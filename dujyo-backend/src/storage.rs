@@ -127,6 +127,39 @@ impl BlockchainStorage {
             .execute(&self.pool)
             .await?;
 
+        // Create users table (CRITICAL for registration)
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS users (
+                user_id VARCHAR(255) PRIMARY KEY,
+                wallet_address VARCHAR(255) UNIQUE NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                username VARCHAR(255) UNIQUE,
+                user_type VARCHAR(50) DEFAULT 'listener',
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+            "#
+        )
+        .execute(&self.pool)
+        .await?;
+
+        // Create token_balances table (for DYO/DYS balances)
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS token_balances (
+                address VARCHAR(255) PRIMARY KEY,
+                dyo_balance BIGINT NOT NULL DEFAULT 0,
+                dys_balance BIGINT NOT NULL DEFAULT 0,
+                staked_balance BIGINT NOT NULL DEFAULT 0,
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+            "#
+        )
+        .execute(&self.pool)
+        .await?;
+
         // Create indexes for users table
         sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
             .execute(&self.pool)
