@@ -77,20 +77,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signUp = async (email: string, password: string, username: string) => {
     try {
       console.log('📝 Starting registration process for:', email);
+      console.log('🚀 Starting registration process...');
+      console.log('📧 Email:', email);
+      console.log('👤 Username:', username);
       
-      // Call register endpoint
       const apiBaseUrl = getApiBaseUrl();
-      const registerResponse = await fetch(`${apiBaseUrl}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          username: username,
-        })
-      });
+      console.log('🌐 API Base URL:', apiBaseUrl);
+      
+      const registerUrl = `${apiBaseUrl}/register`;
+      console.log('📡 Register URL:', registerUrl);
+      
+      let registerResponse;
+      try {
+        registerResponse = await fetch(registerUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            username: username,
+          })
+        });
+        
+        console.log('📡 Fetch completed, status:', registerResponse.status);
+      } catch (fetchError) {
+        console.error('❌ FETCH ERROR (network/CORS):', fetchError);
+        console.error('❌ Error details:', {
+          message: fetchError instanceof Error ? fetchError.message : String(fetchError),
+          name: fetchError instanceof Error ? fetchError.name : 'Unknown',
+          stack: fetchError instanceof Error ? fetchError.stack : undefined
+        });
+        throw new Error(`Network error: ${fetchError instanceof Error ? fetchError.message : 'Failed to connect to server'}`);
+      }
 
       console.log('📡 Backend register response status:', registerResponse.status);
       console.log('📡 Backend register response URL:', registerResponse.url);
