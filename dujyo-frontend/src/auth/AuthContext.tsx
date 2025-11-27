@@ -93,25 +93,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       console.log('📡 Backend register response status:', registerResponse.status);
+      console.log('📡 Backend register response URL:', registerResponse.url);
+      
+      // Get response text first to see what we're dealing with
+      const responseText = await registerResponse.text();
+      console.log('📡 Backend register raw response:', responseText);
       
       if (!registerResponse.ok) {
-        const errorText = await registerResponse.text();
-        console.error(' Backend error response:', errorText);
+        console.error('❌ Backend register error - Status:', registerResponse.status);
+        console.error('❌ Backend register error - Response:', responseText);
         let errorMessage = 'Failed to register';
         try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage = errorJson.message || errorMessage;
+          const errorJson = JSON.parse(responseText);
+          errorMessage = errorJson.message || errorJson.error || errorMessage;
+          console.error('❌ Parsed error message:', errorMessage);
         } catch {
-          errorMessage = errorText || errorMessage;
+          errorMessage = responseText || errorMessage;
+          console.error('❌ Could not parse error, using raw text');
         }
         throw new Error(errorMessage);
       }
 
-      const registerResult = await registerResponse.json();
-      console.log(' Backend register result:', registerResult);
+      // Parse JSON response
+      let registerResult;
+      try {
+        registerResult = JSON.parse(responseText);
+        console.log('✅ Backend register result:', registerResult);
+      } catch (e) {
+        console.error('❌ Failed to parse register response as JSON:', e);
+        console.error('❌ Raw response:', responseText);
+        throw new Error('Invalid response from server');
+      }
       
       if (!registerResult.success) {
-        console.error(' Registration failed:', registerResult.message);
+        console.error('❌ Registration failed:', registerResult.message);
+        console.error('❌ Full response:', registerResult);
         throw new Error(registerResult.message || 'Registration failed');
       }
 
