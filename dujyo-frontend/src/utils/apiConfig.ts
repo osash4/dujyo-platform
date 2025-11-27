@@ -14,7 +14,9 @@ export function getApiBaseUrl(): string {
   const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
   if (envUrl) {
     // Remove trailing slash if present
-    return envUrl.replace(/\/$/, '');
+    const cleanUrl = envUrl.replace(/\/$/, '');
+    console.log('🌐 Using API URL from environment:', cleanUrl);
+    return cleanUrl;
   }
 
   // Check if we're running in browser
@@ -26,9 +28,13 @@ export function getApiBaseUrl(): string {
 
   // ✅ PRIORITY 2: Production domain (dujyo.com)
   if (currentHost === 'dujyo.com' || currentHost === 'www.dujyo.com') {
-    // In production, should use env var, but fallback to relative if not set
-    console.warn('⚠️ VITE_API_BASE_URL not set in production. Using relative URLs.');
-    return '';
+    // In production, MUST use env var - throw error if not set
+    console.error('❌ ERROR: VITE_API_BASE_URL not set in production!');
+    console.error('   Please configure VITE_API_BASE_URL in Vercel environment variables');
+    console.error('   Expected format: https://tu-backend-render.onrender.com');
+    // Fallback: try to construct from common Render pattern (not recommended)
+    console.warn('⚠️ Falling back to default Render URL pattern');
+    return 'https://dujyo-platform.onrender.com';
   }
 
   // ✅ PRIORITY 3: Development (localhost)
@@ -38,8 +44,11 @@ export function getApiBaseUrl(): string {
 
   // ✅ PRIORITY 4: Vercel preview deployments
   if (currentHost.includes('vercel.app')) {
-    // Use env var if available, otherwise relative
-    return envUrl || '';
+    // Use env var if available, otherwise show error
+    if (!envUrl) {
+      console.error('❌ ERROR: VITE_API_BASE_URL not set for Vercel preview!');
+    }
+    return envUrl || 'https://dujyo-platform.onrender.com';
   }
 
   // ✅ PRIORITY 5: ngrok (development tunneling)
@@ -54,6 +63,7 @@ export function getApiBaseUrl(): string {
   }
 
   // Default fallback
+  console.warn('⚠️ Using default localhost API URL');
   return 'http://localhost:8083';
 }
 
