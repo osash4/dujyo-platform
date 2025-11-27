@@ -122,15 +122,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!registerResponse.ok) {
         console.error('❌ Backend register error - Status:', registerResponse.status);
         console.error('❌ Backend register error - Response:', responseText);
+        
         let errorMessage = 'Failed to register';
+        
+        // Handle specific status codes
+        if (registerResponse.status === 500) {
+          errorMessage = 'Server error. Please try again later or contact support.';
+          console.error('❌ Server error (500) - Backend may have database issues');
+        } else if (registerResponse.status === 503) {
+          errorMessage = 'Service temporarily unavailable. Please try again in a moment.';
+        } else if (registerResponse.status === 400) {
+          errorMessage = 'Invalid request. Please check your information.';
+        }
+        
         try {
           const errorJson = JSON.parse(responseText);
           errorMessage = errorJson.message || errorJson.error || errorMessage;
           console.error('❌ Parsed error message:', errorMessage);
         } catch {
-          errorMessage = responseText || errorMessage;
-          console.error('❌ Could not parse error, using raw text');
+          if (responseText) {
+            errorMessage = responseText.length > 200 ? errorMessage : responseText;
+          }
+          console.error('❌ Could not parse error, using raw text or default');
         }
+        
         throw new Error(errorMessage);
       }
 

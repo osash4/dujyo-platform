@@ -344,19 +344,33 @@ pub async fn register_handler(
     
     // Hash password
     let password_hash = hash(&payload.password, DEFAULT_COST)
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|e| {
+            eprintln!("Password hashing error: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
     
     // Check if email already exists
-    let email_exists: Option<String> = sqlx::query_scalar(
+    let email_exists_result: Result<Option<String>, sqlx::Error> = sqlx::query_scalar(
         "SELECT email FROM users WHERE email = $1"
     )
     .bind(&payload.email)
     .fetch_optional(pool)
-    .await
-    .map_err(|e| {
-        eprintln!("❌ Database error checking email: {}", e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+    .await;
+    
+    let email_exists = match email_exists_result {
+        Ok(val) => val,
+        Err(e) => {
+            eprintln!("Database error checking email: {}", e);
+            eprintln!("Database URL: {}", std::env::var("DATABASE_URL").unwrap_or_else(|_| "not set".to_string()));
+            return Ok(axum::Json(RegisterResponse {
+                success: false,
+                token: String::new(),
+                message: format!("Database connection error. Please check backend logs."),
+                user_id: None,
+                wallet_address: None,
+            }));
+        }
+    };
     
     if email_exists.is_some() {
         return Ok(axum::Json(RegisterResponse {
@@ -370,16 +384,26 @@ pub async fn register_handler(
     
     // Check if username already exists (if provided)
     if let Some(ref username) = payload.username {
-        let username_exists: Option<String> = sqlx::query_scalar(
+        let username_exists_result: Result<Option<String>, sqlx::Error> = sqlx::query_scalar(
             "SELECT username FROM users WHERE username = $1"
         )
         .bind(username)
         .fetch_optional(pool)
-        .await
-        .map_err(|e| {
-            eprintln!("❌ Database error checking username: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
+        .await;
+        
+        let username_exists = match username_exists_result {
+            Ok(val) => val,
+            Err(e) => {
+                eprintln!("Database error checking username: {}", e);
+                return Ok(axum::Json(RegisterResponse {
+                    success: false,
+                    token: String::new(),
+                    message: format!("Database connection error. Please check backend logs."),
+                    user_id: None,
+                    wallet_address: None,
+                }));
+            }
+        };
         
         if username_exists.is_some() {
             return Ok(axum::Json(RegisterResponse {
@@ -460,10 +484,10 @@ pub async fn register_handler(
             
             match init_balance_result {
                 Ok(_) => {
-                    eprintln!("✅ Initialized token balance for wallet: {}", wallet_address);
+                    eprintln!("Initialized token balance for wallet: {}", wallet_address);
                 }
                 Err(e) => {
-                    eprintln!("⚠️ Warning: Failed to initialize token balance for {}: {}", wallet_address, e);
+                    eprintln!("Warning: Failed to initialize token balance for {}: {}", wallet_address, e);
                     // Continue registration even if balance initialization fails
                 }
             }
@@ -492,7 +516,7 @@ pub async fn register_handler(
             }))
         }
         Err(e) => {
-            eprintln!("❌ Database error during registration: {}", e);
+            eprintln!("Database error during registration: {}", e);
             // Return a more descriptive error
             let error_msg = if e.to_string().contains("duplicate key") {
                 if e.to_string().contains("email") {
