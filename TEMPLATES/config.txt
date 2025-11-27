@@ -1,0 +1,13 @@
+# Configuración de Onboarding - XWave
+# Generado automáticamente el Sun Nov  9 14:25:06 AST 2025
+
+TU_NOMBRE=
+TU_EMAIL=
+TU_NUMERO=
+SYSTEM_URL=http://localhost:8083
+FEEDBACK_LINK=
+
+# Instrucciones:
+# 1. Usa estos valores al personalizar mensajes para cada artista
+# 2. Reemplaza {NOMBRE} con el nombre de cada artista en invitation_whatsapp.txt
+# 3. Usa el FEEDBACK_LINK en todos los mensajes de feedback

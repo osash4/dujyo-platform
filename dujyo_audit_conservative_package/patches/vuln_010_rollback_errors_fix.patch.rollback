@@ -1,0 +1,29 @@
+--- a/xwave-backend/src/server.rs
++++ b/xwave-backend/src/server.rs
+@@ -958,7 +958,7 @@
+         // ✅ ATOMIC CHECK: Verify pool has enough capacity (within transaction)
+         if pool_total_distributed + final_earnings > MONTHLY_POOL_LIMIT {
+-            // ✅ SECURITY FIX VULN-010: Properly handle rollback errors
+-            if let Err(e) = tx.rollback().await {
+-                eprintln!("❌ CRITICAL: Failed to rollback transaction: {}", e);
+-                // Log error but continue with error response
+-                // Transaction may have already been rolled back or committed
+-            }
++            let _ = tx.rollback().await;
+             let minutes_used = daily_usage.minutes_used;
+             let tokens_earned = daily_usage.tokens_earned;
+             drop(daily_usage_map);
+@@ -1029,7 +1029,7 @@
+         // 3. Attack on RNG (requires compromising OS RNG)
+         if nonce_insert_result.is_none() {
+-            // ✅ SECURITY FIX VULN-010: Properly handle rollback errors
+-            if let Err(e) = tx.rollback().await {
+-                eprintln!("❌ CRITICAL: Failed to rollback transaction after nonce collision: {}", e);
+-                // Log error but continue with error response
+-                // Transaction may have already been rolled back or committed
+-            }
++            let _ = tx.rollback().await;
+             eprintln!("🚨 CRITICAL: Nonce collision detected! This should never happen with server-side generation.");
+             return Ok(Json(StreamEarnResponse {
+                 success: false,
+

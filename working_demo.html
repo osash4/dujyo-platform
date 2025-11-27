@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XWave Working Demo - Como DEBERÍA funcionar</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .section { background: #2a2a2a; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .warning { color: #fbbf24; }
+        .log { background: #1e1e1e; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+        .playing { background: #22c55e; }
+        .paused { background: #ef4444; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .balance-display { background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #374151; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 XWave Working Demo - Como DEBERÍA funcionar</h1>
+        
+        <div class="section">
+            <h2>🔐 Login Automático</h2>
+            <button onclick="autoLogin()">Login con user@example.com</button>
+            <div id="login-status" class="log">Status: No logueado</div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>💰 Balance Management</h2>
+                <div class="balance-display">
+                    <h3>Balance Total: <span id="total-balance">73</span> XWV</h3>
+                    <h3>Disponible: <span id="available-balance">73</span> XWV</h3>
+                    <h3>Staked: <span id="staked-balance">0</span> XWV</h3>
+                    <h3>USXWV: <span id="usxwv-balance">0</span> USXWV</h3>
+                </div>
+                <button onclick="stakeTokens()">Stake 12 XWV</button>
+                <button onclick="unstakeTokens()">Unstake All</button>
+                <div id="staking-log" class="log">Staking: Listo</div>
+            </div>
+
+            <div class="section">
+                <h2>🔄 DEX Trading</h2>
+                <div class="balance-display">
+                    <h3>XWV: <span id="dex-xwv">73</span></h3>
+                    <h3>USXWV: <span id="dex-usxwv">0</span></h3>
+                </div>
+                <button onclick="swapToUSXWV()">Swap 14 XWV → USXWV</button>
+                <button onclick="swapToXWV()">Swap 10 USXWV → XWV</button>
+                <div id="swap-log" class="log">Swap: Listo</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎵 Stream-to-Earn</h2>
+            <button id="playBtn" onclick="togglePlay()">▶️ Play Content</button>
+            <button onclick="stopContent()">⏹️ Stop</button>
+            <div id="stream-status" class="log">Status: Stopped</div>
+            
+            <div class="balance-display">
+                <h3>Artist Earnings: <span id="artist-earnings">0</span> XWV</h3>
+                <h3>Listener Rewards: <span id="listener-rewards">0</span> XWV</h3>
+                <h3>Total Earned: <span id="total-earned">0</span> XWV</h3>
+                <h3>Stream Time: <span id="stream-time">0:00</span></h3>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🛒 Use Earnings</h2>
+            <button onclick="buyNFT()">Buy NFT (5 XWV)</button>
+            <button onclick="buyMerch()">Buy Merch (3 XWV)</button>
+            <div id="purchase-log" class="log">Purchases: Listo</div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Real-time Logs</h2>
+            <div id="logs" class="log">Sistema iniciado...</div>
+        </div>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+        let isPlaying = false;
+        let streamInterval = null;
+        let artistInterval = null;
+        let listenerInterval = null;
+        
+        // State
+        let state = {
+            totalBalance: 73,
+            availableBalance: 73,
+            stakedBalance: 0,
+            usxwvBalance: 0,
+            artistEarnings: 0,
+            listenerRewards: 0,
+            totalEarned: 0,
+            streamTime: 0
+        };
+
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.textContent += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function updateDisplay() {
+            document.getElementById('total-balance').textContent = state.totalBalance;
+            document.getElementById('available-balance').textContent = state.availableBalance;
+            document.getElementById('staked-balance').textContent = state.stakedBalance;
+            document.getElementById('usxwv-balance').textContent = state.usxwvBalance;
+            document.getElementById('dex-xwv').textContent = state.availableBalance;
+            document.getElementById('dex-usxwv').textContent = state.usxwvBalance;
+            document.getElementById('artist-earnings').textContent = state.artistEarnings;
+            document.getElementById('listener-rewards').textContent = state.listenerRewards;
+            document.getElementById('total-earned').textContent = state.totalEarned;
+            document.getElementById('stream-time').textContent = formatTime(state.streamTime);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        async function autoLogin() {
+            const loginStatus = document.getElementById('login-status');
+            loginStatus.textContent = 'Logging in...';
+            
+            try {
+                // Simulate login
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                isLoggedIn = true;
+                loginStatus.textContent = '✅ Logged in as user@example.com';
+                loginStatus.className = 'log success';
+                
+                log('✅ Login successful - JWT token obtained');
+                updateDisplay();
+                
+            } catch (error) {
+                loginStatus.textContent = `❌ Login failed: ${error.message}`;
+                loginStatus.className = 'log error';
+                log(`❌ Login failed: ${error.message}`);
+            }
+        }
+
+        function stakeTokens() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const amount = 12;
+            if (state.availableBalance < amount) {
+                alert('Insufficient balance!');
+                return;
+            }
+            
+            // Simulate staking
+            state.availableBalance -= amount;
+            state.stakedBalance += amount;
+            state.totalBalance = state.availableBalance + state.stakedBalance;
+            
+            updateDisplay();
+            log(`✅ Staked ${amount} XWV - Available: ${state.availableBalance}, Staked: ${state.stakedBalance}`);
+            
+            document.getElementById('staking-log').textContent = `✅ Staked ${amount} XWV successfully`;
+            document.getElementById('staking-log').className = 'log success';
+        }
+
+        function unstakeTokens() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            if (state.stakedBalance === 0) {
+                alert('No tokens staked!');
+                return;
+            }
+            
+            const amount = state.stakedBalance;
+            const rewards = Math.floor(amount * 0.12); // 12% APY
+            
+            // Simulate unstaking with rewards
+            state.availableBalance += amount + rewards;
+            state.stakedBalance = 0;
+            state.totalBalance = state.availableBalance + state.stakedBalance;
+            
+            updateDisplay();
+            log(`✅ Unstaked ${amount} XWV + ${rewards} rewards - New balance: ${state.availableBalance}`);
+            
+            document.getElementById('staking-log').textContent = `✅ Unstaked ${amount} XWV + ${rewards} rewards`;
+            document.getElementById('staking-log').className = 'log success';
+        }
+
+        function swapToUSXWV() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const amount = 14;
+            if (state.availableBalance < amount) {
+                alert('Insufficient XWV balance!');
+                return;
+            }
+            
+            // Simulate swap (1:1 ratio)
+            state.availableBalance -= amount;
+            state.usxwvBalance += amount;
+            
+            updateDisplay();
+            log(`✅ Swapped ${amount} XWV → ${amount} USXWV`);
+            
+            document.getElementById('swap-log').textContent = `✅ Swapped ${amount} XWV → USXWV`;
+            document.getElementById('swap-log').className = 'log success';
+        }
+
+        function swapToXWV() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const amount = 10;
+            if (state.usxwvBalance < amount) {
+                alert('Insufficient USXWV balance!');
+                return;
+            }
+            
+            // Simulate swap (1:1 ratio)
+            state.usxwvBalance -= amount;
+            state.availableBalance += amount;
+            
+            updateDisplay();
+            log(`✅ Swapped ${amount} USXWV → ${amount} XWV`);
+            
+            document.getElementById('swap-log').textContent = `✅ Swapped ${amount} USXWV → XWV`;
+            document.getElementById('swap-log').className = 'log success';
+        }
+
+        function togglePlay() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            if (isPlaying) {
+                pauseContent();
+            } else {
+                playContent();
+            }
+        }
+
+        function playContent() {
+            isPlaying = true;
+            const playBtn = document.getElementById('playBtn');
+            const streamStatus = document.getElementById('stream-status');
+            
+            playBtn.textContent = '⏸️ Pause Content';
+            playBtn.className = 'playing';
+            streamStatus.textContent = 'Status: Playing - Earning tokens...';
+            streamStatus.className = 'log success';
+            
+            log('🎵 Started playing content - Stream-to-earn activated');
+            
+            // Start earning simulation
+            startStreamEarn();
+        }
+
+        function pauseContent() {
+            isPlaying = false;
+            const playBtn = document.getElementById('playBtn');
+            const streamStatus = document.getElementById('stream-status');
+            
+            playBtn.textContent = '▶️ Play Content';
+            playBtn.className = 'paused';
+            streamStatus.textContent = 'Status: Paused';
+            streamStatus.className = 'log';
+            
+            log('⏸️ Content paused - Stream-to-earn stopped');
+            
+            // Stop earning simulation
+            stopStreamEarn();
+        }
+
+        function stopContent() {
+            isPlaying = false;
+            const playBtn = document.getElementById('playBtn');
+            const streamStatus = document.getElementById('stream-status');
+            
+            playBtn.textContent = '▶️ Play Content';
+            playBtn.className = 'paused';
+            streamStatus.textContent = 'Status: Stopped';
+            streamStatus.className = 'log';
+            
+            log('⏹️ Content stopped - Stream-to-earn stopped');
+            
+            // Stop earning simulation
+            stopStreamEarn();
+            
+            // Reset earnings
+            state.artistEarnings = 0;
+            state.listenerRewards = 0;
+            state.totalEarned = 0;
+            state.streamTime = 0;
+            updateDisplay();
+        }
+
+        function startStreamEarn() {
+            // Artist tokens every 30 seconds
+            artistInterval = setInterval(() => {
+                if (!isPlaying) return;
+                
+                const amount = 5;
+                state.artistEarnings += amount;
+                state.totalEarned += amount;
+                state.streamTime += 30;
+                state.availableBalance += amount;
+                state.totalBalance += amount;
+                
+                updateDisplay();
+                log(`💰 Artist earned ${amount} XWV (Total: ${state.artistEarnings})`);
+            }, 30000);
+
+            // Listener tokens every 60 seconds
+            listenerInterval = setInterval(() => {
+                if (!isPlaying) return;
+                
+                const amount = 2;
+                state.listenerRewards += amount;
+                state.totalEarned += amount;
+                state.streamTime += 60;
+                state.availableBalance += amount;
+                state.totalBalance += amount;
+                
+                updateDisplay();
+                log(`💰 Listener earned ${amount} XWV (Total: ${state.listenerRewards})`);
+            }, 60000);
+        }
+
+        function stopStreamEarn() {
+            if (artistInterval) {
+                clearInterval(artistInterval);
+                artistInterval = null;
+            }
+            
+            if (listenerInterval) {
+                clearInterval(listenerInterval);
+                listenerInterval = null;
+            }
+        }
+
+        function buyNFT() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const cost = 5;
+            if (state.availableBalance < cost) {
+                alert('Insufficient balance for NFT!');
+                return;
+            }
+            
+            state.availableBalance -= cost;
+            state.totalBalance -= cost;
+            
+            updateDisplay();
+            log(`🖼️ Bought NFT for ${cost} XWV`);
+            
+            document.getElementById('purchase-log').textContent = `✅ Bought NFT for ${cost} XWV`;
+            document.getElementById('purchase-log').className = 'log success';
+        }
+
+        function buyMerch() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const cost = 3;
+            if (state.availableBalance < cost) {
+                alert('Insufficient balance for merch!');
+                return;
+            }
+            
+            state.availableBalance -= cost;
+            state.totalBalance -= cost;
+            
+            updateDisplay();
+            log(`👕 Bought merch for ${cost} XWV`);
+            
+            document.getElementById('purchase-log').textContent = `✅ Bought merch for ${cost} XWV`;
+            document.getElementById('purchase-log').className = 'log success';
+        }
+
+        // Initialize
+        window.onload = () => {
+            updateDisplay();
+            log('🚀 XWave Demo initialized - This shows how the system SHOULD work');
+        };
+    </script>
+</body>
+</html>

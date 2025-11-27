@@ -1,0 +1,274 @@
+# CI/CD Security Scanning Pipeline
+# Runs on every push and pull request
+
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run weekly security scans
+    - cron: '0 0 * * 0'
+
+jobs:
+  # Rust Security Audit
+  cargo-audit:
+    name: Cargo Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+      
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+      
+      - name: Run cargo audit
+        working-directory: ./xwave-backend
+        run: cargo audit --deny warnings
+        continue-on-error: true
+      
+      - name: Upload audit results
+        uses: actions/upload-artifact@v3
+        with:
+          name: cargo-audit-results
+          path: ./xwave-backend/target/audit/
+
+  # Static Analysis with Clippy
+  clippy-lint:
+    name: Clippy Security Lints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy
+      
+      - name: Run Clippy
+        working-directory: ./xwave-backend
+        run: |
+          cargo clippy --all-targets --all-features -- \
+            -D warnings \
+            -W clippy::all \
+            -W clippy::suspicious \
+            -W clippy::complexity \
+            -W clippy::perf \
+            -W clippy::style
+      
+      - name: Run Clippy Security Checks
+        working-directory: ./xwave-backend
+        run: |
+          cargo clippy --all-targets -- \
+            -W clippy::integer_arithmetic \
+            -W clippy::float_arithmetic \
+            -W clippy::unwrap_used \
+            -W clippy::expect_used \
+            -W clippy::panic \
+            -W clippy::todo \
+            -W clippy::unimplemented
+
+  # Dependency Vulnerability Scan
+  npm-audit:
+    name: NPM Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Audit Frontend Dependencies
+        working-directory: ./xwave-frontend
+        run: |
+          npm audit --audit-level=moderate
+          npm audit --json > audit-report.json
+        continue-on-error: true
+      
+      - name: Upload audit report
+        uses: actions/upload-artifact@v3
+        with:
+          name: npm-audit-frontend
+          path: ./xwave-frontend/audit-report.json
+
+  # Container Security Scan
+  trivy-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build Docker images
+        run: |
+          docker build -t xwave/backend:test ./xwave-backend
+          docker build -t xwave/frontend:test ./xwave-frontend
+      
+      - name: Run Trivy vulnerability scanner - Backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'xwave/backend:test'
+          format: 'sarif'
+          output: 'trivy-backend-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Run Trivy vulnerability scanner - Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'xwave/frontend:test'
+          format: 'sarif'
+          output: 'trivy-frontend-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: '.'
+
+  # SAST - Static Application Security Testing
+  codeql-analysis:
+    name: CodeQL SAST
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      matrix:
+        language: [ 'javascript', 'typescript' ]
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  # Secret Scanning
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for better detection
+      
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified --fail
+
+  # License Compliance
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check Rust dependencies licenses
+        working-directory: ./xwave-backend
+        run: |
+          cargo install cargo-license
+          cargo license --json > licenses.json
+          # Check for incompatible licenses
+          if grep -q "GPL" licenses.json; then
+            echo "GPL license detected - review required"
+            exit 1
+          fi
+      
+      - name: Check NPM dependencies licenses
+        working-directory: ./xwave-frontend
+        run: |
+          npx license-checker --json > licenses.json
+          # Review GPL licenses
+          npx license-checker --exclude 'MIT,ISC,BSD,Apache-2.0'
+
+  # Performance & Load Test
+  performance-test:
+    name: Performance Regression Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup services for testing
+        run: |
+          docker-compose -f docker-compose.simple.yml up -d
+          sleep 30  # Wait for services to start
+      
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+      
+      - name: Run performance tests
+        run: |
+          k6 run --out json=performance-results.json ./scripts/load-testing/k6-high-load.js
+        continue-on-error: true
+      
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: performance-results.json
+
+  # Security Report Summary
+  security-summary:
+    name: Security Report Summary
+    runs-on: ubuntu-latest
+    needs: [cargo-audit, clippy-lint, npm-audit, trivy-scan, secret-scan]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Generate Security Summary
+        run: |
+          echo "# Security Scan Summary" > security-summary.md
+          echo "" >> security-summary.md
+          echo "## Scan Results" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "- Cargo Audit: ${{ needs.cargo-audit.result }}" >> security-summary.md
+          echo "- Clippy Lints: ${{ needs.clippy-lint.result }}" >> security-summary.md
+          echo "- NPM Audit: ${{ needs.npm-audit.result }}" >> security-summary.md
+          echo "- Container Scan: ${{ needs.trivy-scan.result }}" >> security-summary.md
+          echo "- Secret Scan: ${{ needs.secret-scan.result }}" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "Generated: $(date)" >> security-summary.md
+      
+      - name: Comment PR with summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('security-summary.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: summary
+            });
+

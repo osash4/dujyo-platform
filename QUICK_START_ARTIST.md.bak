@@ -1,0 +1,293 @@
+# 🚀 Guía Rápida para Artistas - XWave MVP
+
+**Tiempo estimado:** 15-20 minutos  
+**Dificultad:** Básica
+
+---
+
+## 📋 Antes de Empezar
+
+### Lo que necesitas:
+- ✅ Una cuenta de email
+- ✅ Un archivo de audio (MP3, WAV, etc.) - puede ser de prueba
+- ✅ 15-20 minutos de tiempo
+- ✅ Conexión a internet
+
+### Lo que vas a hacer:
+1. Registrarte en XWave
+2. Verificarte como artista
+3. Subir una canción
+4. Reproducir tu música
+5. Darnos tu feedback
+
+---
+
+## 🎯 Paso 1: Registro (2-3 min)
+
+### Opción A: Usando la API directamente
+
+**Endpoint:**
+```
+POST https://gustily-nonsuppressed-emilio.ngrok-free.dev/register
+```
+
+**Datos necesarios:**
+```json
+{
+  "email": "tu_email@ejemplo.com",
+  "password": "tu_contraseña",
+  "username": "tu_usuario",
+  "artist_name": "Tu Nombre Artístico"
+}
+```
+
+**Ejemplo con cURL:**
+```bash
+curl -X POST https://gustily-nonsuppressed-emilio.ngrok-free.dev/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "artista@ejemplo.com",
+    "password": "password123",
+    "username": "artista_test",
+    "artist_name": "Artista Test"
+  }'
+```
+
+**Respuesta esperada:**
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "message": "User registered successfully"
+}
+```
+
+**⚠️ IMPORTANTE:** Guarda el `token` - lo necesitarás para los siguientes pasos.
+
+---
+
+## 🎨 Paso 2: Verificación como Artista (1-2 min)
+
+**Endpoint:**
+```
+POST https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/artist/request-verification
+```
+
+**Headers:**
+```
+Authorization: Bearer {tu_token}
+Content-Type: application/json
+```
+
+**Ejemplo con cURL:**
+```bash
+curl -X POST https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/artist/request-verification \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+**Respuesta esperada:**
+```json
+{
+  "success": true,
+  "message": "Verification request submitted successfully. Auto-approved for MVP.",
+  "verified": true
+}
+```
+
+✅ ¡Ya eres artista verificado!
+
+---
+
+## 📤 Paso 3: Subir una Canción (5-7 min)
+
+**Endpoint:**
+```
+POST https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/upload/content
+```
+
+**Headers:**
+```
+Authorization: Bearer {tu_token}
+Content-Type: multipart/form-data
+```
+
+**Datos necesarios:**
+- `file`: Tu archivo de audio
+- `title`: Título de la canción
+- `artist`: **✅ REQUERIDO** - Nombre del artista (mismo que `artist_name` del registro)
+- `description`: Descripción (opcional)
+- `genre`: Género (opcional)
+- `content_type`: "audio"
+- `price`: "0.0" (para prueba)
+
+**⚠️ IMPORTANTE:** El campo `artist` es obligatorio y debe coincidir con el `artist_name` que usaste en el registro.
+
+**Ejemplo con cURL:**
+```bash
+curl -X POST https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/upload/content \
+  -H "Authorization: Bearer {tu_token}" \
+  -F "file=@/ruta/a/tu/cancion.mp3" \
+  -F "title=Mi Primera Canción" \
+  -F "artist=Tu Nombre Artístico" \
+  -F "description=Canción de prueba para XWave MVP" \
+  -F "genre=Pop" \
+  -F "content_type=audio" \
+  -F "price=0.0"
+```
+
+**Respuesta esperada:**
+```json
+{
+  "success": true,
+  "message": "Successfully uploaded audio content: Mi Primera Canción",
+  "content_id": "CONTENT_A03DBFDD_1762043000",
+  "file_url": "/uploads/audio/CONTENT_A03DBFDD_1762043000_cancion.mp3",
+  "ipfs_hash": "Qm..."
+}
+```
+
+**⚠️ IMPORTANTE:** Guarda el `content_id` - lo necesitarás para reproducir.
+
+---
+
+## 📋 Paso 4: Ver tu Contenido (2-3 min)
+
+**Endpoint:**
+```
+GET https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/content/artist/{artist_id}
+```
+
+**Nota:** Necesitas tu `artist_id` (wallet_address). Puedes obtenerlo del token o usar el `user_id` del registro.
+
+**Ejemplo con cURL:**
+```bash
+curl -X GET https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/content/artist/{tu_artist_id} \
+  -H "Authorization: Bearer {tu_token}"
+```
+
+**Respuesta esperada:**
+```json
+{
+  "success": true,
+  "message": "Retrieved 1 content items",
+  "content": [
+    {
+      "content_id": "CONTENT_A03DBFDD_1762043000",
+      "title": "Mi Primera Canción",
+      "artist_name": "Artista Test",
+      ...
+    }
+  ],
+  "total": 1
+}
+```
+
+✅ ¡Tu canción está en la lista!
+
+---
+
+## 🎵 Paso 5: Reproducir tu Canción (2-3 min)
+
+**Endpoint:**
+```
+GET https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/content/{content_id}/file
+```
+
+**Ejemplo con cURL:**
+```bash
+curl -X GET https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/content/{tu_content_id}/file \
+  -H "Authorization: Bearer {tu_token}" \
+  --output cancion_descargada.mp3
+```
+
+**Verificar headers:**
+```bash
+curl -I -X GET https://gustily-nonsuppressed-emilio.ngrok-free.dev/api/v1/content/{tu_content_id}/file \
+  -H "Authorization: Bearer {tu_token}"
+```
+
+**Respuesta esperada:**
+```
+HTTP/1.1 200 OK
+Content-Type: audio/mpeg
+Content-Length: [tamaño]
+Cache-Control: public, max-age=31536000
+Accept-Ranges: bytes
+```
+
+✅ ¡Tu canción se reproduce correctamente!
+
+---
+
+## 💬 Paso 6: Feedback (3-5 min)
+
+### Opción A: Google Forms
+Completa el formulario: [LINK_GOOGLE_FORMS]
+
+### Opción B: Telegram/WhatsApp
+Responde estas preguntas:
+
+1. **¿Qué funcionó bien?**
+   [Tu respuesta]
+
+2. **¿Qué se rompió o no funcionó?**
+   [Tu respuesta]
+
+3. **¿Qué falta o qué mejorarías?**
+   [Tu respuesta]
+
+4. **¿Volverías a usar la plataforma?**
+   ✅ Sí / ❌ No / 🤔 Tal vez
+
+5. **¿Recomendarías XWave a otros artistas?**
+   ✅ Sí / ❌ No / 🤔 Tal vez
+
+---
+
+## 🆘 ¿Problemas?
+
+### Error: "JWT token invalid"
+- Verifica que el token esté completo
+- Asegúrate de incluir "Bearer " antes del token
+- Si expiró, haz un nuevo registro
+
+### Error: "Artist verification required"
+- Ejecuta el Paso 2 primero
+- Espera 1-2 segundos después de la verificación
+
+### Error: "File not found"
+- Verifica que el upload fue exitoso
+- Revisa que el archivo existe en tu computadora
+
+### Error: "Content not found"
+- Usa el `content_id` correcto del Paso 3
+- Verifica que el upload fue exitoso
+
+---
+
+## 📞 ¿Necesitas Ayuda?
+
+- **WhatsApp/Telegram:** [TU_NUMERO]
+- **Email:** [TU_EMAIL]
+- **Horario:** [HORARIO_DISPONIBLE]
+
+---
+
+## ✅ Checklist de Completación
+
+- [ ] Registro completado
+- [ ] Verificación de artista completada
+- [ ] Canción subida exitosamente
+- [ ] Contenido visible en lista
+- [ ] Archivo reproducible
+- [ ] Feedback enviado
+
+**¡Gracias por probar XWave! 🙏**
+
+---
+
+**Última actualización:** Noviembre 2024
+

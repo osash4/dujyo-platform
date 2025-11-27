@@ -1,0 +1,9 @@
+# XWave Kubernetes Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: xwave
+  labels:
+    name: xwave
+    app: xwave
+    environment: production

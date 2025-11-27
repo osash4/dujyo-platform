@@ -1,0 +1,328 @@
+# 🚀 Plan de Acción - Onboarding Artistas Testers MVP
+
+**Fecha:** Noviembre 2024  
+**Estado:** ✅ MVP 100% Funcional (6/6 tests pasan)  
+**Objetivo:** Onboardear 3-5 artistas testers en las próximas 48 horas
+
+---
+
+## ⚡ Acción Inmediata (Hoy)
+
+### 1. Verificar Sistema (5 min)
+```bash
+# Verificar que el servidor está corriendo
+curl http://localhost:8083/health
+
+# Verificar que el test MVP pasa
+cd xwave-backend
+cargo run --bin test-mvp-flow
+```
+
+**✅ Checklist Pre-Onboarding:**
+- [ ] Servidor backend corriendo en `http://localhost:8083`
+- [ ] Base de datos PostgreSQL accesible
+- [ ] Test MVP pasa 6/6 pasos
+- [ ] Directorio `./uploads/` existe y tiene permisos
+- [ ] Variables de entorno configuradas (`.env` con `JWT_SECRET` y `DATABASE_URL`)
+
+---
+
+### 2. Identificar Artistas (30 min)
+
+**Lista de Artistas Testers:**
+- [ ] Artista 1: [NOMBRE] - [CONTACTO] - [NIVEL_TÉCNICO]
+- [ ] Artista 2: [NOMBRE] - [CONTACTO] - [NIVEL_TÉCNICO]
+- [ ] Artista 3: [NOMBRE] - [CONTACTO] - [NIVEL_TÉCNICO]
+- [ ] Artista 4: [NOMBRE] - [CONTACTO] - [NIVEL_TÉCNICO]
+- [ ] Artista 5: [NOMBRE] - [CONTACTO] - [NIVEL_TÉCNICO]
+
+**Criterios:**
+- Disponibilidad de 15-20 minutos
+- Nivel técnico: Básico a Medio (no necesitan ser expertos)
+- Acceso a WhatsApp/Email/Telegram
+- Motivación para dar feedback honesto
+
+---
+
+### 3. Preparar Comunicación (15 min)
+
+**Templates Listos:**
+- ✅ `TEMPLATES/invitation_whatsapp.txt` - Mensaje WhatsApp/Telegram
+- ✅ `TEMPLATES/invitation_email.md` - Email formal
+- ✅ `TEMPLATES/feedback_questions.md` - Preguntas de feedback
+
+**Personalizar:**
+- [ ] Reemplazar `[NOMBRE]` con nombre real
+- [ ] Reemplazar `[TU_NOMBRE]`, `[TU_EMAIL]`, `[TU_NUMERO]`
+- [ ] Configurar canal de feedback (Google Forms o Telegram)
+- [ ] Preparar link de feedback compartible
+
+---
+
+### 4. Configurar Sistema de Feedback (10 min)
+
+**Opción A: Google Forms**
+1. Crear formulario en Google Forms
+2. Usar preguntas de `TEMPLATES/feedback_questions.md`
+3. Obtener link compartible
+4. Agregar link a templates de comunicación
+
+**Opción B: Telegram/WhatsApp**
+1. Crear grupo de Telegram o WhatsApp
+2. Preparar mensaje con preguntas
+3. Agregar instrucciones a templates
+
+**Link de Feedback:** `[AGREGAR_LINK_AQUÍ]`
+
+---
+
+## 📅 Timeline de Onboarding
+
+### Día 1: Preparación y Primeros 2 Artistas
+
+**Mañana (2-3 horas):**
+- [ ] Verificar sistema completo
+- [ ] Identificar y contactar primeros 2 artistas
+- [ ] Enviar invitaciones personalizadas
+- [ ] Agendar sesiones (15-20 min cada una)
+
+**Tarde (2-3 horas):**
+- [ ] Onboarding Artista 1 (15-20 min)
+  - [ ] Registro
+  - [ ] Verificación
+  - [ ] Upload
+  - [ ] Reproducción
+  - [ ] Feedback
+- [ ] Onboarding Artista 2 (15-20 min)
+  - [ ] Registro
+  - [ ] Verificación
+  - [ ] Upload
+  - [ ] Reproducción
+  - [ ] Feedback
+
+**Noche:**
+- [ ] Revisar feedback del día
+- [ ] Identificar bugs críticos
+- [ ] Preparar para Día 2
+
+---
+
+### Día 2: Resto de Artistas y Consolidación
+
+**Mañana (2-3 horas):**
+- [ ] Onboarding Artista 3 (15-20 min)
+- [ ] Onboarding Artista 4 (15-20 min)
+- [ ] Onboarding Artista 5 (15-20 min)
+
+**Tarde (1-2 horas):**
+- [ ] Consolidar feedback de todos los artistas
+- [ ] Identificar patrones y problemas comunes
+- [ ] Priorizar bugs y mejoras
+- [ ] Agradecer a artistas testers
+
+---
+
+## 🎯 Flujo del Artista (15-20 min)
+
+### Paso 1: Registro (2-3 min)
+**Endpoint:** `POST http://localhost:8083/register`
+
+**Datos requeridos:**
+```json
+{
+  "email": "artista@ejemplo.com",
+  "password": "password123",
+  "username": "artista_test",
+  "artist_name": "Artista Test"
+}
+```
+
+**Resultado esperado:**
+- Token JWT recibido
+- User ID generado
+
+---
+
+### Paso 2: Verificación Artista (1-2 min)
+**Endpoint:** `POST http://localhost:8083/api/v1/artist/request-verification`
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Resultado esperado:**
+- `verified: true` (automático en MVP)
+
+---
+
+### Paso 3: Upload de Canción (5-7 min)
+**Endpoint:** `POST http://localhost:8083/api/v1/upload/content`
+
+**Form-data requerido:**
+- `file`: Archivo de audio (MP3, WAV, etc.)
+- `title`: Título de la canción
+- `artist`: **✅ REQUERIDO** - Nombre del artista (mismo que `artist_name` del registro)
+- `description`: Descripción (opcional)
+- `genre`: Género (opcional)
+- `content_type`: "audio"
+- `price`: "0.0"
+
+**⚠️ IMPORTANTE:** El campo `artist` es obligatorio y debe coincidir con el `artist_name` del registro.
+
+**Resultado esperado:**
+- Content ID generado
+- Archivo guardado en `./uploads/audio/`
+- File URL generado
+
+---
+
+### Paso 4: Listar Contenido (2-3 min)
+**Endpoint:** `GET http://localhost:8083/api/v1/content/artist/{artist_id}`
+
+**Nota:** `artist_id` es el `wallet_address` del usuario (se genera automáticamente en el registro).
+
+**Resultado esperado:**
+- Lista con la canción subida
+- Metadata completa visible
+
+---
+
+### Paso 5: Reproducir Canción (2-3 min)
+**Endpoint:** `GET http://localhost:8083/api/v1/content/{content_id}/file`
+
+**Resultado esperado:**
+- Archivo de audio servido
+- Headers correctos (Content-Type: audio/mpeg)
+- Archivo reproducible
+
+---
+
+### Paso 6: Feedback (3-5 min)
+- Completar formulario de feedback
+- O responder preguntas directamente
+
+---
+
+## 📋 Checklist de Sesión con Artista
+
+**Antes de la sesión:**
+- [ ] Servidor corriendo y accesible
+- [ ] Test MVP pasa (verificación rápida)
+- [ ] Templates de comunicación listos
+- [ ] Canal de feedback configurado
+
+**Durante la sesión:**
+- [ ] Guiar registro paso a paso
+- [ ] Verificar que token se recibe correctamente
+- [ ] Asistir en verificación de artista
+- [ ] Ayudar con upload (especialmente campo `artist`)
+- [ ] Verificar que archivo se sube correctamente
+- [ ] Confirmar que reproducción funciona
+- [ ] Recopilar feedback inmediato
+
+**Después de la sesión:**
+- [ ] Verificar logs del servidor
+- [ ] Confirmar datos en base de datos
+- [ ] Verificar archivos en `./uploads/`
+- [ ] Documentar feedback
+- [ ] Agradecer al artista
+
+---
+
+## 🐛 Troubleshooting Rápido
+
+### Error: "Artist is required"
+**Causa:** Falta el campo `artist` en el form-data del upload.
+
+**Solución:**
+- Agregar `artist` al form-data con el mismo valor que `artist_name` del registro
+- Ejemplo: `-F "artist=Artista Test"`
+
+---
+
+### Error: "JWT token invalid"
+**Causa:** Token expirado o mal formateado.
+
+**Solución:**
+- Verificar que el token esté completo
+- Asegurar header: `Authorization: Bearer {token}`
+- Si expiró, hacer nuevo registro
+
+---
+
+### Error: "Artist verification required"
+**Causa:** No se completó la verificación.
+
+**Solución:**
+- Ejecutar `POST /api/v1/artist/request-verification`
+- Esperar 1-2 segundos antes de upload
+
+---
+
+### Error: "File not found"
+**Causa:** Archivo no se guardó correctamente.
+
+**Solución:**
+- Verificar que el upload fue exitoso
+- Revisar logs del servidor
+- Verificar permisos en `./uploads/`
+
+---
+
+## 📊 Métricas de Éxito
+
+### KPIs del Onboarding
+- **Tasa de completación:** % de artistas que completan todo el flujo
+- **Tiempo promedio:** Tiempo total por artista
+- **Tasa de errores:** % de artistas que encuentran bugs
+- **Satisfacción:** Calificación promedio (1-5)
+- **Recomendación:** % que recomendaría XWave
+
+### Objetivos MVP
+- ✅ 100% de artistas completan registro
+- ✅ 80%+ completan upload exitoso
+- ✅ < 20% encuentran bugs críticos
+- ✅ 4+ de satisfacción promedio
+- ✅ 60%+ recomendarían XWave
+
+---
+
+## 📞 Contacto de Soporte
+
+**Durante el onboarding:**
+- WhatsApp/Telegram: `[AGREGAR_NUMERO]`
+- Email: `[AGREGAR_EMAIL]`
+- Horario: `[AGREGAR_HORARIO]`
+
+**Para emergencias:**
+- `[AGREGAR_CONTACTO_URGENTE]`
+
+---
+
+## 📚 Documentos de Referencia
+
+- **Guía completa:** `ONBOARDING_ARTISTS.md`
+- **Checklist detallado:** `ARTIST_ONBOARDING_CHECKLIST.md`
+- **Guía rápida artista:** `QUICK_START_ARTIST.md`
+- **Testing técnico:** `TESTING_MVP.md`
+- **Templates:** `TEMPLATES/`
+
+---
+
+## ✅ Estado Final
+
+**Última actualización:** Noviembre 2024  
+**Versión:** 1.0  
+**Estado del Sistema:** ✅ MVP 100% Funcional
+
+**Próximos pasos:**
+1. Ejecutar verificación del sistema
+2. Identificar 3-5 artistas testers
+3. Enviar invitaciones personalizadas
+4. Comenzar onboarding
+
+---
+
+**¡Listo para onboardear artistas! 🚀**
+

@@ -1,0 +1,110 @@
+# XWave Production Dockerfile
+# 
+# This Dockerfile creates a production-ready image for XWave:
+# - Multi-stage build for optimization
+# - Security hardening
+# - Performance optimization
+# - Health checks
+# - Non-root user
+
+# ===========================================
+# BUILD STAGE
+# ===========================================
+
+FROM rust:1.75-slim as rust-builder
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy Cargo files
+COPY xwave-backend/Cargo.toml xwave-backend/Cargo.lock ./
+
+# Create dummy main.rs to cache dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+
+# Build dependencies
+RUN cargo build --release && rm -rf src
+
+# Copy source code
+COPY xwave-backend/src ./src
+COPY xwave-backend/migrations ./migrations
+
+# Build application
+RUN cargo build --release
+
+# ===========================================
+# NODE.JS BUILD STAGE
+# ===========================================
+
+FROM node:18-alpine as node-builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY xwave-frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY xwave-frontend/ ./
+
+# Build application
+RUN npm run build
+
+# ===========================================
+# PRODUCTION STAGE
+# ===========================================
+
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN groupadd -r xwave && useradd -r -g xwave xwave
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application from rust-builder
+COPY --from=rust-builder /app/target/release/xwave-backend /app/xwave-backend
+
+# Copy built frontend from node-builder
+COPY --from=node-builder /app/dist /app/frontend
+
+# Copy configuration files
+COPY docker-compose.production.yml /app/docker-compose.yml
+COPY scripts/ /app/scripts/
+COPY migrations/ /app/migrations/
+
+# Set permissions
+RUN chown -R xwave:xwave /app
+RUN chmod +x /app/xwave-backend
+RUN chmod +x /app/scripts/*.sh
+
+# Switch to non-root user
+USER xwave
+
+# Expose ports
+EXPOSE 8080 8081 8082 8083
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Default command
+CMD ["/app/xwave-backend"]

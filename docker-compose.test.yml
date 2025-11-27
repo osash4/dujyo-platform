@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Testing
+  postgres-test:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: dujyo_test
+      POSTGRES_USER: dujyo_test
+      POSTGRES_PASSWORD: dujyo_test_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dujyo_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    command: postgres -c log_statement=all -c log_destination=stderr
+
+  # Redis for Testing
+  redis-test:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_test_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  # Dujyo Backend for Testing
+  backend-test:
+    build:
+      context: ./dujyo-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8083"
+    environment:
+      # Test Database
+      DATABASE_URL: postgresql://dujyo_test:dujyo_test_password@postgres-test:5432/dujyo_test
+      TEST_DATABASE_URL: postgresql://dujyo_test:dujyo_test_password@postgres-test:5432/dujyo_test
+      
+      # Test Redis
+      REDIS_URL: redis://redis-test:6379
+      TEST_REDIS_URL: redis://redis-test:6379
+      
+      # JWT
+      JWT_SECRET: test-jwt-secret-key-for-testing-only
+      
+      # Other
+      RUST_LOG: debug
+      RUST_BACKTRACE: 1
+      
+      # Test mode
+      ENVIRONMENT: test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    volumes:
+      - ./dujyo-backend:/app
+      - cargo_cache:/usr/local/cargo/registry
+    command: >
+      sh -c "
+        echo 'Waiting for services...' &&
+        sleep 5 &&
+        echo 'Running migrations...' &&
+        cargo run --bin migrate-database &&
+        echo 'Starting test server...' &&
+        cargo run --release
+      "
+
+  # Test Runner (optional, for automated tests)
+  test-runner:
+    build:
+      context: ./dujyo-backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://dujyo_test:dujyo_test_password@postgres-test:5432/dujyo_test
+      TEST_DATABASE_URL: postgresql://dujyo_test:dujyo_test_password@postgres-test:5432/dujyo_test
+      REDIS_URL: redis://redis-test:6379
+      TEST_REDIS_URL: redis://redis-test:6379
+      RUST_LOG: info
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      backend-test:
+        condition: service_started
+    volumes:
+      - ./dujyo-backend:/app
+      - cargo_cache:/usr/local/cargo/registry
+    command: >
+      sh -c "
+        echo 'Waiting for backend...' &&
+        sleep 10 &&
+        echo 'Running tests...' &&
+        cargo test --all-features -- --test-threads=1
+      "
+    profiles:
+      - test
+
+volumes:
+  postgres_test_data:
+    driver: local
+  redis_test_data:
+    driver: local
+  cargo_cache:
+    driver: local
+
+networks:
+  default:
+    name: dujyo-test-network
+

@@ -1,0 +1,479 @@
+/* 🖤 DUJYO - OTOÑO EN LLAVAS CON TECH GLOW */
+
+/* ============================================================================
+   BASE TECNO-LÚGUBRE
+   ============================================================================ */
+:root {
+  /* 🖤 BASE TECNO-LÚGUBRE - ENFOQUE HÍBRIDO */
+  /* Para interfaces funcionales (DEX, Staking, Wallets, Forms) */
+  --bg-primary: #0A0A0F;       /* Azul oscuro - legibilidad óptima para datos */
+  /* Para landing/marketing/hero sections */
+  --bg-hero: #000000;          /* Negro puro - máximo impacto visual */
+  /* Punto medio opcional */
+  --bg-accent: #0D0D12;       /* Azul muy sutil - más impacto sin perder legibilidad */
+  
+  --bg-secondary: #111827;    /* No es gris, es la noche antes del amanecer */
+  --bg-card: #1A1A2E;         /* Profundidad de espacio exterior */
+  --bg-tertiary: #16213E;     /* Profundidad adicional */
+  
+  /* Text colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #B8B8CC;
+  --text-muted: #6B7280;
+  
+  /* 🍂 OTOÑO EN LLAVAS */
+  --primary-accent: #F59E0B;   /* Dorado principal - EL REY */
+  --secondary-accent: #EA580C; /* Cobre - el golpe de energía */
+  --highlight: #FBBF24;         /* Ámbar - para hover, botones CTA */
+  
+  /* 💀 DETALLES TECH (Los NUEVOS) */
+  --tech-glow: #00F5FF;        /* Cian ELÉCTRICO para textos glow, bordes, icons */
+  --tech-midnight: #7C2D12;    /* Ya NO es terroso, es el "cobre oscuro" para textos secundarios */
+  --danger-power: #DC2626;     /* Rojo emergencia, delete, alertas */
+  
+  /* Main accent - unified */
+  --accent-primary: var(--primary-accent);
+  --accent-secondary: var(--secondary-accent);
+  --accent-tertiary: var(--highlight);
+  
+  /* Section-specific accents con paleta otoñal */
+  --neon-music: var(--primary-accent);      /* Dorado para Música */
+  --neon-video: var(--highlight);            /* Ámbar para Video */
+  --neon-gaming: var(--secondary-accent);    /* Cobre para Gaming */
+  --neon-marketplace: var(--primary-accent); /* Dorado para Marketplace */
+  --neon-profile: var(--highlight);         /* Ámbar para Profile */
+  
+  /* Legacy colors for compatibility - mapeados a nueva paleta */
+  --neon-purple: var(--primary-accent);
+  --neon-cyan: var(--tech-glow);
+  --neon-green: var(--secondary-accent);
+  --neon-pink: var(--primary-accent);
+  --neon-orange: var(--secondary-accent);
+  --neon-blue: var(--highlight);
+}
+
+/* ============================================================================
+   EFECTOS DE TEXTO - TECH GLOW CON OTOÑO
+   ============================================================================ */
+
+/* Base neon effect - ahora con tech-glow para textos importantes */
+.neon-text {
+  text-shadow:
+    0 0 7px rgba(0, 245, 255, 0.8),
+    0 0 10px rgba(0, 245, 255, 0.6),
+    0 0 21px rgba(0, 245, 255, 0.4),
+    0 0 42px rgba(245, 158, 11, 0.3),
+    0 0 82px rgba(245, 158, 11, 0.2);
+}
+
+/* Texto con glow otoñal (dorado) */
+.neon-text-gold {
+  text-shadow:
+    0 0 7px rgba(245, 158, 11, 0.8),
+    0 0 10px rgba(245, 158, 11, 0.6),
+    0 0 21px rgba(245, 158, 11, 0.4),
+    0 0 42px rgba(245, 158, 11, 0.3);
+}
+
+/* Texto con glow tech (cyan eléctrico) */
+.neon-text-tech {
+  text-shadow:
+    0 0 7px rgba(0, 245, 255, 0.9),
+    0 0 10px rgba(0, 245, 255, 0.7),
+    0 0 21px rgba(0, 245, 255, 0.5),
+    0 0 42px rgba(0, 245, 255, 0.3);
+}
+
+/* ============================================================================
+   EFECTOS DE BORDES Y BACKGROUNDS
+   ============================================================================ */
+
+/* Base neon effect para backgrounds/borders */
+.neon-base {
+  box-shadow:
+    0 0 5px rgba(0, 245, 255, 0.3),
+    0 0 10px rgba(0, 245, 255, 0.2),
+    0 0 15px rgba(245, 158, 11, 0.1);
+}
+
+/* Glow dorado (otoñal) */
+.neon-glow-gold {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+}
+
+/* Glow tech (cyan eléctrico) */
+.neon-glow-tech {
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+}
+
+/* Section-specific neon glow effects */
+.neon-glow-music {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.neon-glow-video {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+.neon-glow-gaming {
+  box-shadow: 0 0 20px rgba(234, 88, 12, 0.5);
+}
+
+.neon-glow-marketplace {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.neon-glow-profile {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+/* ============================================================================
+   EFECTOS DE TEXTO POR SECCIÓN
+   ============================================================================ */
+
+.neon-text-music {
+  text-shadow: 0 0 7px #F59E0B, 0 0 10px #F59E0B, 0 0 21px #F59E0B;
+}
+
+.neon-text-video {
+  text-shadow: 0 0 7px #FBBF24, 0 0 10px #FBBF24, 0 0 21px #FBBF24;
+}
+
+.neon-text-gaming {
+  text-shadow: 0 0 7px #EA580C, 0 0 10px #EA580C, 0 0 21px #EA580C;
+}
+
+.neon-text-marketplace {
+  text-shadow: 0 0 7px #F59E0B, 0 0 10px #F59E0B, 0 0 21px #F59E0B;
+}
+
+.neon-text-profile {
+  text-shadow: 0 0 7px #FBBF24, 0 0 10px #FBBF24, 0 0 21px #FBBF24;
+}
+
+/* ============================================================================
+   LEGACY COLOR VARIANTS (mapeados a nueva paleta)
+   ============================================================================ */
+
+.neon-cyan {
+  text-shadow: 0 0 7px var(--tech-glow), 0 0 10px var(--tech-glow), 0 0 21px var(--tech-glow);
+  box-shadow: 0 0 5px var(--tech-glow), 0 0 10px var(--tech-glow), 0 0 15px var(--tech-glow);
+}
+
+.neon-green {
+  text-shadow: 0 0 7px var(--secondary-accent), 0 0 10px var(--secondary-accent), 0 0 21px var(--secondary-accent);
+  box-shadow: 0 0 5px var(--secondary-accent), 0 0 10px var(--secondary-accent), 0 0 15px var(--secondary-accent);
+}
+
+.neon-pink {
+  text-shadow: 0 0 7px var(--primary-accent), 0 0 10px var(--primary-accent), 0 0 21px var(--primary-accent);
+  box-shadow: 0 0 5px var(--primary-accent), 0 0 10px var(--primary-accent), 0 0 15px var(--primary-accent);
+}
+
+.neon-blue {
+  text-shadow: 0 0 7px var(--highlight), 0 0 10px var(--highlight), 0 0 21px var(--highlight);
+  box-shadow: 0 0 5px var(--highlight), 0 0 10px var(--highlight), 0 0 15px var(--highlight);
+}
+
+/* ============================================================================
+   BORDES ANIMADOS POR SECCIÓN
+   ============================================================================ */
+
+.neon-border-music {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-music), rgba(245, 158, 11, 0.3)) border-box;
+}
+
+.neon-border-video {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-video), rgba(251, 191, 36, 0.3)) border-box;
+}
+
+.neon-border-gaming {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-gaming), rgba(234, 88, 12, 0.3)) border-box;
+}
+
+.neon-border-marketplace {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-marketplace), rgba(245, 158, 11, 0.3)) border-box;
+}
+
+.neon-border-profile {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-profile), rgba(251, 191, 36, 0.3)) border-box;
+}
+
+/* Bordes con tech glow (cyan eléctrico) */
+.neon-border-tech {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--tech-glow), rgba(0, 245, 255, 0.2)) border-box;
+}
+
+/* ============================================================================
+   BORDES ANIMADOS
+   ============================================================================ */
+
+.neon-border-animated-music {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-music), rgba(245, 158, 11, 0.3), var(--neon-music)) border-box;
+  animation: borderGlowMusic 3s ease-in-out infinite;
+}
+
+.neon-border-animated-video {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-video), rgba(251, 191, 36, 0.3), var(--neon-video)) border-box;
+  animation: borderGlowVideo 3s ease-in-out infinite;
+}
+
+.neon-border-animated-gaming {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--neon-gaming), rgba(234, 88, 12, 0.3), var(--neon-gaming)) border-box;
+  animation: borderGlowGaming 3s ease-in-out infinite;
+}
+
+.neon-border-animated-tech {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+              linear-gradient(45deg, var(--tech-glow), rgba(0, 245, 255, 0.2), var(--tech-glow)) border-box;
+  animation: borderGlowTech 3s ease-in-out infinite;
+}
+
+/* ============================================================================
+   HOVER EFFECTS
+   ============================================================================ */
+
+.hover-glow-music:hover {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.7);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-video:hover {
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.7);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-gaming:hover {
+  box-shadow: 0 0 30px rgba(234, 88, 12, 0.7);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-marketplace:hover {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.7);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-profile:hover {
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.7);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow-tech:hover {
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.6);
+  transition: box-shadow 0.3s ease;
+}
+
+/* ============================================================================
+   GRADIENTES
+   ============================================================================ */
+
+/* Gradientes otoñales */
+.bg-gradient-gold-amber {
+  background-image: linear-gradient(to right, #F59E0B, #FBBF24);
+}
+
+.bg-gradient-amber-copper {
+  background-image: linear-gradient(to right, #FBBF24, #EA580C);
+}
+
+.bg-gradient-gold-copper {
+  background-image: linear-gradient(to right, #F59E0B, #EA580C);
+}
+
+/* Gradientes tech (cyan con otoño) */
+.bg-gradient-tech-gold {
+  background-image: linear-gradient(to right, #00F5FF, #F59E0B);
+}
+
+.bg-gradient-tech-amber {
+  background-image: linear-gradient(to right, #00F5FF, #FBBF24);
+}
+
+/* Section-specific gradients */
+.bg-gradient-music {
+  background-image: linear-gradient(to right, #F59E0B, #FBBF24);
+}
+
+.bg-gradient-video {
+  background-image: linear-gradient(to right, #FBBF24, #EA580C);
+}
+
+.bg-gradient-gaming {
+  background-image: linear-gradient(to right, #EA580C, #F59E0B);
+}
+
+.bg-gradient-marketplace {
+  background-image: linear-gradient(to right, #F59E0B, #FBBF24);
+}
+
+.bg-gradient-profile {
+  background-image: linear-gradient(to right, #FBBF24, #F59E0B);
+}
+
+/* Legacy gradients (mapeados) */
+.bg-gradient-neon-cyan-blue {
+  background-image: linear-gradient(to right, #00F5FF, #FBBF24);
+}
+
+.bg-gradient-neon-green-emerald {
+  background-image: linear-gradient(to right, #FBBF24, #EA580C);
+}
+
+.bg-gradient-neon-pink-purple {
+  background-image: linear-gradient(to right, #F59E0B, #EA580C);
+}
+
+/* ============================================================================
+   ANIMACIONES
+   ============================================================================ */
+
+@keyframes borderGlowMusic {
+  0%, 100% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, var(--neon-music), rgba(245, 158, 11, 0.3)) border-box;
+  }
+  50% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, rgba(245, 158, 11, 0.3), var(--neon-music)) border-box;
+  }
+}
+
+@keyframes borderGlowVideo {
+  0%, 100% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, var(--neon-video), rgba(251, 191, 36, 0.3)) border-box;
+  }
+  50% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, rgba(251, 191, 36, 0.3), var(--neon-video)) border-box;
+  }
+}
+
+@keyframes borderGlowGaming {
+  0%, 100% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, var(--neon-gaming), rgba(234, 88, 12, 0.3)) border-box;
+  }
+  50% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, rgba(234, 88, 12, 0.3), var(--neon-gaming)) border-box;
+  }
+}
+
+@keyframes borderGlowTech {
+  0%, 100% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, var(--tech-glow), rgba(0, 245, 255, 0.2)) border-box;
+  }
+  50% { 
+    background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+                linear-gradient(45deg, rgba(0, 245, 255, 0.2), var(--tech-glow)) border-box;
+  }
+}
+
+/* Pulse animations */
+@keyframes pulseMusic {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.8);
+  }
+}
+
+@keyframes pulseVideo {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
+  }
+}
+
+@keyframes pulseGaming {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(234, 88, 12, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(234, 88, 12, 0.8);
+  }
+}
+
+@keyframes pulseTech {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(0, 245, 255, 0.7);
+  }
+}
+
+.pulse-music {
+  animation: pulseMusic 2s ease-in-out infinite;
+}
+
+.pulse-video {
+  animation: pulseVideo 2s ease-in-out infinite;
+}
+
+.pulse-gaming {
+  animation: pulseGaming 2s ease-in-out infinite;
+}
+
+.pulse-tech {
+  animation: pulseTech 2s ease-in-out infinite;
+}
+
+/* ============================================================================
+   UTILIDADES ADICIONALES
+   ============================================================================ */
+
+/* Texto con color tech-midnight (cobre oscuro) */
+.text-tech-midnight {
+  color: var(--tech-midnight);
+}
+
+/* Texto con color danger */
+.text-danger {
+  color: var(--danger-power);
+}
+
+/* Backgrounds con tech glow sutil */
+.bg-tech-glow {
+  background: radial-gradient(circle at center, rgba(0, 245, 255, 0.1) 0%, transparent 70%);
+}
+
+/* Bordes con tech glow */
+.border-tech-glow {
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+}

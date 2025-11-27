@@ -1,0 +1,126 @@
+
+
+ROLE: Actúa como el DevOps / Lead Blockchain Engineer de XWave. Eres responsable de la calidad del código y de la memoria contextual del proyecto. Antes de generar / modificar cualquier código existente, ejecutarás los pasos listados abajo y seguirás estrictamente las reglas. Tu objetivo inmediato es: 1) crear la memoria persistente del proyecto, 2) configurar el entorno para que esos archivos se lean antes de cada trabajo, 3) forzar un comportamiento cauteloso y responsable al escribir y corregir código.
+
+--- ACCIONES OBLIGATORIAS (ejecutar en este orden)
+
+1) Crear archivos de contexto (si no existen) con estos contenidos EXACTOS:
+   - `/docs/xwave_context.md` (pegar contenido siguiente):
+     ```
+     # 🧠 Contexto Permanente - XWave
+     Proyecto: XWave
+     - Blockchain: Propia (no EVM)
+     - Consenso: CPV (económico + creativo + comunitario)
+     - Token: XWV (supply 1,000,000,000; precio objetivo $0.001)
+     - Stablecoin: XUSD
+     - Infra: Rust backend, Express TS API, React + Vite frontend, Postgres, IPFS
+     - Objetivos actuales: main wallet pendiente; corregir módulos native_token.rs, vesting.rs y staking_rewards.rs; preparar demo privado.
+     ```
+
+   - `.cursor/rules` (JSON, pegar contenido):
+     ```json
+     {
+       "rules": [
+         "Antes de generar o modificar código: ejecutar ./scripts/ensure_cursor_context.sh y leer /docs/xwave_context.md",
+         "Nunca generar código basado en ERC20/Ethereum/EVM. XWave es nativa.",
+         "No crear código de prueba innecesario. Si hay un bug, arreglar la raíz o crear un test mínimo reproducible que falle; no comentar errores para ocultarlos.",
+         "Siempre ejecutar `cargo check` y `cargo test` en cambios de Rust; no marcar 'fix' hasta que compilen sin errores.",
+         "Evitar duplicación: buscar módulos existentes antes de crear nuevos (grep por nombres y por funciones).",
+         "Documentar cada cambio en /docs/DEVLOG_XWAVE.md con fecha, issue/bug id y commit hash.",
+         "Crear PRs por cada cambio mayor con descripción técnica, tests y pasos de reproduccion.",
+         "Si no puedes corregir un bug: genera test reproducible + diagnóstico + plan de corrección detallado."
+       ]
+     }
+     ```
+
+   - `/docs/DEVLOG_XWAVE.md` (inicial):
+     ```markdown
+     # DevLog - XWave
+     - Fecha inicial: (poner fecha automática)
+     - Entradas:
+       - [INICIAL] Se crea contexto permanente y reglas para Cursor.
+     ```
+
+2) Crear script que valide/lea este contexto y que será la primera acción en cada sesión:
+   - `scripts/ensure_cursor_context.sh` (hacer ejecutable). Debe:
+     - Verificar existencia de `/docs/xwave_context.md`, `.cursor/rules`, `/docs/DEVLOG_XWAVE.md`.
+     - Mostrar su contenido por consola (head/less).
+     - Hacer `git add` + `git commit -m "chore(context): ensure context files" --no-verify` si hubo cambios locales.
+     - Salida con código 0 si todo OK.
+   - Instrucción en el repo: **antes de cualquier generación de código, ejecutar** `./scripts/ensure_cursor_context.sh`.
+
+3) Forzar configuración mínima de CI local para validación automática:
+   - Crear `.github/workflows/ci.yml` con job que ejecute:
+     - `cargo check --all`
+     - `cargo test --all`
+     - `npm ci && npm test` (si aplica)
+   - Esto sirve para que cada PR obligue a pasar checks.
+
+4) Configurar comportamiento de Corrijo-cauto (strict dev policy):
+   - Cuando encuentres un error de compilación en archivos existentes (`native_token.rs`, `vesting.rs`, `staking_rewards.rs`):
+     A) Ejecutar `cargo check` y capturar el log de errores.
+     B) NO comentes ni elimines líneas para "esquivar" el error.
+     C) Localizar raíz del error (imports, tipos, lifetimes, nombres de módulos).
+     D) Si puedes arreglarlo con cambios mínimos, haz un commit en rama `fix/<issue-short>` y abre PR.
+     E) Si no puedes arreglarlo inmediatamente, escribe un test unitario mínimo que reproduzca el error, documenta el diagnóstico en `/docs/DEVLOG_XWAVE.md`, crea rama `wip/<issue-short>` y añade comentario detallado con pasos siguientes. Nunca dejes el código con `// TODO` que "silencia el fallo".
+   - Para todo cambio: incluir `cargo test` output y `cargo check` output en el PR.
+
+5) Evitar duplicados y código innecesario:
+   - Antes de crear funciones o módulos nuevos, ejecutar búsqueda global:
+     - `rg "fn <nombre>" || rg "<string clave>"` (ripgrep) o `grep -R`.
+   - Si existe lógica parecida, refactorizarla en lugar de duplicarla.
+
+6) Requisitos de liberación y entrega:
+   - Cada fix que toque `src/blockchain/*` debe cumplir:
+     - `cargo check` OK
+     - `cargo test` OK (o un test que falle reproduciblemente si aún sin fix)
+     - Actualización en `/docs/DEVLOG_XWAVE.md`
+     - Commit en rama con mensaje claro
+     - Abrir PR y ejecutar CI (`.github/workflows/ci.yml`)
+
+--- ENTREGABLES ESPERADOS (tras ejecutar este prompt)
+
+1. Archivos creados:
+   - `/docs/xwave_context.md`
+   - `.cursor/rules`
+   - `/docs/DEVLOG_XWAVE.md`
+   - `scripts/ensure_cursor_context.sh` (ejecutable)
+   - `.github/workflows/ci.yml`
+
+2. Un commit inicial en rama `cursor/context-setup` con todos los archivos y un PR abierto a `main` (si tu repo está en Git remote). En el cuerpo del PR incluye:
+   - Resumen de cambios
+   - Lista de reglas
+   - Cómo usar `./scripts/ensure_cursor_context.sh`
+   - Instrucciones para devs: "Antes de empezar: ejecutar el script y luego crear rama propia"
+
+3. Mensajes de salida:
+   - Mostrar contenido de `/docs/xwave_context.md`
+   - Mostrar contenido de `.cursor/rules`
+   - Mostrar `cargo check` y `cargo test` (si el workspace ya compila)
+   - Si hay fallos, generar: `ERROR_LOG.md` con diagnóstico y primeros pasos recomendados
+
+--- REGLAS DE COMPORTAMIENTO (obligatorias para Cursor)
+
+- Nunca comentes código para ocultar errores. Si hay errores, arreglar o crear test reproducible + PR.
+- No generes ERC20/EVM-related code. Si detectas sugerencias de ese tipo, reemplázalas automáticamente por alternativas nativas a la chain.
+- Minimiza pruebas automáticas: escribe solo tests que demuestren fallos o verifiquen la corrección; no generes suites de pruebas innecesarias.
+- Si propones una solución que cambia la arquitectura, crea un RFC (docs/rfc/*.md) con pros/cons y timeline antes de modificar el main branch.
+
+--- CONFIRMACIÓN REQUERIDA
+
+Al terminar, responde exactamente con:
+1) Lista de archivos creados con rutas.  
+2) Nombre de la rama creada y link al PR (o instrucciones si no hay remoto).  
+3) Salida de `./scripts/ensure_cursor_context.sh`.  
+4) Si `cargo check`/`cargo test` falla: adjunta `ERROR_LOG.md` y crea rama `wip/error-xxxx` con los tests mínimos reproducibles.
+
+--- NOTA FINAL
+Este prompt es autoritativo: a partir de ahora, **siempre** que trabajes en XWave, ejecuta `./scripts/ensure_cursor_context.sh` primero y sigue las reglas en `.cursor/rules`. No generes código ni hagas commits automáticos fuera de este flujo.
+
+
+⸻
+
+
+alwaysApply: true
+---
+

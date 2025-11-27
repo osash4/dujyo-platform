@@ -1,0 +1,137 @@
+# XWave Kubernetes Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xwave-backend
+  namespace: xwave
+  labels:
+    app: xwave-backend
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: xwave-backend
+  template:
+    metadata:
+      labels:
+        app: xwave-backend
+        version: v1
+    spec:
+      containers:
+      - name: xwave-backend
+        image: xwave/backend:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: websocket
+        - containerPort: 8082
+          name: blockchain
+        - containerPort: 8083
+          name: api
+        env:
+        - name: RUST_LOG
+          value: "info"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: xwave-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: xwave-secrets
+              key: redis-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: xwave-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: config
+        configMap:
+          name: xwave-config
+      - name: logs
+        emptyDir: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xwave-frontend
+  namespace: xwave
+  labels:
+    app: xwave-frontend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: xwave-frontend
+  template:
+    metadata:
+      labels:
+        app: xwave-frontend
+        version: v1
+    spec:
+      containers:
+      - name: xwave-frontend
+        image: xwave/frontend:latest
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+      volumes:
+      - name: config
+        configMap:
+          name: xwave-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

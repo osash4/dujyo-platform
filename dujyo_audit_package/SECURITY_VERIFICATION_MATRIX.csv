@@ -1,0 +1,10 @@
+Vulnerability ID,Title,Severity,CVSS v3.1,PoC Test File,Resultado Esperado,Estado,Archivo Fix,PR/Commit SHA,Estimated Fix Time (hours)
+VULN-001,Client-controlled nonce generation,Critical,9.1,tests/critical_security_tests.rs:63-126,Server generates nonce,PASS,src/server.rs:562-572,N/A,0
+VULN-002,TOCTOU in nonce check,High,8.5,tests/critical_security_tests.rs:132-215,Atomic insertion prevents collisions,PASS,src/server.rs:984-1032,N/A,0
+VULN-003,TOCTOU in withdrawals,Critical,9.3,tests/critical_security_tests.rs:221-279,Only one withdrawal processed,PASS,src/routes/payments.rs:117-214,N/A,0
+VULN-004,Stake verification bypass,High,8.8,tests/critical_security_tests.rs:285-332,Balance check prevents registration,PASS,src/routes/validator_registration.rs:58-111,N/A,0
+VULN-005,Integer overflow in token transfers,Critical,9.1,pocs/token_overflow_poc.rs,Overflow prevented,FAIL,src/blockchain/token.rs,N/A,8
+VULN-006,Reentrancy risk in DEX swaps,Critical,8.9,pocs/dex_reentrancy_poc.rs,Reentrancy prevented,FAIL,src/dex/mod.rs,N/A,8
+VULN-007,JWT secret hardcoded fallback,High,7.5,pocs/jwt_secret_poc.rs,Secret required,FAIL,src/auth.rs:28-41,N/A,2
+VULN-008,Missing input validation in vesting,High,7.2,pocs/vesting_overflow_poc.rs,Overflow prevented,FAIL,src/blockchain/vesting.rs:86-150,N/A,4
+VULN-009,Panic risks from unwrap() usage,Medium,6.5,tests/panic_protection_tests.rs,No panics,FAIL,src/server.rs (multiple),N/A,20

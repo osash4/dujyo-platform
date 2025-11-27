@@ -1,0 +1,2497 @@
+<testsuites id="" name="" tests="9" failures="1" skipped="0" errors="0" time="87.99858600000002">
+<testsuite name="xwave-e2e.spec.ts" timestamp="2025-09-24T20:05:11.108Z" hostname="chromium" tests="3" failures="0" skipped="0" time="40.778" errors="0">
+<testcase name="XWave E2E Tests › Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold" classname="xwave-e2e.spec.ts" time="21.173">
+<system-out>
+<![CDATA[Step 1: Testing login...
+Page content length: [33m53113[39m
+Page title: XWave - Revolutionizing Entertainment
+Page URL: http://localhost:5173/login
+Page content preview: <!DOCTYPE html><html lang="en"><head>
+    <script type="module">
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+    <meta name="viewport" content="width=device-width, initial
+Console error: Error al iniciar sesión:  Error: Invalid credentials
+    at signIn (http://localhost:5173/src/auth/AuthContext.tsx:48:15)
+    at handleLogin (http://localhost:5173/src/pages/Login.tsx:38:13)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3736:33)
+    at executeDispatch (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7014:11)
+    at processDispatchQueueItemsInOrder (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7034:15)
+    at processDispatchQueue (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7043:13)
+    at dispatchEventsForPlugins (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7051:11)
+Step 2: Testing wallet creation/connection...
+Wallet dashboard not found, checking for wallet connection...
+Step 3: Checking initial balance...
+Step 4: Testing transfer of 500 tokens...
+Transfer button not found, trying alternative approach...
+Transaction form found
+Step 5: Asserting balance after transfer...
+Step 6: Testing marketplace navigation...
+Page error: Cannot destructure property 'isDarkMode' of 'useTheme(...)' as it is null.
+Page error: Cannot destructure property 'isDarkMode' of 'useTheme(...)' as it is null.
+Console error: The above error occurred in the <ContentMarketplace> component:
+
+    at ContentMarketplace (http://localhost:5173/src/components/marketplace/ContentMarketplace.tsx:29:41)
+    at ProtectedRoute (http://localhost:5173/src/auth/ProtectedRoute.tsx:22:27)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:4069:5)
+    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:4539:5)
+    at AppRoutes (http://localhost:5173/src/App.tsx:87:30)
+    at WebSocketProvider (http://localhost:5173/src/contexts/WebSocketContext.tsx:29:37)
+    at BlockchainProvider (http://localhost:5173/src/contexts/BlockchainContext.tsx:25:38)
+    at AuthProvider (http://localhost:5173/src/auth/AuthContext.tsx:21:32)
+    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:4482:15)
+    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:5228:5)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Page error: Cannot destructure property 'isDarkMode' of 'useTheme(...)' as it is null.
+Step 7: Testing marketplace purchase...
+Buy button not found in marketplace
+Step 8: Asserting item ownership...
+Ownership indicator not found
+E2E Test Summary:
+- Initial Balance: [33m0[39m
+- Updated Balance: [33m0[39m
+- Balance Change: [33m0[39m
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:41747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="XWave E2E Tests › API connectivity test" classname="xwave-e2e.spec.ts" time="9.807">
+<system-out>
+<![CDATA[Testing API connectivity...
+Health check response: {
+  service: [32m'xwave-blockchain'[39m,
+  status: [32m'healthy'[39m,
+  timestamp: [33m1758744323[39m
+}
+Blockchain response: {
+  blocks: [
+    {
+      timestamp: [33m1758744175[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'0'[39m,
+      hash: [32m'1e91'[39m,
+      validator: [1mnull[22m
+    },
+    {
+      timestamp: [33m1758708259[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'0'[39m,
+      hash: [32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708884[39m,
+      transactions: [],
+      previous_hash: [32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'[39m,
+      hash: [32m'2150'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708894[39m,
+      transactions: [],
+      previous_hash: [32m'2150'[39m,
+      hash: [32m'7f2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708904[39m,
+      transactions: [],
+      previous_hash: [32m'7f2'[39m,
+      hash: [32m'7d2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708914[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708944[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708954[39m,
+      transactions: [],
+      previous_hash: [32m'7d4'[39m,
+      hash: [32m'7d7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708964[39m,
+      transactions: [],
+      previous_hash: [32m'7d7'[39m,
+      hash: [32m'7db'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708974[39m,
+      transactions: [],
+      previous_hash: [32m'7db'[39m,
+      hash: [32m'807'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708984[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7aa'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708994[39m,
+      transactions: [],
+      previous_hash: [32m'7aa'[39m,
+      hash: [32m'805'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709004[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'798'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709014[39m,
+      transactions: [],
+      previous_hash: [32m'798'[39m,
+      hash: [32m'7a4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709024[39m,
+      transactions: [],
+      previous_hash: [32m'7a4'[39m,
+      hash: [32m'7c9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709196[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'241a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709206[39m,
+      transactions: [],
+      previous_hash: [32m'241a'[39m,
+      hash: [32m'816'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709216[39m,
+      transactions: [],
+      previous_hash: [32m'816'[39m,
+      hash: [32m'79f'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709246[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7d4'[39m,
+      hash: [32m'2411'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709256[39m,
+      transactions: [],
+      previous_hash: [32m'2411'[39m,
+      hash: [32m'7eb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709266[39m,
+      transactions: [],
+      previous_hash: [32m'7eb'[39m,
+      hash: [32m'803'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709276[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'7a1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709286[39m,
+      transactions: [],
+      previous_hash: [32m'7a1'[39m,
+      hash: [32m'7d0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709296[39m,
+      transactions: [],
+      previous_hash: [32m'7d0'[39m,
+      hash: [32m'7d3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709306[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7ce'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709316[39m,
+      transactions: [],
+      previous_hash: [32m'7ce'[39m,
+      hash: [32m'800'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709326[39m,
+      transactions: [],
+      previous_hash: [32m'800'[39m,
+      hash: [32m'79a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709336[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'79a'[39m,
+      hash: [32m'2413'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709346[39m,
+      transactions: [],
+      previous_hash: [32m'2413'[39m,
+      hash: [32m'7ed'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709366[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'7a3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709386[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709396[39m,
+      transactions: [],
+      previous_hash: [32m'7d5'[39m,
+      hash: [32m'7d9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709436[39m,
+      transactions: [],
+      previous_hash: [32m'7d0'[39m,
+      hash: [32m'7cf'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709729[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7ff'[39m,
+      hash: [32m'5cc9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709739[39m,
+      transactions: [],
+      previous_hash: [32m'5cc9'[39m,
+      hash: [32m'85d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709749[39m,
+      transactions: [],
+      previous_hash: [32m'85d'[39m,
+      hash: [32m'7dc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709759[39m,
+      transactions: [],
+      previous_hash: [32m'7dc'[39m,
+      hash: [32m'80a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709496[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7de'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709506[39m,
+      transactions: [],
+      previous_hash: [32m'7de'[39m,
+      hash: [32m'802'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709516[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709526[39m,
+      transactions: [],
+      previous_hash: [32m'79d'[39m,
+      hash: [32m'7d8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709819[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7dd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709829[39m,
+      transactions: [],
+      previous_hash: [32m'7dd'[39m,
+      hash: [32m'809'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709576[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'7a6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709879[39m,
+      transactions: [],
+      previous_hash: [32m'809'[39m,
+      hash: [32m'7b0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709899[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7e5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709909[39m,
+      transactions: [],
+      previous_hash: [32m'7e5'[39m,
+      hash: [32m'7da'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709646[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'7a2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709929[39m,
+      transactions: [],
+      previous_hash: [32m'806'[39m,
+      hash: [32m'7a9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709666[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709949[39m,
+      transactions: [],
+      previous_hash: [32m'7dd'[39m,
+      hash: [32m'80c'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709686[39m,
+      transactions: [],
+      previous_hash: [32m'7db'[39m,
+      hash: [32m'808'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709696[39m,
+      transactions: [],
+      previous_hash: [32m'808'[39m,
+      hash: [32m'7ac'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709706[39m,
+      transactions: [],
+      previous_hash: [32m'7ac'[39m,
+      hash: [32m'7ff'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709989[39m,
+      transactions: [],
+      previous_hash: [32m'7df'[39m,
+      hash: [32m'812'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709999[39m,
+      transactions: [],
+      previous_hash: [32m'812'[39m,
+      hash: [32m'7ad'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710009[39m,
+      transactions: [],
+      previous_hash: [32m'7ad'[39m,
+      hash: [32m'7f4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710019[39m,
+      transactions: [],
+      previous_hash: [32m'7f4'[39m,
+      hash: [32m'7ca'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710029[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710039[39m,
+      transactions: [],
+      previous_hash: [32m'7f5'[39m,
+      hash: [32m'7cd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710049[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7fa'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710059[39m,
+      transactions: [],
+      previous_hash: [32m'7fa'[39m,
+      hash: [32m'7fb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710069[39m,
+      transactions: [],
+      previous_hash: [32m'7fb'[39m,
+      hash: [32m'7fd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710209[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7c8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710309[39m,
+      transactions: [],
+      previous_hash: [32m'7d1'[39m,
+      hash: [32m'7c7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710629[39m,
+      transactions: [],
+      previous_hash: [32m'7fd'[39m,
+      hash: [32m'801'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710719[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7fe'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710909[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7a0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710939[39m,
+      transactions: [],
+      previous_hash: [32m'7fe'[39m,
+      hash: [32m'806'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711020[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7c0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711030[39m,
+      transactions: [],
+      previous_hash: [32m'7c0'[39m,
+      hash: [32m'7bd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711040[39m,
+      transactions: [],
+      previous_hash: [32m'7bd'[39m,
+      hash: [32m'7f1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711050[39m,
+      transactions: [],
+      previous_hash: [32m'7f1'[39m,
+      hash: [32m'7c3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711162[39m,
+      transactions: [],
+      previous_hash: [32m'7c3'[39m,
+      hash: [32m'7c6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711182[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711252[39m,
+      transactions: [],
+      previous_hash: [32m'7c9'[39m,
+      hash: [32m'7cc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711262[39m,
+      transactions: [],
+      previous_hash: [32m'7cc'[39m,
+      hash: [32m'7f7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711282[39m,
+      transactions: [],
+      previous_hash: [32m'7cf'[39m,
+      hash: [32m'7fc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711332[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711362[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7f9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711502[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'791'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711512[39m,
+      transactions: [],
+      previous_hash: [32m'791'[39m,
+      hash: [32m'799'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711532[39m,
+      transactions: [],
+      previous_hash: [32m'7a2'[39m,
+      hash: [32m'7c4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711912[39m,
+      transactions: [],
+      previous_hash: [32m'799'[39m,
+      hash: [32m'7a5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758712102[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7c1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758712952[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'79c'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714002[39m,
+      transactions: [],
+      previous_hash: [32m'806'[39m,
+      hash: [32m'793'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714123[39m,
+      transactions: [],
+      previous_hash: [32m'7c8'[39m,
+      hash: [32m'7cb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714213[39m,
+      transactions: [],
+      previous_hash: [32m'7a1'[39m,
+      hash: [32m'7c2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714243[39m,
+      transactions: [],
+      previous_hash: [32m'7cb'[39m,
+      hash: [32m'7f8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714293[39m,
+      transactions: [],
+      previous_hash: [32m'7ff'[39m,
+      hash: [32m'804'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714303[39m,
+      transactions: [],
+      previous_hash: [32m'804'[39m,
+      hash: [32m'795'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714563[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79b'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714683[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79e'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758715003[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'796'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758715876[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7a8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716436[39m,
+      transactions: [],
+      previous_hash: [32m'799'[39m,
+      hash: [32m'7ab'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716898[39m,
+      transactions: [],
+      previous_hash: [32m'809'[39m,
+      hash: [32m'7af'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716998[39m,
+      transactions: [],
+      previous_hash: [32m'7af'[39m,
+      hash: [32m'80d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758717768[39m,
+      transactions: [],
+      previous_hash: [32m'7de'[39m,
+      hash: [32m'80b'[39m,
+      validator: [32m'system'[39m
+    },
+    ... 23 more items
+  ],
+  total_blocks: [33m123[39m
+}
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:41746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="XWave E2E Tests › DEX functionality test" classname="xwave-e2e.spec.ts" time="9.798">
+<system-out>
+<![CDATA[Testing DEX functionality...
+Pool data: {
+  success: [33mtrue[39m,
+  pool: {
+    created_at: [33m1758744175[39m,
+    fee_rate: [33m0.003[39m,
+    id: [32m'XWAVE_USDC'[39m,
+    reserve_a: [33m1000150[39m,
+    reserve_b: [33m999950.3099390991[39m,
+    token_a: [32m'XWAVE'[39m,
+    token_b: [32m'USDC'[39m,
+    total_supply: [33m1000049.9950005[39m
+  },
+  message: [32m'Pool retrieved successfully'[39m
+}
+Login response: {
+  success: [33mtrue[39m,
+  token: [32m'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYVzExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLCJleHAiOjE3NTg4MzA3MjQsImlhdCI6MTc1ODc0NDMyNCwiaXNzIjoieHdhdmUtYmxvY2tjaGFpbiJ9.rle5n1fAoZxNxiETwWwhubU323OKY9pSYLKr-dh3h84'[39m,
+  message: [32m'Login successful'[39m
+}
+Swap response status: [33m200[39m
+Swap data: {
+  success: [33mtrue[39m,
+  message: [32m'Swap executed successfully'[39m,
+  tx_hash: [32m'swap_1758744324609'[39m,
+  amount_received: [33m9.967910023526356[39m,
+  price_impact: [33m0.0000029995200809300344[39m
+}
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:41745) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+</testsuite>
+<testsuite name="xwave-e2e.spec.ts" timestamp="2025-09-24T20:05:11.108Z" hostname="firefox" tests="3" failures="1" skipped="0" time="78.504" errors="0">
+<testcase name="XWave E2E Tests › Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold" classname="xwave-e2e.spec.ts" time="31.09">
+<failure message="xwave-e2e.spec.ts:12:3 Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold" type="FAILURE">
+<![CDATA[  [firefox] › xwave-e2e.spec.ts:12:3 › XWave E2E Tests › Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.screenshot: Test timeout of 30000ms exceeded.
+    Call log:
+      - taking page screenshot
+      - waiting for fonts to load...
+      - fonts loaded
+
+
+      59 |     
+      60 |     // Take screenshot after login attempt
+    > 61 |     await page.screenshot({ path: 'test-results/01-login-attempt.png' });
+         |                ^
+      62 |     
+      63 |     // Step 2: Create/Connect Wallet
+      64 |     console.log('Step 2: Testing wallet creation/connection...');
+        at /Users/yare/xwave/xwave-frontend/tests/xwave-e2e.spec.ts:61:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/xwave-e2e-XWave-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/xwave-e2e-XWave-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/xwave-e2e-XWave-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[Step 1: Testing login...
+Console error: [JavaScript Error: "Firefox can’t establish a connection to the server at ws://localhost:8083/ws." {file: "http://localhost:5173/src/contexts/WebSocketContext.tsx" line: 43}]
+Console error: [JavaScript Error: "The connection to ws://localhost:8083/ws was interrupted while the page was loading." {file: "http://localhost:5173/src/contexts/WebSocketContext.tsx" line: 43}]
+Page content length: [33m53113[39m
+Page title: XWave - Revolutionizing Entertainment
+Page URL: http://localhost:5173/login
+Page content preview: <!DOCTYPE html><html lang="en"><head>
+    <script type="module">
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+    <meta name="viewport" content="width=device-width, initial
+Console error: Error al iniciar sesión:  Error
+
+[[ATTACHMENT|test-results/xwave-e2e-XWave-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/xwave-e2e-XWave-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/video.webm]]
+
+[[ATTACHMENT|test-results/xwave-e2e-XWave-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/error-context.md]]
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:41748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="XWave E2E Tests › API connectivity test" classname="xwave-e2e.spec.ts" time="23.238">
+<system-out>
+<![CDATA[Testing API connectivity...
+Health check response: {
+  service: [32m'xwave-blockchain'[39m,
+  status: [32m'healthy'[39m,
+  timestamp: [33m1758744362[39m
+}
+Blockchain response: {
+  blocks: [
+    {
+      timestamp: [33m1758744175[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'0'[39m,
+      hash: [32m'1e91'[39m,
+      validator: [1mnull[22m
+    },
+    {
+      timestamp: [33m1758708259[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'0'[39m,
+      hash: [32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708884[39m,
+      transactions: [],
+      previous_hash: [32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'[39m,
+      hash: [32m'2150'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708894[39m,
+      transactions: [],
+      previous_hash: [32m'2150'[39m,
+      hash: [32m'7f2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708904[39m,
+      transactions: [],
+      previous_hash: [32m'7f2'[39m,
+      hash: [32m'7d2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708914[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708944[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708954[39m,
+      transactions: [],
+      previous_hash: [32m'7d4'[39m,
+      hash: [32m'7d7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708964[39m,
+      transactions: [],
+      previous_hash: [32m'7d7'[39m,
+      hash: [32m'7db'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708974[39m,
+      transactions: [],
+      previous_hash: [32m'7db'[39m,
+      hash: [32m'807'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708984[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7aa'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708994[39m,
+      transactions: [],
+      previous_hash: [32m'7aa'[39m,
+      hash: [32m'805'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709004[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'798'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709014[39m,
+      transactions: [],
+      previous_hash: [32m'798'[39m,
+      hash: [32m'7a4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709024[39m,
+      transactions: [],
+      previous_hash: [32m'7a4'[39m,
+      hash: [32m'7c9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709196[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'241a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709206[39m,
+      transactions: [],
+      previous_hash: [32m'241a'[39m,
+      hash: [32m'816'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709216[39m,
+      transactions: [],
+      previous_hash: [32m'816'[39m,
+      hash: [32m'79f'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709246[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7d4'[39m,
+      hash: [32m'2411'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709256[39m,
+      transactions: [],
+      previous_hash: [32m'2411'[39m,
+      hash: [32m'7eb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709266[39m,
+      transactions: [],
+      previous_hash: [32m'7eb'[39m,
+      hash: [32m'803'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709276[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'7a1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709286[39m,
+      transactions: [],
+      previous_hash: [32m'7a1'[39m,
+      hash: [32m'7d0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709296[39m,
+      transactions: [],
+      previous_hash: [32m'7d0'[39m,
+      hash: [32m'7d3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709306[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7ce'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709316[39m,
+      transactions: [],
+      previous_hash: [32m'7ce'[39m,
+      hash: [32m'800'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709326[39m,
+      transactions: [],
+      previous_hash: [32m'800'[39m,
+      hash: [32m'79a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709336[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'79a'[39m,
+      hash: [32m'2413'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709346[39m,
+      transactions: [],
+      previous_hash: [32m'2413'[39m,
+      hash: [32m'7ed'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709366[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'7a3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709386[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709396[39m,
+      transactions: [],
+      previous_hash: [32m'7d5'[39m,
+      hash: [32m'7d9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709436[39m,
+      transactions: [],
+      previous_hash: [32m'7d0'[39m,
+      hash: [32m'7cf'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709729[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7ff'[39m,
+      hash: [32m'5cc9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709739[39m,
+      transactions: [],
+      previous_hash: [32m'5cc9'[39m,
+      hash: [32m'85d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709749[39m,
+      transactions: [],
+      previous_hash: [32m'85d'[39m,
+      hash: [32m'7dc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709759[39m,
+      transactions: [],
+      previous_hash: [32m'7dc'[39m,
+      hash: [32m'80a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709496[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7de'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709506[39m,
+      transactions: [],
+      previous_hash: [32m'7de'[39m,
+      hash: [32m'802'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709516[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709526[39m,
+      transactions: [],
+      previous_hash: [32m'79d'[39m,
+      hash: [32m'7d8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709819[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7dd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709829[39m,
+      transactions: [],
+      previous_hash: [32m'7dd'[39m,
+      hash: [32m'809'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709576[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'7a6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709879[39m,
+      transactions: [],
+      previous_hash: [32m'809'[39m,
+      hash: [32m'7b0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709899[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7e5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709909[39m,
+      transactions: [],
+      previous_hash: [32m'7e5'[39m,
+      hash: [32m'7da'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709646[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'7a2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709929[39m,
+      transactions: [],
+      previous_hash: [32m'806'[39m,
+      hash: [32m'7a9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709666[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709949[39m,
+      transactions: [],
+      previous_hash: [32m'7dd'[39m,
+      hash: [32m'80c'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709686[39m,
+      transactions: [],
+      previous_hash: [32m'7db'[39m,
+      hash: [32m'808'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709696[39m,
+      transactions: [],
+      previous_hash: [32m'808'[39m,
+      hash: [32m'7ac'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709706[39m,
+      transactions: [],
+      previous_hash: [32m'7ac'[39m,
+      hash: [32m'7ff'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709989[39m,
+      transactions: [],
+      previous_hash: [32m'7df'[39m,
+      hash: [32m'812'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709999[39m,
+      transactions: [],
+      previous_hash: [32m'812'[39m,
+      hash: [32m'7ad'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710009[39m,
+      transactions: [],
+      previous_hash: [32m'7ad'[39m,
+      hash: [32m'7f4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710019[39m,
+      transactions: [],
+      previous_hash: [32m'7f4'[39m,
+      hash: [32m'7ca'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710029[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710039[39m,
+      transactions: [],
+      previous_hash: [32m'7f5'[39m,
+      hash: [32m'7cd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710049[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7fa'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710059[39m,
+      transactions: [],
+      previous_hash: [32m'7fa'[39m,
+      hash: [32m'7fb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710069[39m,
+      transactions: [],
+      previous_hash: [32m'7fb'[39m,
+      hash: [32m'7fd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710209[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7c8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710309[39m,
+      transactions: [],
+      previous_hash: [32m'7d1'[39m,
+      hash: [32m'7c7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710629[39m,
+      transactions: [],
+      previous_hash: [32m'7fd'[39m,
+      hash: [32m'801'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710719[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7fe'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710909[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7a0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710939[39m,
+      transactions: [],
+      previous_hash: [32m'7fe'[39m,
+      hash: [32m'806'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711020[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7c0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711030[39m,
+      transactions: [],
+      previous_hash: [32m'7c0'[39m,
+      hash: [32m'7bd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711040[39m,
+      transactions: [],
+      previous_hash: [32m'7bd'[39m,
+      hash: [32m'7f1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711050[39m,
+      transactions: [],
+      previous_hash: [32m'7f1'[39m,
+      hash: [32m'7c3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711162[39m,
+      transactions: [],
+      previous_hash: [32m'7c3'[39m,
+      hash: [32m'7c6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711182[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711252[39m,
+      transactions: [],
+      previous_hash: [32m'7c9'[39m,
+      hash: [32m'7cc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711262[39m,
+      transactions: [],
+      previous_hash: [32m'7cc'[39m,
+      hash: [32m'7f7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711282[39m,
+      transactions: [],
+      previous_hash: [32m'7cf'[39m,
+      hash: [32m'7fc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711332[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711362[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7f9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711502[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'791'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711512[39m,
+      transactions: [],
+      previous_hash: [32m'791'[39m,
+      hash: [32m'799'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711532[39m,
+      transactions: [],
+      previous_hash: [32m'7a2'[39m,
+      hash: [32m'7c4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711912[39m,
+      transactions: [],
+      previous_hash: [32m'799'[39m,
+      hash: [32m'7a5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758712102[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7c1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758712952[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'79c'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714002[39m,
+      transactions: [],
+      previous_hash: [32m'806'[39m,
+      hash: [32m'793'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714123[39m,
+      transactions: [],
+      previous_hash: [32m'7c8'[39m,
+      hash: [32m'7cb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714213[39m,
+      transactions: [],
+      previous_hash: [32m'7a1'[39m,
+      hash: [32m'7c2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714243[39m,
+      transactions: [],
+      previous_hash: [32m'7cb'[39m,
+      hash: [32m'7f8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714293[39m,
+      transactions: [],
+      previous_hash: [32m'7ff'[39m,
+      hash: [32m'804'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714303[39m,
+      transactions: [],
+      previous_hash: [32m'804'[39m,
+      hash: [32m'795'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714563[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79b'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714683[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79e'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758715003[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'796'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758715876[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7a8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716436[39m,
+      transactions: [],
+      previous_hash: [32m'799'[39m,
+      hash: [32m'7ab'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716898[39m,
+      transactions: [],
+      previous_hash: [32m'809'[39m,
+      hash: [32m'7af'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716998[39m,
+      transactions: [],
+      previous_hash: [32m'7af'[39m,
+      hash: [32m'80d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758717768[39m,
+      transactions: [],
+      previous_hash: [32m'7de'[39m,
+      hash: [32m'80b'[39m,
+      validator: [32m'system'[39m
+    },
+    ... 27 more items
+  ],
+  total_blocks: [33m127[39m
+}
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:41935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="XWave E2E Tests › DEX functionality test" classname="xwave-e2e.spec.ts" time="24.176">
+<system-out>
+<![CDATA[Testing DEX functionality...
+Pool data: {
+  success: [33mtrue[39m,
+  pool: {
+    created_at: [33m1758744175[39m,
+    fee_rate: [33m0.003[39m,
+    id: [32m'XWAVE_USDC'[39m,
+    reserve_a: [33m1000160[39m,
+    reserve_b: [33m999940.3420290756[39m,
+    token_a: [32m'XWAVE'[39m,
+    token_b: [32m'USDC'[39m,
+    total_supply: [33m1000049.9950005[39m
+  },
+  message: [32m'Pool retrieved successfully'[39m
+}
+Login response: {
+  success: [33mtrue[39m,
+  token: [32m'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYVzExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLCJleHAiOjE3NTg4MzA3NjAsImlhdCI6MTc1ODc0NDM2MCwiaXNzIjoieHdhdmUtYmxvY2tjaGFpbiJ9.bAa6hE6guJ6XEC5YgB2-dNqZJfsbsUmogtzb_4gz_as'[39m,
+  message: [32m'Login successful'[39m
+}
+Swap response status: [33m200[39m
+Swap data: {
+  success: [33mtrue[39m,
+  message: [32m'Swap executed successfully'[39m,
+  tx_hash: [32m'swap_1758744360124'[39m,
+  amount_received: [33m9.967710998191523[39m,
+  price_impact: [33m0.000002999490090274788[39m
+}
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:41943) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+</testsuite>
+<testsuite name="xwave-e2e.spec.ts" timestamp="2025-09-24T20:05:11.108Z" hostname="webkit" tests="3" failures="0" skipped="0" time="51.791" errors="0">
+<testcase name="XWave E2E Tests › Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold" classname="xwave-e2e.spec.ts" time="29.458">
+<system-out>
+<![CDATA[Step 1: Testing login...
+Page error: /localhost:8083/health due to access control checks.
+Page error: /localhost:8083/health due to access control checks.
+Page content length: [33m53113[39m
+Page title: XWave - Revolutionizing Entertainment
+Page URL: http://localhost:5173/login
+Page content preview: <!DOCTYPE html><html lang="en"><head>
+    <script type="module">
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+    <meta name="viewport" content="width=device-width, initial
+Console error: Error al iniciar sesión:  Error: Invalid credentials
+Step 2: Testing wallet creation/connection...
+Wallet dashboard not found, checking for wallet connection...
+Step 3: Checking initial balance...
+Step 4: Testing transfer of 500 tokens...
+Transfer button not found, trying alternative approach...
+Transaction form found
+Step 5: Asserting balance after transfer...
+Step 6: Testing marketplace navigation...
+Page error: Right side of assignment cannot be destructured
+Page error: Right side of assignment cannot be destructured
+Console error: The above error occurred in the <ContentMarketplace> component:
+
+ContentMarketplace@http://localhost:5173/src/components/marketplace/ContentMarketplace.tsx:29:54
+ProtectedRoute@http://localhost:5173/src/auth/ProtectedRoute.tsx:23:5
+RenderedRoute@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:4073:32
+Routes@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:4542:19
+AppRoutes@http://localhost:5173/src/App.tsx:87:42
+WebSocketProvider@http://localhost:5173/src/contexts/WebSocketContext.tsx:30:5
+BlockchainProvider@http://localhost:5173/src/contexts/BlockchainContext.tsx:26:5
+AuthProvider@http://localhost:5173/src/auth/AuthContext.tsx:22:5
+Router@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:4485:28
+BrowserRouter@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:5230:11
+App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Page error: Right side of assignment cannot be destructured
+Step 7: Testing marketplace purchase...
+Buy button not found in marketplace
+Step 8: Asserting item ownership...
+Ownership indicator not found
+E2E Test Summary:
+- Initial Balance: [33m0[39m
+- Updated Balance: [33m0[39m
+- Balance Change: [33m0[39m
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:42089) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="XWave E2E Tests › API connectivity test" classname="xwave-e2e.spec.ts" time="11.091">
+<system-out>
+<![CDATA[Testing API connectivity...
+Health check response: {
+  service: [32m'xwave-blockchain'[39m,
+  status: [32m'healthy'[39m,
+  timestamp: [33m1758744379[39m
+}
+Blockchain response: {
+  blocks: [
+    {
+      timestamp: [33m1758744175[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'0'[39m,
+      hash: [32m'1e91'[39m,
+      validator: [1mnull[22m
+    },
+    {
+      timestamp: [33m1758708259[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'0'[39m,
+      hash: [32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708884[39m,
+      transactions: [],
+      previous_hash: [32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'[39m,
+      hash: [32m'2150'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708894[39m,
+      transactions: [],
+      previous_hash: [32m'2150'[39m,
+      hash: [32m'7f2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708904[39m,
+      transactions: [],
+      previous_hash: [32m'7f2'[39m,
+      hash: [32m'7d2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708914[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708944[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708954[39m,
+      transactions: [],
+      previous_hash: [32m'7d4'[39m,
+      hash: [32m'7d7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708964[39m,
+      transactions: [],
+      previous_hash: [32m'7d7'[39m,
+      hash: [32m'7db'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708974[39m,
+      transactions: [],
+      previous_hash: [32m'7db'[39m,
+      hash: [32m'807'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708984[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7aa'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758708994[39m,
+      transactions: [],
+      previous_hash: [32m'7aa'[39m,
+      hash: [32m'805'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709004[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'798'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709014[39m,
+      transactions: [],
+      previous_hash: [32m'798'[39m,
+      hash: [32m'7a4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709024[39m,
+      transactions: [],
+      previous_hash: [32m'7a4'[39m,
+      hash: [32m'7c9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709196[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'241a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709206[39m,
+      transactions: [],
+      previous_hash: [32m'241a'[39m,
+      hash: [32m'816'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709216[39m,
+      transactions: [],
+      previous_hash: [32m'816'[39m,
+      hash: [32m'79f'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709246[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7d4'[39m,
+      hash: [32m'2411'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709256[39m,
+      transactions: [],
+      previous_hash: [32m'2411'[39m,
+      hash: [32m'7eb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709266[39m,
+      transactions: [],
+      previous_hash: [32m'7eb'[39m,
+      hash: [32m'803'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709276[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'7a1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709286[39m,
+      transactions: [],
+      previous_hash: [32m'7a1'[39m,
+      hash: [32m'7d0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709296[39m,
+      transactions: [],
+      previous_hash: [32m'7d0'[39m,
+      hash: [32m'7d3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709306[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7ce'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709316[39m,
+      transactions: [],
+      previous_hash: [32m'7ce'[39m,
+      hash: [32m'800'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709326[39m,
+      transactions: [],
+      previous_hash: [32m'800'[39m,
+      hash: [32m'79a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709336[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'79a'[39m,
+      hash: [32m'2413'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709346[39m,
+      transactions: [],
+      previous_hash: [32m'2413'[39m,
+      hash: [32m'7ed'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709366[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'7a3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709386[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709396[39m,
+      transactions: [],
+      previous_hash: [32m'7d5'[39m,
+      hash: [32m'7d9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709436[39m,
+      transactions: [],
+      previous_hash: [32m'7d0'[39m,
+      hash: [32m'7cf'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709729[39m,
+      transactions: [36m[Array][39m,
+      previous_hash: [32m'7ff'[39m,
+      hash: [32m'5cc9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709739[39m,
+      transactions: [],
+      previous_hash: [32m'5cc9'[39m,
+      hash: [32m'85d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709749[39m,
+      transactions: [],
+      previous_hash: [32m'85d'[39m,
+      hash: [32m'7dc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709759[39m,
+      transactions: [],
+      previous_hash: [32m'7dc'[39m,
+      hash: [32m'80a'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709496[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7de'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709506[39m,
+      transactions: [],
+      previous_hash: [32m'7de'[39m,
+      hash: [32m'802'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709516[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709526[39m,
+      transactions: [],
+      previous_hash: [32m'79d'[39m,
+      hash: [32m'7d8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709819[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7dd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709829[39m,
+      transactions: [],
+      previous_hash: [32m'7dd'[39m,
+      hash: [32m'809'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709576[39m,
+      transactions: [],
+      previous_hash: [32m'805'[39m,
+      hash: [32m'7a6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709879[39m,
+      transactions: [],
+      previous_hash: [32m'809'[39m,
+      hash: [32m'7b0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709899[39m,
+      transactions: [],
+      previous_hash: [32m'7d9'[39m,
+      hash: [32m'7e5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709909[39m,
+      transactions: [],
+      previous_hash: [32m'7e5'[39m,
+      hash: [32m'7da'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709646[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'7a2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709929[39m,
+      transactions: [],
+      previous_hash: [32m'806'[39m,
+      hash: [32m'7a9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709666[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7d6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709949[39m,
+      transactions: [],
+      previous_hash: [32m'7dd'[39m,
+      hash: [32m'80c'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709686[39m,
+      transactions: [],
+      previous_hash: [32m'7db'[39m,
+      hash: [32m'808'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709696[39m,
+      transactions: [],
+      previous_hash: [32m'808'[39m,
+      hash: [32m'7ac'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709706[39m,
+      transactions: [],
+      previous_hash: [32m'7ac'[39m,
+      hash: [32m'7ff'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709989[39m,
+      transactions: [],
+      previous_hash: [32m'7df'[39m,
+      hash: [32m'812'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758709999[39m,
+      transactions: [],
+      previous_hash: [32m'812'[39m,
+      hash: [32m'7ad'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710009[39m,
+      transactions: [],
+      previous_hash: [32m'7ad'[39m,
+      hash: [32m'7f4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710019[39m,
+      transactions: [],
+      previous_hash: [32m'7f4'[39m,
+      hash: [32m'7ca'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710029[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710039[39m,
+      transactions: [],
+      previous_hash: [32m'7f5'[39m,
+      hash: [32m'7cd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710049[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7fa'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710059[39m,
+      transactions: [],
+      previous_hash: [32m'7fa'[39m,
+      hash: [32m'7fb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710069[39m,
+      transactions: [],
+      previous_hash: [32m'7fb'[39m,
+      hash: [32m'7fd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710209[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7c8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710309[39m,
+      transactions: [],
+      previous_hash: [32m'7d1'[39m,
+      hash: [32m'7c7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710629[39m,
+      transactions: [],
+      previous_hash: [32m'7fd'[39m,
+      hash: [32m'801'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710719[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7fe'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710909[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7a0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758710939[39m,
+      transactions: [],
+      previous_hash: [32m'7fe'[39m,
+      hash: [32m'806'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711020[39m,
+      transactions: [],
+      previous_hash: [32m'7d3'[39m,
+      hash: [32m'7c0'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711030[39m,
+      transactions: [],
+      previous_hash: [32m'7c0'[39m,
+      hash: [32m'7bd'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711040[39m,
+      transactions: [],
+      previous_hash: [32m'7bd'[39m,
+      hash: [32m'7f1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711050[39m,
+      transactions: [],
+      previous_hash: [32m'7f1'[39m,
+      hash: [32m'7c3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711162[39m,
+      transactions: [],
+      previous_hash: [32m'7c3'[39m,
+      hash: [32m'7c6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711182[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f6'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711252[39m,
+      transactions: [],
+      previous_hash: [32m'7c9'[39m,
+      hash: [32m'7cc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711262[39m,
+      transactions: [],
+      previous_hash: [32m'7cc'[39m,
+      hash: [32m'7f7'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711282[39m,
+      transactions: [],
+      previous_hash: [32m'7cf'[39m,
+      hash: [32m'7fc'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711332[39m,
+      transactions: [],
+      previous_hash: [32m'7ca'[39m,
+      hash: [32m'7f3'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711362[39m,
+      transactions: [],
+      previous_hash: [32m'7cd'[39m,
+      hash: [32m'7f9'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711502[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'791'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711512[39m,
+      transactions: [],
+      previous_hash: [32m'791'[39m,
+      hash: [32m'799'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711532[39m,
+      transactions: [],
+      previous_hash: [32m'7a2'[39m,
+      hash: [32m'7c4'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758711912[39m,
+      transactions: [],
+      previous_hash: [32m'799'[39m,
+      hash: [32m'7a5'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758712102[39m,
+      transactions: [],
+      previous_hash: [32m'7d2'[39m,
+      hash: [32m'7c1'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758712952[39m,
+      transactions: [],
+      previous_hash: [32m'803'[39m,
+      hash: [32m'79c'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714002[39m,
+      transactions: [],
+      previous_hash: [32m'806'[39m,
+      hash: [32m'793'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714123[39m,
+      transactions: [],
+      previous_hash: [32m'7c8'[39m,
+      hash: [32m'7cb'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714213[39m,
+      transactions: [],
+      previous_hash: [32m'7a1'[39m,
+      hash: [32m'7c2'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714243[39m,
+      transactions: [],
+      previous_hash: [32m'7cb'[39m,
+      hash: [32m'7f8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714293[39m,
+      transactions: [],
+      previous_hash: [32m'7ff'[39m,
+      hash: [32m'804'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714303[39m,
+      transactions: [],
+      previous_hash: [32m'804'[39m,
+      hash: [32m'795'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714563[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79b'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758714683[39m,
+      transactions: [],
+      previous_hash: [32m'802'[39m,
+      hash: [32m'79e'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758715003[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'796'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758715876[39m,
+      transactions: [],
+      previous_hash: [32m'807'[39m,
+      hash: [32m'7a8'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716436[39m,
+      transactions: [],
+      previous_hash: [32m'799'[39m,
+      hash: [32m'7ab'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716898[39m,
+      transactions: [],
+      previous_hash: [32m'809'[39m,
+      hash: [32m'7af'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758716998[39m,
+      transactions: [],
+      previous_hash: [32m'7af'[39m,
+      hash: [32m'80d'[39m,
+      validator: [32m'system'[39m
+    },
+    {
+      timestamp: [33m1758717768[39m,
+      transactions: [],
+      previous_hash: [32m'7de'[39m,
+      hash: [32m'80b'[39m,
+      validator: [32m'system'[39m
+    },
+    ... 29 more items
+  ],
+  total_blocks: [33m129[39m
+}
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:42433) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+<testcase name="XWave E2E Tests › DEX functionality test" classname="xwave-e2e.spec.ts" time="11.242">
+<system-out>
+<![CDATA[Testing DEX functionality...
+Pool data: {
+  success: [33mtrue[39m,
+  pool: {
+    created_at: [33m1758744175[39m,
+    fee_rate: [33m0.003[39m,
+    id: [32m'XWAVE_USDC'[39m,
+    reserve_a: [33m1000170[39m,
+    reserve_b: [33m999930.3743180775[39m,
+    token_a: [32m'XWAVE'[39m,
+    token_b: [32m'USDC'[39m,
+    total_supply: [33m1000049.9950005[39m
+  },
+  message: [32m'Pool retrieved successfully'[39m
+}
+Login response: {
+  success: [33mtrue[39m,
+  token: [32m'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYVzExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLCJleHAiOjE3NTg4MzA3ODIsImlhdCI6MTc1ODc0NDM4MiwiaXNzIjoieHdhdmUtYmxvY2tjaGFpbiJ9.xCJpKBiK19y7xYltG1dPt5t6d1AItHlG78c5Cv5-WJU'[39m,
+  message: [32m'Login successful'[39m
+}
+Swap response status: [33m200[39m
+Swap data: {
+  success: [33mtrue[39m,
+  message: [32m'Swap executed successfully'[39m,
+  tx_hash: [32m'swap_1758744382462'[39m,
+  amount_received: [33m9.967511978820404[39m,
+  price_impact: [33m0.0000029994600966272486[39m
+}
+]]>
+</system-out>
+<system-err>
+<![CDATA[(node:42447) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+]]>
+</system-err>
+</testcase>
+</testsuite>
+</testsuites>

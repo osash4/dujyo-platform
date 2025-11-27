@@ -1,0 +1,602 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Music, Video, Gamepad, 
+  TrendingUp, User, Wallet, BarChart3, 
+  Trophy, ArrowUpRight, Coins, Lock, Unlock, Clock, Award
+} from 'lucide-react';
+import { ContentSection } from '../../../components/ContentSection';
+import { WalletDashboard } from '../../../components/wallet/WalletDashboard';
+import ArtistDashboard from '../../../components/artist/ArtistDashboard';
+import { useBlockchain } from '../../../contexts/BlockchainContext';
+import { useAuth } from '../../../auth/AuthContext';
+
+interface ContentItems {
+  [key: string]: string[];
+}
+
+const ProfilePage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'wallet' | 'staking' | 'achievements' | 'artist-dashboard'>('overview');
+  const { account, isAuthenticated, balancesPallet } = useBlockchain();
+  const { user, getUserRole, hasRole } = useAuth();
+  const navigate = useNavigate();
+  const [balance, setBalance] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Staking state
+  const [stakingAmount, setStakingAmount] = useState('');
+  const [stakingPeriod, setStakingPeriod] = useState(30);
+  const [isStaking, setIsStaking] = useState(false);
+  const [stakingMessage, setStakingMessage] = useState('');
+  const [stakingInfo, setStakingInfo] = useState({
+    totalStaked: 0,
+    totalRewards: 0,
+    apy: 12.5
+  });
+
+  const profilePageItems: ContentItems = {
+    "Your Library": [
+      "Cyberpunk Symphony", "Neon Dreams", "Digital Revolution", 
+      "Blockchain Beats", "Crypto Anthems", "DeFi Dance",
+      "NFT Collection", "Web3 Vibes", "Metaverse Music"
+    ],
+    "Liked Content": [
+      "Electric Vibes", "Future Bass", "Synthwave Classics",
+      "AI Generated Music", "Quantum Sounds", "Digital Dreams",
+      "Crypto Rock", "Blockchain Blues", "DeFi Jazz"
+    ],
+    "Recommendations": [
+      "AI Generated Music", "Blockchain Beats", "Crypto Anthems",
+      "Trending Now", "New Releases", "Popular This Week",
+      "Similar Artists", "Genre Mix", "Discover Weekly"
+    ],
+    "Recently Played": [
+      "XWave Theme", "Trading Music", "DeFi Dance",
+      "Gaming Soundtrack", "Marketplace Mix", "DEX Vibes",
+      "Profile Playlist", "Favorites", "Last Session"
+    ]
+  };
+
+
+  // Cargar balance real de la blockchain
+  useEffect(() => {
+    const loadBalance = async () => {
+      if (account && isAuthenticated) {
+        try {
+          setIsLoading(true);
+          const userBalance = await balancesPallet.getBalance(account);
+          setBalance(userBalance);
+        } catch (error) {
+          console.error('Error cargando balance:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadBalance();
+  }, [account, isAuthenticated, balancesPallet]);
+
+  const handleStake = async () => {
+    if (!stakingAmount || parseFloat(stakingAmount) <= 0) {
+      setStakingMessage('Please enter a valid amount');
+      return;
+    }
+    
+    if (parseFloat(stakingAmount) > balance) {
+      setStakingMessage('Insufficient balance');
+      return;
+    }
+    
+    setIsStaking(true);
+    setStakingMessage('');
+    
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
+      const response = await fetch('http://localhost:8083/stake', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          amount: parseFloat(stakingAmount),
+          period: stakingPeriod,
+          user: user?.uid || account
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Staking failed');
+      }
+      
+      await response.json();
+      setStakingMessage(`Successfully staked ${stakingAmount} XWV for ${stakingPeriod} days!`);
+      setStakingAmount('');
+      
+      // Update staking info
+      setStakingInfo(prev => ({
+        ...prev,
+        totalStaked: prev.totalStaked + parseFloat(stakingAmount)
+      }));
+      
+    } catch (error) {
+      setStakingMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsStaking(false);
+    }
+  };
+
+  const handleContentClick = (_trackTitle: string) => {
+    // Handle content click
+  };
+
+  const stats = [
+    { 
+      label: "Balance", 
+      value: isLoading ? "..." : `${balance.toLocaleString()} XWV`, 
+      icon: Wallet, 
+      color: "#4ECDC4" 
+    },
+    { 
+      label: "Account", 
+      value: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Not Connected", 
+      icon: User, 
+      color: "#FF6B6B" 
+    }
+  ];
+
+  const achievements = [
+    { title: "First Trade", description: "Completed your first DEX trade", icon: TrendingUp, unlocked: true },
+    { title: "Music Lover", description: "Listened to 100+ tracks", icon: Music, unlocked: true },
+    { title: "Gaming Master", description: "Played 50+ games", icon: Gamepad, unlocked: false },
+    { title: "Content Creator", description: "Created 10+ pieces of content", icon: Video, unlocked: false }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+        {/* Hero Section */}
+        <motion.div
+          className="relative overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          {/* Animated Background */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10" />
+            <motion.div
+              className="absolute inset-0"
+              animate={{
+                background: [
+                  'radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
+                  'radial-gradient(circle at 80% 50%, rgba(0, 246, 255, 0.1) 0%, transparent 50%)',
+                  'radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)'
+                ]
+              }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+
+          {/* Hero Content */}
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-center">
+              <motion.div
+                className="w-32 h-32 mx-auto mb-6 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <User size={64} className="text-white" />
+              </motion.div>
+
+              <motion.h1
+                className="text-4xl md:text-6xl font-bold mb-4"
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.4 }}
+              >
+                <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+                  {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : 'User Profile'}
+                </span>
+              </motion.h1>
+
+              <motion.p
+                className="text-xl text-gray-300 max-w-2xl mx-auto mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              >
+                {user?.displayName || 'XWave User'} • {getUserRole().toUpperCase()} • Blockchain Enthusiast
+              </motion.p>
+              
+              {/* Role Badge */}
+              <motion.div
+                className="flex justify-center mb-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              >
+                <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                  hasRole('admin') ? 'bg-red-500/20 text-red-400 border border-red-500/50' :
+                  hasRole('artist') ? 'bg-pink-500/20 text-pink-400 border border-pink-500/50' :
+                  hasRole('validator') ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' :
+                  'bg-green-500/20 text-green-400 border border-green-500/50'
+                }`}>
+                  {getUserRole().toUpperCase()}
+                </div>
+              </motion.div>
+
+              {/* Become Artist Button for Listeners */}
+              {!hasRole('artist') && !hasRole('validator') && (
+                <motion.div
+                  className="flex justify-center mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.0 }}
+                >
+                  <button
+                    onClick={() => navigate('/become-artist')}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <Music size={20} />
+                    Become an Artist
+                    <ArrowUpRight size={20} />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* XP Bar */}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Navigation Tabs */}
+        <div className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav className="flex justify-center space-x-2 py-4">
+              {[
+                { id: 'overview', label: 'Overview', icon: BarChart3, color: '#8B5CF6' },
+                { id: 'wallet', label: 'Wallet', icon: Wallet, color: '#00F6FF' },
+                { id: 'staking', label: 'Staking', icon: Coins, color: '#FFD700' },
+                { id: 'achievements', label: 'Achievements', icon: Trophy, color: '#FF2E92' },
+                ...(hasRole('artist') ? [{ id: 'artist-dashboard', label: 'Artist Dashboard', icon: Music, color: '#FF6B6B' }] : [])
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+
+                return (
+                  <motion.button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`relative flex items-center gap-2 py-3 px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
+                      isActive
+                        ? 'text-white'
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl"
+                        style={{
+                          background: `linear-gradient(135deg, ${tab.color}20, transparent)`,
+                          border: `2px solid ${tab.color}`,
+                          boxShadow: `0 0 20px ${tab.color}50`
+                        }}
+                        layoutId="activeTab"
+                        transition={{ duration: 0.3 }}
+                      />
+                    )}
+                    <Icon size={20} style={{ color: isActive ? tab.color : undefined }} />
+                    <span className="relative z-10">{tab.label}</span>
+                  </motion.button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeTab === 'overview' && (
+              <div className="space-y-8">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {stats.map((stat, index) => {
+                    const Icon = stat.icon;
+                    return (
+                      <motion.div
+                        key={stat.label}
+                        className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="p-3 rounded-lg" style={{ backgroundColor: `${stat.color}20` }}>
+                            <Icon size={24} style={{ color: stat.color }} />
+                          </div>
+                          <ArrowUpRight size={16} className="text-gray-400" />
+                        </div>
+                        <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+                        <p className="text-gray-400 text-sm">{stat.label}</p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Wallet Dashboard */}
+                <motion.div
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <Wallet size={24} className="text-cyan-400" />
+                    Wallet Dashboard
+                  </h3>
+                  <WalletDashboard />
+                </motion.div>
+
+                {/* Content Sections */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {Object.keys(profilePageItems).map((title, index) => (
+                    <motion.div
+                      key={title}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                    >
+                      <ContentSection
+                        title={title}
+                        items={profilePageItems[title]}
+                        onItemClick={handleContentClick}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'wallet' && (
+              <div className="space-y-8">
+                <motion.div
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 border border-gray-700/50 shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+                    <Wallet size={32} className="text-cyan-400" />
+                    Wallet Management
+                  </h3>
+                  <WalletDashboard />
+                </motion.div>
+            </div>
+            )}
+
+
+            {activeTab === 'staking' && (
+              <div className="space-y-8">
+                {/* Staking Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <motion.div
+                    className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/30"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-yellow-500/20 rounded-lg">
+                        <Coins className="w-6 h-6 text-yellow-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Total Staked</h3>
+                        <p className="text-2xl font-bold text-yellow-400">{stakingInfo.totalStaked.toFixed(2)} XWV</p>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-green-500/20 rounded-lg">
+                        <Award className="w-6 h-6 text-green-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Total Rewards</h3>
+                        <p className="text-2xl font-bold text-green-400">{stakingInfo.totalRewards.toFixed(2)} XWV</p>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-blue-500/20 rounded-lg">
+                        <TrendingUp className="w-6 h-6 text-blue-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">Current APY</h3>
+                        <p className="text-2xl font-bold text-blue-400">{stakingInfo.apy}%</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Staking Form */}
+                <motion.div
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 border border-gray-700/50"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                    <Lock className="w-6 h-6 text-yellow-400" />
+                    Stake XWV Tokens
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Amount to Stake
+                      </label>
+                      <input
+                        type="number"
+                        value={stakingAmount}
+                        onChange={(e) => setStakingAmount(e.target.value)}
+                        placeholder="Enter amount"
+                        className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-transparent"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        Available: {balance.toFixed(2)} XWV
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Staking Period
+                      </label>
+                      <select
+                        value={stakingPeriod}
+                        onChange={(e) => setStakingPeriod(Number(e.target.value))}
+                        className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-transparent"
+                      >
+                        <option value={7}>7 days (8% APY)</option>
+                        <option value={30}>30 days (12% APY)</option>
+                        <option value={90}>90 days (18% APY)</option>
+                        <option value={365}>365 days (25% APY)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {stakingMessage && (
+                    <div className={`mt-4 p-4 rounded-lg ${
+                      stakingMessage.includes('Successfully') 
+                        ? 'bg-green-500/20 border border-green-500/30 text-green-400'
+                        : 'bg-red-500/20 border border-red-500/30 text-red-400'
+                    }`}>
+                      {stakingMessage}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleStake}
+                    disabled={isStaking || !stakingAmount}
+                    className="mt-6 w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    {isStaking ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Staking...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-5 h-5" />
+                        Stake XWV
+                      </>
+                    )}
+                  </button>
+                </motion.div>
+              </div>
+            )}
+
+            {activeTab === 'achievements' && (
+              <div className="space-y-8">
+                <motion.div
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 border border-gray-700/50 shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+                    <Trophy size={32} className="text-yellow-400" />
+                    Achievements
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {achievements.map((achievement, index) => {
+                      const Icon = achievement.icon;
+                      return (
+                        <motion.div
+                          key={achievement.title}
+                          className={`p-6 rounded-xl border transition-all duration-300 ${
+                            achievement.unlocked 
+                              ? 'bg-gray-700/30 border-yellow-400/50' 
+                              : 'bg-gray-800/30 border-gray-600/30 opacity-60'
+                          }`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={`p-3 rounded-lg ${
+                              achievement.unlocked ? 'bg-yellow-400/20' : 'bg-gray-600/20'
+                            }`}>
+                              <Icon size={24} className={achievement.unlocked ? 'text-yellow-400' : 'text-gray-500'} />
+                            </div>
+                            <div>
+                              <h4 className={`font-semibold ${achievement.unlocked ? 'text-white' : 'text-gray-500'}`}>
+                                {achievement.title}
+                              </h4>
+                              <p className={`text-sm ${achievement.unlocked ? 'text-gray-300' : 'text-gray-600'}`}>
+                                {achievement.description}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              </div>
+            )}
+
+            {activeTab === 'artist-dashboard' && hasRole('artist') && (
+              <div className="space-y-8">
+                <motion.div
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 border border-gray-700/50 shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+                    <Music size={32} className="text-pink-400" />
+                    Artist Dashboard
+                  </h3>
+                  <ArtistDashboard />
+                </motion.div>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePage;

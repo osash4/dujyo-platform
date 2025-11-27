@@ -1,0 +1,414 @@
+/* 🎨 DUJYO - GUÍA DE COMPONENTES "ORO Y OSCURIDAD" */
+
+/* ============================================
+   1. BOTONES PRINCIPALES (CTA - Los Más Importantes)
+   ============================================ */
+
+/* 🟠 BOTÓN DORADO PRINCIPAL (Comprar, Subir, Stream) */
+.btn-primary,
+.btn-cta {
+  background: linear-gradient(135deg, #F59E0B, #EA580C); /* Dorado -> Cobre */
+  color: #0A0A0F !important; /* Texto negro para máximo contraste */
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.btn-primary:hover,
+.btn-cta:hover {
+  background: linear-gradient(135deg, #FBBF24, #F59E0B); /* Más brillante al hover */
+  box-shadow: 0 6px 25px rgba(245, 158, 11, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active,
+.btn-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+.btn-primary:disabled,
+.btn-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 🖤 BOTÓN SECUNDARIO (Cancelar, Volver, Menos Importante) */
+.btn-secondary {
+  background: transparent;
+  color: #FBBF24; /* Ámbar */
+  border: 2px solid #FBBF24; /* Borde ámbar */
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: #F59E0B;
+  color: #F59E0B;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 🔵 BOTÓN TECH (Conectar Wallet, Configuración Tech) */
+.btn-tech {
+  background: transparent;
+  color: #00F5FF; /* Cian eléctrico */
+  border: 2px solid #00F5FF;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+}
+
+.btn-tech:hover {
+  background: rgba(0, 245, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-tech:active {
+  transform: translateY(0);
+}
+
+.btn-tech:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   2. TARJETAS/CARDS (De Artistas, Playlists, Juegos)
+   ============================================ */
+
+.card,
+.card-dujyo {
+  background: #1A1A2E; /* Fondo card */
+  border: 1px solid rgba(245, 158, 11, 0.2); /* Borde dorado sutil */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1); /* Sombra dorada */
+  transition: all 0.3s ease;
+}
+
+.card:hover,
+.card-dujyo:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 6px 30px rgba(245, 158, 11, 0.2);
+  transform: translateY(-4px);
+}
+
+/* Card con efecto tech */
+.card-tech {
+  background: #1A1A2E;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 245, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card-tech:hover {
+  border-color: rgba(0, 245, 255, 0.4);
+  box-shadow: 0 6px 30px rgba(0, 245, 255, 0.2);
+}
+
+/* ============================================
+   3. BARRAS DE PROGRESO (Stream, Carga)
+   ============================================ */
+
+.progress-bar,
+.progress-bar-dujyo {
+  background: #111827; /* Fondo barra */
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill,
+.progress-fill-dujyo {
+  background: linear-gradient(90deg, #F59E0B, #EA580C); /* Dorado -> Cobre */
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+/* Barra de progreso tech */
+.progress-bar-tech {
+  background: #111827;
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-fill-tech {
+  background: linear-gradient(90deg, #00F5FF, #00D4FF);
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+/* ============================================
+   4. ICONOS TECH (Ajusta según tu librería de iconos)
+   ============================================ */
+
+.icon-music,
+.icon-music-dujyo {
+  color: #F59E0B; /* Dorado */
+}
+
+.icon-video,
+.icon-video-dujyo {
+  color: #EA580C; /* Cobre */
+}
+
+.icon-gaming,
+.icon-gaming-dujyo {
+  color: #00F5FF; /* Cian */
+}
+
+.icon-wallet,
+.icon-wallet-dujyo {
+  color: #FBBF24; /* Ámbar */
+}
+
+.icon-blockchain,
+.icon-blockchain-dujyo {
+  color: #00F5FF; /* Cian */
+}
+
+.icon-success {
+  color: #10B981; /* Verde para éxito */
+}
+
+.icon-danger {
+  color: #DC2626; /* Rojo para peligro */
+}
+
+/* ============================================
+   5. BADGES/ETIQUETAS (Nuevo, Trending, NFT)
+   ============================================ */
+
+.badge,
+.badge-dujyo {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-trending,
+.badge-trending-dujyo {
+  background: #EA580C; /* Cobre */
+  color: #0A0A0F;
+}
+
+.badge-nft,
+.badge-nft-dujyo {
+  background: #00F5FF; /* Cian */
+  color: #0A0A0F;
+}
+
+.badge-new,
+.badge-new-dujyo {
+  background: #F59E0B; /* Dorado */
+  color: #0A0A0F;
+}
+
+.badge-premium,
+.badge-premium-dujyo {
+  background: linear-gradient(135deg, #F59E0B, #EA580C);
+  color: #0A0A0F;
+}
+
+.badge-success {
+  background: #10B981;
+  color: #0A0A0F;
+}
+
+.badge-warning {
+  background: #F59E0B;
+  color: #0A0A0F;
+}
+
+.badge-danger {
+  background: #DC2626;
+  color: #FFFFFF;
+}
+
+/* ============================================
+   6. INPUTS Y FORMULARIOS
+   ============================================ */
+
+.input-dujyo,
+.input-primary {
+  background: #111827;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 8px;
+  color: #FFFFFF;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.input-dujyo:focus,
+.input-primary:focus {
+  outline: none;
+  border-color: #F59E0B;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.input-tech {
+  background: #111827;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  border-radius: 8px;
+  color: #FFFFFF;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.input-tech:focus {
+  outline: none;
+  border-color: #00F5FF;
+  box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.1);
+}
+
+/* ============================================
+   7. LINKS Y ENLACES
+   ============================================ */
+
+.link-primary,
+.link-dujyo {
+  color: #F59E0B;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.link-primary:hover,
+.link-dujyo:hover {
+  color: #FBBF24;
+  border-bottom-color: #FBBF24;
+}
+
+.link-tech {
+  color: #00F5FF;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.link-tech:hover {
+  color: #00D4FF;
+  border-bottom-color: #00F5FF;
+}
+
+/* ============================================
+   8. ALERTAS Y NOTIFICACIONES
+   ============================================ */
+
+.alert-success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid #10B981;
+  color: #10B981;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid #F59E0B;
+  color: #FBBF24;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.alert-danger {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid #DC2626;
+  color: #DC2626;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.alert-tech {
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid #00F5FF;
+  color: #00F5FF;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+/* ============================================
+   9. TABS Y NAVEGACIÓN
+   ============================================ */
+
+.tab-active {
+  color: #F59E0B;
+  border-bottom: 2px solid #F59E0B;
+}
+
+.tab-inactive {
+  color: #6B7280;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-active-tech {
+  color: #00F5FF;
+  border-bottom: 2px solid #00F5FF;
+}
+
+/* ============================================
+   10. UTILIDADES ADICIONALES
+   ============================================ */
+
+/* Glow effects */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.glow-tech {
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+}
+
+.glow-copper {
+  box-shadow: 0 0 20px rgba(234, 88, 12, 0.5);
+}
+
+/* Text gradients */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #F59E0B, #EA580C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-tech {
+  background: linear-gradient(135deg, #00F5FF, #00D4FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Borders */
+.border-gold {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.border-tech {
+  border-color: rgba(0, 245, 255, 0.3);
+}
+
+.border-copper {
+  border-color: rgba(234, 88, 12, 0.3);
+}
+

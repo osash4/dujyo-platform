@@ -1,0 +1,96 @@
+name: XWave CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  rust-check:
+    name: Rust Backend Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+        override: true
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo index
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo build
+      uses: actions/cache@v3
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Check Rust backend
+      run: |
+        cd xwave-backend
+        cargo check --all
+    
+    - name: Test Rust backend
+      run: |
+        cd xwave-backend
+        cargo test --all
+
+  node-check:
+    name: Node.js Frontend/API Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+      continue-on-error: true
+    
+    - name: Check frontend build
+      run: |
+        cd xwave-frontend
+        npm ci
+        npm run build
+      continue-on-error: true
+
+  context-validation:
+    name: Context Files Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate context files
+      run: |
+        ./scripts/ensure_cursor_context.sh
+    
+    - name: Check XWave context
+      run: |
+        if ! grep -q "Blockchain: Propia (no EVM)" docs/xwave_context.md; then
+          echo "❌ Contexto de XWave no válido"
+          exit 1
+        fi
+        echo "✅ Contexto de XWave válido"

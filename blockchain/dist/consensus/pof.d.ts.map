@@ -1,0 +1,1 @@
+{"version":3,"file":"pof.d.ts","sourceRoot":"","sources":["../../src/consensus/pof.ts"],"names":[],"mappings":"AAAA,UAAU,SAAS;IACjB,OAAO,EAAE,MAAM,CAAC;IAChB,KAAK,EAAE,MAAM,CAAC;IACd,SAAS,EAAE,MAAM,CAAC;CACnB;AAID,wBAAgB,cAAc,CAAC,UAAU,EAAE,SAAS,EAAE,GAAG,SAAS,CAejE"}

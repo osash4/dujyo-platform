@@ -1,0 +1,31 @@
+¡Hola {NOMBRE}! 👋
+
+Te escribo porque estamos lanzando XWave, una plataforma streaming Web3 para artistas, y queremos que seas uno de nuestros primeros testers.
+
+🎯 ¿Qué es XWave?
+Es una plataforma donde los artistas pueden subir su música y ganar tokens mientras los fans escuchan. Estamos en fase MVP (versión temprana) y buscamos feedback real de artistas como tú.
+
+⏱️ ¿Cuánto tiempo toma?
+Solo 15-20 minutos. Te guiaré paso a paso:
+1. Registro rápido
+2. Verificación como artista
+3. Subir una canción de prueba
+4. Reproducir tu música
+5. Darnos tu feedback
+
+🎁 ¿Qué obtienes?
+- Acceso temprano a la plataforma
+- Tu opinión será clave para mejorar XWave
+- Posibilidad de ser artista fundador
+
+🔗 URL de la plataforma: https://gustily-nonsuppressed-emilio.ngrok-free.dev
+
+¡Solo abre esta URL en tu navegador y podrás acceder a la plataforma! Es muy fácil 😊
+
+¿Te animas? Podemos hacerlo ahora o agendar un momento que te funcione mejor.
+
+¡Gracias por tu apoyo! 🙏
+
+---
+Para más información, revisa: QUICK_START_ARTIST.md
+

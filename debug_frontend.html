@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XWave Frontend Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .debug-section { background: #2a2a2a; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .log { background: #1e1e1e; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 XWave Frontend Debug</h1>
+        
+        <div class="debug-section">
+            <h2>Local Storage Check</h2>
+            <button onclick="checkLocalStorage()">Check Local Storage</button>
+            <div id="localStorage-result" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>JWT Token Test</h2>
+            <button onclick="testJWTToken()">Test JWT Token</button>
+            <div id="jwt-result" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>Stream Earn Test</h2>
+            <button onclick="testStreamEarn()">Test Stream Earn</button>
+            <div id="stream-earn-result" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>Auto Stream Earn Test</h2>
+            <button onclick="startAutoTest()">Start Auto Test</button>
+            <button onclick="stopAutoTest()">Stop Auto Test</button>
+            <div id="auto-test-result" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let autoTestInterval = null;
+
+        function checkLocalStorage() {
+            const result = document.getElementById('localStorage-result');
+            let output = 'Local Storage Contents:\n';
+            
+            // Check for JWT token
+            const jwtToken = localStorage.getItem('jwt_token');
+            output += `jwt_token: ${jwtToken ? '✅ Found' : '❌ Not found'}\n`;
+            if (jwtToken) {
+                output += `Token length: ${jwtToken.length}\n`;
+                output += `Token preview: ${jwtToken.substring(0, 50)}...\n`;
+            }
+            
+            // Check for user data
+            const user = localStorage.getItem('user');
+            output += `user: ${user ? '✅ Found' : '❌ Not found'}\n`;
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    output += `User email: ${userData.email}\n`;
+                    output += `User role: ${userData.role}\n`;
+                    output += `User UID: ${userData.uid}\n`;
+                } catch (e) {
+                    output += `Error parsing user data: ${e.message}\n`;
+                }
+            }
+            
+            // Check for wallet data
+            const wallet = localStorage.getItem('xwave_wallet');
+            output += `xwave_wallet: ${wallet ? '✅ Found' : '❌ Not found'}\n`;
+            if (wallet) {
+                try {
+                    const walletData = JSON.parse(wallet);
+                    output += `Wallet address: ${walletData.address}\n`;
+                } catch (e) {
+                    output += `Error parsing wallet data: ${e.message}\n`;
+                }
+            }
+            
+            result.textContent = output;
+        }
+
+        async function testJWTToken() {
+            const result = document.getElementById('jwt-result');
+            const jwtToken = localStorage.getItem('jwt_token');
+            
+            if (!jwtToken) {
+                result.textContent = '❌ No JWT token found in localStorage';
+                result.className = 'log error';
+                return;
+            }
+            
+            result.textContent = 'Testing JWT token...';
+            
+            try {
+                const response = await fetch('http://localhost:8083/balance/XW2912A395F2F37BF3980E09296A139227764DECED', {
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.textContent = `✅ JWT token is valid!\nBalance: ${data.balance} XWV`;
+                    result.className = 'log success';
+                } else {
+                    result.textContent = `❌ JWT token validation failed: ${response.status} ${response.statusText}`;
+                    result.className = 'log error';
+                }
+            } catch (error) {
+                result.textContent = `❌ JWT validation error: ${error.message}`;
+                result.className = 'log error';
+            }
+        }
+
+        async function testStreamEarn() {
+            const result = document.getElementById('stream-earn-result');
+            const jwtToken = localStorage.getItem('jwt_token');
+            
+            if (!jwtToken) {
+                result.textContent = '❌ No JWT token found';
+                result.className = 'log error';
+                return;
+            }
+            
+            result.textContent = 'Testing stream earn...';
+            
+            try {
+                const response = await fetch('http://localhost:8083/api/stream-earn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jwtToken}`
+                    },
+                    body: JSON.stringify({
+                        type_: 'listener',
+                        amount: 2,
+                        track_id: 'debug_test',
+                        track_title: 'Debug Test Track'
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    result.textContent = `✅ Stream earn successful!\nEarned: ${data.tokens_earned} XWV\nNew Balance: ${data.new_balance} XWV`;
+                    result.className = 'log success';
+                } else {
+                    result.textContent = `❌ Stream earn failed: ${data.message}`;
+                    result.className = 'log error';
+                }
+            } catch (error) {
+                result.textContent = `❌ Stream earn error: ${error.message}`;
+                result.className = 'log error';
+            }
+        }
+
+        function startAutoTest() {
+            if (autoTestInterval) {
+                clearInterval(autoTestInterval);
+            }
+            
+            const result = document.getElementById('auto-test-result');
+            result.textContent = 'Starting auto stream earn test every 30 seconds...\n';
+            
+            autoTestInterval = setInterval(async () => {
+                const jwtToken = localStorage.getItem('jwt_token');
+                if (!jwtToken) {
+                    result.textContent += '❌ No JWT token found\n';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('http://localhost:8083/api/stream-earn', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${jwtToken}`
+                        },
+                        body: JSON.stringify({
+                            type_: 'listener',
+                            amount: 2,
+                            track_id: 'auto_debug_test',
+                            track_title: 'Auto Debug Test Track'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    const timestamp = new Date().toLocaleTimeString();
+                    if (data.success) {
+                        result.textContent += `[${timestamp}] ✅ Earned ${data.tokens_earned} XWV, New Balance: ${data.new_balance}\n`;
+                    } else {
+                        result.textContent += `[${timestamp}] ❌ Failed: ${data.message}\n`;
+                    }
+                    result.scrollTop = result.scrollHeight;
+                } catch (error) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    result.textContent += `[${timestamp}] ❌ Error: ${error.message}\n`;
+                    result.scrollTop = result.scrollHeight;
+                }
+            }, 30000);
+        }
+
+        function stopAutoTest() {
+            if (autoTestInterval) {
+                clearInterval(autoTestInterval);
+                autoTestInterval = null;
+                const result = document.getElementById('auto-test-result');
+                result.textContent += 'Auto test stopped.\n';
+            }
+        }
+
+        // Run all checks on page load
+        window.onload = () => {
+            checkLocalStorage();
+            testJWTToken();
+        };
+    </script>
+</body>
+</html>
+

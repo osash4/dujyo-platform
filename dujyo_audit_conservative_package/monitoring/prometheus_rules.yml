@@ -1,0 +1,140 @@
+groups:
+  - name: xwave_security_alerts
+    interval: 30s
+    rules:
+      # VULN-005: Integer Overflow
+      - alert: IntegerOverflowDetected
+        expr: safe_math_errors_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          vulnerability: VULN-005
+        annotations:
+          summary: "Integer overflow detected"
+          description: "SafeMath error detected: {{ $value }} errors"
+
+      # VULN-006: Reentrancy
+      - alert: ReentrancyDetected
+        expr: reentrancy_guard_failures_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          vulnerability: VULN-006
+        annotations:
+          summary: "Reentrancy detected"
+          description: "Reentrancy guard failure: {{ $value }} failures"
+
+      # VULN-007: JWT Secret
+      - alert: JWTSecretNotConfigured
+        expr: jwt_secret_configured == 0
+        for: 1m
+        labels:
+          severity: critical
+          vulnerability: VULN-007
+        annotations:
+          summary: "JWT secret not configured"
+          description: "JWT_SECRET environment variable not configured"
+
+      - alert: JWTSecretIsDefault
+        expr: jwt_secret_is_default == 1
+        for: 1m
+        labels:
+          severity: critical
+          vulnerability: VULN-007
+        annotations:
+          summary: "JWT secret is default value"
+          description: "JWT_SECRET is using default hardcoded value"
+
+      # VULN-009: unwrap() Panics
+      - alert: UnwrapPanicDetected
+        expr: unwrap_panics_total > 0
+        for: 1m
+        labels:
+          severity: high
+          vulnerability: VULN-009
+        annotations:
+          summary: "unwrap() panic detected"
+          description: "Panic from unwrap(): {{ $value }} panics"
+
+      # VULN-010: Rollback Errors
+      - alert: RollbackErrorsDetected
+        expr: rollback_errors_total > 0
+        for: 1m
+        labels:
+          severity: medium
+          vulnerability: VULN-010
+        annotations:
+          summary: "Transaction rollback errors detected"
+          description: "Rollback errors: {{ $value }} errors"
+
+      # VULN-011: Fail-Open Rate Limiter
+      - alert: RateLimiterFailOpen
+        expr: rate_limiter_failures_total / rate_limiter_requests_total > 0.01
+        for: 5m
+        labels:
+          severity: high
+          vulnerability: VULN-011
+        annotations:
+          summary: "Rate limiter failing > 1% of requests"
+          description: "Rate limiter failure rate: {{ $value | humanizePercentage }}"
+
+      # VULN-012: Time Manipulation
+      - alert: TimeDriftDetected
+        expr: time_drift_seconds > 5
+        for: 1m
+        labels:
+          severity: medium
+          vulnerability: VULN-012
+        annotations:
+          summary: "Time drift detected"
+          description: "Time drift: {{ $value }} seconds"
+
+      # VULN-013: DB Pool Fail-Open
+      - alert: DatabasePoolExhausted
+        expr: database_pool_active_connections / database_pool_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: high
+          vulnerability: VULN-013
+        annotations:
+          summary: "Database pool > 80% exhausted"
+          description: "Pool usage: {{ $value | humanizePercentage }}"
+
+      - alert: DatabasePoolUnhealthy
+        expr: database_pool_health == 0
+        for: 1m
+        labels:
+          severity: critical
+          vulnerability: VULN-013
+        annotations:
+          summary: "Database pool unhealthy"
+          description: "Database pool health check failed"
+
+      # General Security Alerts
+      - alert: NonceCollisionDetected
+        expr: nonce_collisions_total > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nonce collision detected"
+          description: "Nonce collision: {{ $value }} collisions"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate: {{ $value | humanizePercentage }}"
+
+      - alert: UnauthorizedAccessAttempts
+        expr: rate(http_requests_total{status="401"}[5m]) > 10
+        for: 5m
+        labels:
+          severity: medium
+        annotations:
+          summary: "High unauthorized access attempts"
+          description: "Unauthorized attempts: {{ $value }} per second"
+

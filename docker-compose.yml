@@ -1,0 +1,81 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: dujyo
+      POSTGRES_USER: dujyo
+      POSTGRES_PASSWORD: dujyo_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dujyo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Dujyo Backend
+  backend:
+    build:
+      context: ./xwave-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      DATABASE_URL: postgresql://dujyo:dujyo_password@postgres:5432/dujyo
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      RPC_PORT: 8083
+      WS_PORT: 8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Dujyo Blockchain Node
+  blockchain:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      RPC_PORT: 8080
+      WS_PORT: 8081
+      NODE_ID: validator-1
+      STAKE_AMOUNT: 1000000
+      PEERS: "validator-2:8080,validator-3:8080"
+    volumes:
+      - ./blockchain:/app
+    command: npm run dev
+
+  # Dujyo Frontend
+  frontend:
+    build:
+      context: ./xwave-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:8083
+      REACT_APP_BLOCKCHAIN_URL: http://localhost:8080
+    depends_on:
+      - backend
+      - blockchain
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: dujyo-network

@@ -1,0 +1,771 @@
+{
+  "config": {
+    "configFile": "/Users/yare/dujyo/dujyo-frontend/playwright.config.ts",
+    "rootDir": "/Users/yare/dujyo/dujyo-frontend/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yare/dujyo/dujyo-frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yare/dujyo/dujyo-frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/yare/dujyo/dujyo-frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/yare/dujyo/dujyo-frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/yare/dujyo/dujyo-frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/yare/dujyo/dujyo-frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "dujyo-e2e.spec.ts",
+      "file": "dujyo-e2e.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Dujyo E2E Tests",
+          "file": "dujyo-e2e.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 21173,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Step 1: Testing login...\n"
+                        },
+                        {
+                          "text": "Page content length: \u001b[33m53113\u001b[39m\n"
+                        },
+                        {
+                          "text": "Page title: Dujyo - Revolutionizing Entertainment\n"
+                        },
+                        {
+                          "text": "Page URL: http://localhost:5173/login\n"
+                        },
+                        {
+                          "text": "Page content preview: <!DOCTYPE html><html lang=\"en\"><head>\n    <script type=\"module\">\nimport RefreshRuntime from \"/@react-refresh\"\nRefreshRuntime.injectIntoGlobalHook(window)\nwindow.$RefreshReg$ = () => {}\nwindow.$RefreshSig$ = () => (type) => type\nwindow.__vite_plugin_react_preamble_installed__ = true\n</script>\n\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"UTF-8\">\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\">\n    <meta name=\"viewport\" content=\"width=device-width, initial\n"
+                        },
+                        {
+                          "text": "Console error: Error al iniciar sesión:  Error: Invalid credentials\n    at signIn (http://localhost:5173/src/auth/AuthContext.tsx:48:15)\n    at handleLogin (http://localhost:5173/src/pages/Login.tsx:38:13)\n    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3674:22)\n    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3699:24)\n    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3733:39)\n    at invokeGuardedCallbackAndCatchFirstError (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:3736:33)\n    at executeDispatch (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7014:11)\n    at processDispatchQueueItemsInOrder (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7034:15)\n    at processDispatchQueue (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7043:13)\n    at dispatchEventsForPlugins (http://localhost:5173/node_modules/.vite/deps/chunk-67DEV5DB.js?v=404825df:7051:11)\n"
+                        },
+                        {
+                          "text": "Step 2: Testing wallet creation/connection...\n"
+                        },
+                        {
+                          "text": "Wallet dashboard not found, checking for wallet connection...\n"
+                        },
+                        {
+                          "text": "Step 3: Checking initial balance...\n"
+                        },
+                        {
+                          "text": "Step 4: Testing transfer of 500 tokens...\n"
+                        },
+                        {
+                          "text": "Transfer button not found, trying alternative approach...\n"
+                        },
+                        {
+                          "text": "Transaction form found\n"
+                        },
+                        {
+                          "text": "Step 5: Asserting balance after transfer...\n"
+                        },
+                        {
+                          "text": "Step 6: Testing marketplace navigation...\n"
+                        },
+                        {
+                          "text": "Page error: Cannot destructure property 'isDarkMode' of 'useTheme(...)' as it is null.\n"
+                        },
+                        {
+                          "text": "Page error: Cannot destructure property 'isDarkMode' of 'useTheme(...)' as it is null.\n"
+                        },
+                        {
+                          "text": "Console error: The above error occurred in the <ContentMarketplace> component:\n\n    at ContentMarketplace (http://localhost:5173/src/components/marketplace/ContentMarketplace.tsx:29:41)\n    at ProtectedRoute (http://localhost:5173/src/auth/ProtectedRoute.tsx:22:27)\n    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:4069:5)\n    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:4539:5)\n    at AppRoutes (http://localhost:5173/src/App.tsx:87:30)\n    at WebSocketProvider (http://localhost:5173/src/contexts/WebSocketContext.tsx:29:37)\n    at BlockchainProvider (http://localhost:5173/src/contexts/BlockchainContext.tsx:25:38)\n    at AuthProvider (http://localhost:5173/src/auth/AuthContext.tsx:21:32)\n    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:4482:15)\n    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=404825df:5228:5)\n    at App\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries.\n"
+                        },
+                        {
+                          "text": "Page error: Cannot destructure property 'isDarkMode' of 'useTheme(...)' as it is null.\n"
+                        },
+                        {
+                          "text": "Step 7: Testing marketplace purchase...\n"
+                        },
+                        {
+                          "text": "Buy button not found in marketplace\n"
+                        },
+                        {
+                          "text": "Step 8: Asserting item ownership...\n"
+                        },
+                        {
+                          "text": "Ownership indicator not found\n"
+                        },
+                        {
+                          "text": "E2E Test Summary:\n"
+                        },
+                        {
+                          "text": "- Initial Balance: \u001b[33m0\u001b[39m\n"
+                        },
+                        {
+                          "text": "- Updated Balance: \u001b[33m0\u001b[39m\n"
+                        },
+                        {
+                          "text": "- Balance Change: \u001b[33m0\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:41747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:15.152Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-92ac3360cdf11609bc6e",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 12,
+              "column": 3
+            },
+            {
+              "title": "API connectivity test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 9807,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Testing API connectivity...\n"
+                        },
+                        {
+                          "text": "Health check response: {\n  service: \u001b[32m'dujyo-blockchain'\u001b[39m,\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[33m1758744323\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Blockchain response: {\n  blocks: [\n    {\n      timestamp: \u001b[33m1758744175\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'0'\u001b[39m,\n      hash: \u001b[32m'1e91'\u001b[39m,\n      validator: \u001b[1mnull\u001b[22m\n    },\n    {\n      timestamp: \u001b[33m1758708259\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'0'\u001b[39m,\n      hash: \u001b[32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708884\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'\u001b[39m,\n      hash: \u001b[32m'2150'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708894\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2150'\u001b[39m,\n      hash: \u001b[32m'7f2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708904\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f2'\u001b[39m,\n      hash: \u001b[32m'7d2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708914\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708944\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708954\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d4'\u001b[39m,\n      hash: \u001b[32m'7d7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708964\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d7'\u001b[39m,\n      hash: \u001b[32m'7db'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708974\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7db'\u001b[39m,\n      hash: \u001b[32m'807'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708984\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7aa'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708994\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7aa'\u001b[39m,\n      hash: \u001b[32m'805'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709004\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'798'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709014\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'798'\u001b[39m,\n      hash: \u001b[32m'7a4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709024\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a4'\u001b[39m,\n      hash: \u001b[32m'7c9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709196\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'241a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709206\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'241a'\u001b[39m,\n      hash: \u001b[32m'816'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709216\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'816'\u001b[39m,\n      hash: \u001b[32m'79f'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709246\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7d4'\u001b[39m,\n      hash: \u001b[32m'2411'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709256\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2411'\u001b[39m,\n      hash: \u001b[32m'7eb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709266\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7eb'\u001b[39m,\n      hash: \u001b[32m'803'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709276\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'7a1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709286\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a1'\u001b[39m,\n      hash: \u001b[32m'7d0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709296\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d0'\u001b[39m,\n      hash: \u001b[32m'7d3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709306\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7ce'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709316\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ce'\u001b[39m,\n      hash: \u001b[32m'800'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709326\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'800'\u001b[39m,\n      hash: \u001b[32m'79a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709336\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'79a'\u001b[39m,\n      hash: \u001b[32m'2413'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709346\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2413'\u001b[39m,\n      hash: \u001b[32m'7ed'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709366\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'7a3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709386\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709396\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d5'\u001b[39m,\n      hash: \u001b[32m'7d9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709436\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d0'\u001b[39m,\n      hash: \u001b[32m'7cf'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709729\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7ff'\u001b[39m,\n      hash: \u001b[32m'5cc9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709739\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'5cc9'\u001b[39m,\n      hash: \u001b[32m'85d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709749\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'85d'\u001b[39m,\n      hash: \u001b[32m'7dc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709759\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dc'\u001b[39m,\n      hash: \u001b[32m'80a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709496\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7de'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709506\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7de'\u001b[39m,\n      hash: \u001b[32m'802'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709516\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709526\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'79d'\u001b[39m,\n      hash: \u001b[32m'7d8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709819\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7dd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709829\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dd'\u001b[39m,\n      hash: \u001b[32m'809'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709576\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'7a6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709879\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'809'\u001b[39m,\n      hash: \u001b[32m'7b0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709899\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7e5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709909\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7e5'\u001b[39m,\n      hash: \u001b[32m'7da'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709646\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'7a2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709929\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'806'\u001b[39m,\n      hash: \u001b[32m'7a9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709666\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709949\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dd'\u001b[39m,\n      hash: \u001b[32m'80c'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709686\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7db'\u001b[39m,\n      hash: \u001b[32m'808'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709696\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'808'\u001b[39m,\n      hash: \u001b[32m'7ac'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709706\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ac'\u001b[39m,\n      hash: \u001b[32m'7ff'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709989\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7df'\u001b[39m,\n      hash: \u001b[32m'812'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709999\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'812'\u001b[39m,\n      hash: \u001b[32m'7ad'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710009\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ad'\u001b[39m,\n      hash: \u001b[32m'7f4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710019\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f4'\u001b[39m,\n      hash: \u001b[32m'7ca'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710029\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710039\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f5'\u001b[39m,\n      hash: \u001b[32m'7cd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710049\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7fa'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710059\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fa'\u001b[39m,\n      hash: \u001b[32m'7fb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710069\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fb'\u001b[39m,\n      hash: \u001b[32m'7fd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710209\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7c8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710309\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d1'\u001b[39m,\n      hash: \u001b[32m'7c7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710629\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fd'\u001b[39m,\n      hash: \u001b[32m'801'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710719\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7fe'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710909\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7a0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710939\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fe'\u001b[39m,\n      hash: \u001b[32m'806'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711020\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7c0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711030\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c0'\u001b[39m,\n      hash: \u001b[32m'7bd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711040\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7bd'\u001b[39m,\n      hash: \u001b[32m'7f1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711050\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f1'\u001b[39m,\n      hash: \u001b[32m'7c3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711162\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c3'\u001b[39m,\n      hash: \u001b[32m'7c6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711182\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711252\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c9'\u001b[39m,\n      hash: \u001b[32m'7cc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711262\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cc'\u001b[39m,\n      hash: \u001b[32m'7f7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711282\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cf'\u001b[39m,\n      hash: \u001b[32m'7fc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711332\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711362\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7f9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711502\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'791'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711512\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'791'\u001b[39m,\n      hash: \u001b[32m'799'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711532\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a2'\u001b[39m,\n      hash: \u001b[32m'7c4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711912\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'799'\u001b[39m,\n      hash: \u001b[32m'7a5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758712102\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7c1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758712952\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'79c'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714002\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'806'\u001b[39m,\n      hash: \u001b[32m'793'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714123\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c8'\u001b[39m,\n      hash: \u001b[32m'7cb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714213\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a1'\u001b[39m,\n      hash: \u001b[32m'7c2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714243\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cb'\u001b[39m,\n      hash: \u001b[32m'7f8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714293\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ff'\u001b[39m,\n      hash: \u001b[32m'804'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714303\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'804'\u001b[39m,\n      hash: \u001b[32m'795'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714563\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79b'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714683\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79e'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758715003\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'796'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758715876\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7a8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716436\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'799'\u001b[39m,\n      hash: \u001b[32m'7ab'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716898\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'809'\u001b[39m,\n      hash: \u001b[32m'7af'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716998\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7af'\u001b[39m,\n      hash: \u001b[32m'80d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758717768\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7de'\u001b[39m,\n      hash: \u001b[32m'80b'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    ... 23 more items\n  ],\n  total_blocks: \u001b[33m123\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:41746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:15.067Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-b05b32fd049158642a3a",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 249,
+              "column": 3
+            },
+            {
+              "title": "DEX functionality test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 9798,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Testing DEX functionality...\n"
+                        },
+                        {
+                          "text": "Pool data: {\n  success: \u001b[33mtrue\u001b[39m,\n  pool: {\n    created_at: \u001b[33m1758744175\u001b[39m,\n    fee_rate: \u001b[33m0.003\u001b[39m,\n    id: \u001b[32m'DUJYO_USDC'\u001b[39m,\n    reserve_a: \u001b[33m1000150\u001b[39m,\n    reserve_b: \u001b[33m999950.3099390991\u001b[39m,\n    token_a: \u001b[32m'DUJYO'\u001b[39m,\n    token_b: \u001b[32m'USDC'\u001b[39m,\n    total_supply: \u001b[33m1000049.9950005\u001b[39m\n  },\n  message: \u001b[32m'Pool retrieved successfully'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Login response: {\n  success: \u001b[33mtrue\u001b[39m,\n  token: \u001b[32m'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYVzExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLCJleHAiOjE3NTg4MzA3MjQsImlhdCI6MTc1ODc0NDMyNCwiaXNzIjoieHdhdmUtYmxvY2tjaGFpbiJ9.rle5n1fAoZxNxiETwWwhubU323OKY9pSYLKr-dh3h84'\u001b[39m,\n  message: \u001b[32m'Login successful'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Swap response status: \u001b[33m200\u001b[39m\n"
+                        },
+                        {
+                          "text": "Swap data: {\n  success: \u001b[33mtrue\u001b[39m,\n  message: \u001b[32m'Swap executed successfully'\u001b[39m,\n  tx_hash: \u001b[32m'swap_1758744324609'\u001b[39m,\n  amount_received: \u001b[33m9.967910023526356\u001b[39m,\n  price_impact: \u001b[33m0.0000029995200809300344\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:41745) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:14.837Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-4c15be8b62404358a590",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 270,
+              "column": 3
+            },
+            {
+              "title": "Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "timedOut",
+                      "duration": 31090,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/Users/yare/dujyo/dujyo-frontend/tests/dujyo-e2e.spec.ts",
+                            "column": 16,
+                            "line": 61
+                          },
+                          "message": "Error: page.screenshot: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\n\n  59 |     \n  60 |     // Take screenshot after login attempt\n> 61 |     await page.screenshot({ path: 'test-results/01-login-attempt.png' });\n     |                ^\n  62 |     \n  63 |     // Step 2: Create/Connect Wallet\n  64 |     console.log('Step 2: Testing wallet creation/connection...');\n    at /Users/yare/dujyo/dujyo-frontend/tests/dujyo-e2e.spec.ts:61:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Step 1: Testing login...\n"
+                        },
+                        {
+                          "text": "Console error: [JavaScript Error: \"Firefox can’t establish a connection to the server at ws://localhost:8083/ws.\" {file: \"http://localhost:5173/src/contexts/WebSocketContext.tsx\" line: 43}]\n"
+                        },
+                        {
+                          "text": "Console error: [JavaScript Error: \"The connection to ws://localhost:8083/ws was interrupted while the page was loading.\" {file: \"http://localhost:5173/src/contexts/WebSocketContext.tsx\" line: 43}]\n"
+                        },
+                        {
+                          "text": "Page content length: \u001b[33m53113\u001b[39m\n"
+                        },
+                        {
+                          "text": "Page title: Dujyo - Revolutionizing Entertainment\n"
+                        },
+                        {
+                          "text": "Page URL: http://localhost:5173/login\n"
+                        },
+                        {
+                          "text": "Page content preview: <!DOCTYPE html><html lang=\"en\"><head>\n    <script type=\"module\">\nimport RefreshRuntime from \"/@react-refresh\"\nRefreshRuntime.injectIntoGlobalHook(window)\nwindow.$RefreshReg$ = () => {}\nwindow.$RefreshSig$ = () => (type) => type\nwindow.__vite_plugin_react_preamble_installed__ = true\n</script>\n\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"UTF-8\">\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\">\n    <meta name=\"viewport\" content=\"width=device-width, initial\n"
+                        },
+                        {
+                          "text": "Console error: Error al iniciar sesión:  Error\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:41748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:14.829Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yare/dujyo/dujyo-frontend/test-results/dujyo-e2e-Dujyo-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yare/dujyo/dujyo-frontend/test-results/dujyo-e2e-Dujyo-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yare/dujyo/dujyo-frontend/test-results/dujyo-e2e-Dujyo-E2E-Tests--a59ea-rketplace-buy-→-assert-sold-firefox/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-504ad772762ca02eef18",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 12,
+              "column": 3
+            },
+            {
+              "title": "API connectivity test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 23238,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Testing API connectivity...\n"
+                        },
+                        {
+                          "text": "Health check response: {\n  service: \u001b[32m'dujyo-blockchain'\u001b[39m,\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[33m1758744362\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Blockchain response: {\n  blocks: [\n    {\n      timestamp: \u001b[33m1758744175\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'0'\u001b[39m,\n      hash: \u001b[32m'1e91'\u001b[39m,\n      validator: \u001b[1mnull\u001b[22m\n    },\n    {\n      timestamp: \u001b[33m1758708259\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'0'\u001b[39m,\n      hash: \u001b[32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708884\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'\u001b[39m,\n      hash: \u001b[32m'2150'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708894\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2150'\u001b[39m,\n      hash: \u001b[32m'7f2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708904\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f2'\u001b[39m,\n      hash: \u001b[32m'7d2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708914\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708944\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708954\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d4'\u001b[39m,\n      hash: \u001b[32m'7d7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708964\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d7'\u001b[39m,\n      hash: \u001b[32m'7db'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708974\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7db'\u001b[39m,\n      hash: \u001b[32m'807'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708984\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7aa'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708994\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7aa'\u001b[39m,\n      hash: \u001b[32m'805'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709004\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'798'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709014\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'798'\u001b[39m,\n      hash: \u001b[32m'7a4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709024\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a4'\u001b[39m,\n      hash: \u001b[32m'7c9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709196\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'241a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709206\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'241a'\u001b[39m,\n      hash: \u001b[32m'816'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709216\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'816'\u001b[39m,\n      hash: \u001b[32m'79f'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709246\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7d4'\u001b[39m,\n      hash: \u001b[32m'2411'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709256\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2411'\u001b[39m,\n      hash: \u001b[32m'7eb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709266\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7eb'\u001b[39m,\n      hash: \u001b[32m'803'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709276\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'7a1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709286\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a1'\u001b[39m,\n      hash: \u001b[32m'7d0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709296\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d0'\u001b[39m,\n      hash: \u001b[32m'7d3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709306\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7ce'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709316\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ce'\u001b[39m,\n      hash: \u001b[32m'800'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709326\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'800'\u001b[39m,\n      hash: \u001b[32m'79a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709336\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'79a'\u001b[39m,\n      hash: \u001b[32m'2413'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709346\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2413'\u001b[39m,\n      hash: \u001b[32m'7ed'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709366\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'7a3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709386\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709396\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d5'\u001b[39m,\n      hash: \u001b[32m'7d9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709436\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d0'\u001b[39m,\n      hash: \u001b[32m'7cf'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709729\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7ff'\u001b[39m,\n      hash: \u001b[32m'5cc9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709739\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'5cc9'\u001b[39m,\n      hash: \u001b[32m'85d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709749\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'85d'\u001b[39m,\n      hash: \u001b[32m'7dc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709759\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dc'\u001b[39m,\n      hash: \u001b[32m'80a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709496\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7de'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709506\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7de'\u001b[39m,\n      hash: \u001b[32m'802'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709516\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709526\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'79d'\u001b[39m,\n      hash: \u001b[32m'7d8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709819\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7dd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709829\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dd'\u001b[39m,\n      hash: \u001b[32m'809'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709576\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'7a6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709879\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'809'\u001b[39m,\n      hash: \u001b[32m'7b0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709899\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7e5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709909\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7e5'\u001b[39m,\n      hash: \u001b[32m'7da'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709646\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'7a2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709929\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'806'\u001b[39m,\n      hash: \u001b[32m'7a9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709666\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709949\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dd'\u001b[39m,\n      hash: \u001b[32m'80c'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709686\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7db'\u001b[39m,\n      hash: \u001b[32m'808'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709696\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'808'\u001b[39m,\n      hash: \u001b[32m'7ac'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709706\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ac'\u001b[39m,\n      hash: \u001b[32m'7ff'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709989\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7df'\u001b[39m,\n      hash: \u001b[32m'812'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709999\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'812'\u001b[39m,\n      hash: \u001b[32m'7ad'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710009\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ad'\u001b[39m,\n      hash: \u001b[32m'7f4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710019\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f4'\u001b[39m,\n      hash: \u001b[32m'7ca'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710029\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710039\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f5'\u001b[39m,\n      hash: \u001b[32m'7cd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710049\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7fa'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710059\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fa'\u001b[39m,\n      hash: \u001b[32m'7fb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710069\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fb'\u001b[39m,\n      hash: \u001b[32m'7fd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710209\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7c8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710309\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d1'\u001b[39m,\n      hash: \u001b[32m'7c7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710629\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fd'\u001b[39m,\n      hash: \u001b[32m'801'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710719\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7fe'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710909\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7a0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710939\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fe'\u001b[39m,\n      hash: \u001b[32m'806'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711020\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7c0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711030\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c0'\u001b[39m,\n      hash: \u001b[32m'7bd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711040\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7bd'\u001b[39m,\n      hash: \u001b[32m'7f1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711050\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f1'\u001b[39m,\n      hash: \u001b[32m'7c3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711162\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c3'\u001b[39m,\n      hash: \u001b[32m'7c6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711182\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711252\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c9'\u001b[39m,\n      hash: \u001b[32m'7cc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711262\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cc'\u001b[39m,\n      hash: \u001b[32m'7f7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711282\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cf'\u001b[39m,\n      hash: \u001b[32m'7fc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711332\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711362\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7f9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711502\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'791'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711512\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'791'\u001b[39m,\n      hash: \u001b[32m'799'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711532\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a2'\u001b[39m,\n      hash: \u001b[32m'7c4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711912\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'799'\u001b[39m,\n      hash: \u001b[32m'7a5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758712102\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7c1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758712952\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'79c'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714002\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'806'\u001b[39m,\n      hash: \u001b[32m'793'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714123\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c8'\u001b[39m,\n      hash: \u001b[32m'7cb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714213\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a1'\u001b[39m,\n      hash: \u001b[32m'7c2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714243\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cb'\u001b[39m,\n      hash: \u001b[32m'7f8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714293\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ff'\u001b[39m,\n      hash: \u001b[32m'804'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714303\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'804'\u001b[39m,\n      hash: \u001b[32m'795'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714563\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79b'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714683\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79e'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758715003\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'796'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758715876\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7a8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716436\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'799'\u001b[39m,\n      hash: \u001b[32m'7ab'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716898\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'809'\u001b[39m,\n      hash: \u001b[32m'7af'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716998\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7af'\u001b[39m,\n      hash: \u001b[32m'80d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758717768\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7de'\u001b[39m,\n      hash: \u001b[32m'80b'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    ... 27 more items\n  ],\n  total_blocks: \u001b[33m127\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:41935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:30.349Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-0c3a5179254dd758a392",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 249,
+              "column": 3
+            },
+            {
+              "title": "DEX functionality test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 24176,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Testing DEX functionality...\n"
+                        },
+                        {
+                          "text": "Pool data: {\n  success: \u001b[33mtrue\u001b[39m,\n  pool: {\n    created_at: \u001b[33m1758744175\u001b[39m,\n    fee_rate: \u001b[33m0.003\u001b[39m,\n    id: \u001b[32m'DUJYO_USDC'\u001b[39m,\n    reserve_a: \u001b[33m1000160\u001b[39m,\n    reserve_b: \u001b[33m999940.3420290756\u001b[39m,\n    token_a: \u001b[32m'DUJYO'\u001b[39m,\n    token_b: \u001b[32m'USDC'\u001b[39m,\n    total_supply: \u001b[33m1000049.9950005\u001b[39m\n  },\n  message: \u001b[32m'Pool retrieved successfully'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Login response: {\n  success: \u001b[33mtrue\u001b[39m,\n  token: \u001b[32m'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYVzExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLCJleHAiOjE3NTg4MzA3NjAsImlhdCI6MTc1ODc0NDM2MCwiaXNzIjoieHdhdmUtYmxvY2tjaGFpbiJ9.bAa6hE6guJ6XEC5YgB2-dNqZJfsbsUmogtzb_4gz_as'\u001b[39m,\n  message: \u001b[32m'Login successful'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Swap response status: \u001b[33m200\u001b[39m\n"
+                        },
+                        {
+                          "text": "Swap data: {\n  success: \u001b[33mtrue\u001b[39m,\n  message: \u001b[32m'Swap executed successfully'\u001b[39m,\n  tx_hash: \u001b[32m'swap_1758744360124'\u001b[39m,\n  amount_received: \u001b[33m9.967710998191523\u001b[39m,\n  price_impact: \u001b[33m0.000002999490090274788\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:41943) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:31.060Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-51a0595635aab9aba107",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 270,
+              "column": 3
+            },
+            {
+              "title": "Complete user flow: login → create wallet → transfer 500 → assert balance → marketplace buy → assert sold",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 29458,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Step 1: Testing login...\n"
+                        },
+                        {
+                          "text": "Page error: /localhost:8083/health due to access control checks.\n"
+                        },
+                        {
+                          "text": "Page error: /localhost:8083/health due to access control checks.\n"
+                        },
+                        {
+                          "text": "Page content length: \u001b[33m53113\u001b[39m\n"
+                        },
+                        {
+                          "text": "Page title: Dujyo - Revolutionizing Entertainment\n"
+                        },
+                        {
+                          "text": "Page URL: http://localhost:5173/login\n"
+                        },
+                        {
+                          "text": "Page content preview: <!DOCTYPE html><html lang=\"en\"><head>\n    <script type=\"module\">\nimport RefreshRuntime from \"/@react-refresh\"\nRefreshRuntime.injectIntoGlobalHook(window)\nwindow.$RefreshReg$ = () => {}\nwindow.$RefreshSig$ = () => (type) => type\nwindow.__vite_plugin_react_preamble_installed__ = true\n</script>\n\n    <script type=\"module\" src=\"/@vite/client\"></script>\n\n    <meta charset=\"UTF-8\">\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\">\n    <meta name=\"viewport\" content=\"width=device-width, initial\n"
+                        },
+                        {
+                          "text": "Console error: Error al iniciar sesión:  Error: Invalid credentials\n"
+                        },
+                        {
+                          "text": "Step 2: Testing wallet creation/connection...\n"
+                        },
+                        {
+                          "text": "Wallet dashboard not found, checking for wallet connection...\n"
+                        },
+                        {
+                          "text": "Step 3: Checking initial balance...\n"
+                        },
+                        {
+                          "text": "Step 4: Testing transfer of 500 tokens...\n"
+                        },
+                        {
+                          "text": "Transfer button not found, trying alternative approach...\n"
+                        },
+                        {
+                          "text": "Transaction form found\n"
+                        },
+                        {
+                          "text": "Step 5: Asserting balance after transfer...\n"
+                        },
+                        {
+                          "text": "Step 6: Testing marketplace navigation...\n"
+                        },
+                        {
+                          "text": "Page error: Right side of assignment cannot be destructured\n"
+                        },
+                        {
+                          "text": "Page error: Right side of assignment cannot be destructured\n"
+                        },
+                        {
+                          "text": "Console error: The above error occurred in the <ContentMarketplace> component:\n\nContentMarketplace@http://localhost:5173/src/components/marketplace/ContentMarketplace.tsx:29:54\nProtectedRoute@http://localhost:5173/src/auth/ProtectedRoute.tsx:23:5\nRenderedRoute@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:4073:32\nRoutes@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:4542:19\nAppRoutes@http://localhost:5173/src/App.tsx:87:42\nWebSocketProvider@http://localhost:5173/src/contexts/WebSocketContext.tsx:30:5\nBlockchainProvider@http://localhost:5173/src/contexts/BlockchainContext.tsx:26:5\nAuthProvider@http://localhost:5173/src/auth/AuthContext.tsx:22:5\nRouter@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:4485:28\nBrowserRouter@http://localhost:5173/node_modules/.vite/deps/react-router-dom.js:5230:11\nApp\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries.\n"
+                        },
+                        {
+                          "text": "Page error: Right side of assignment cannot be destructured\n"
+                        },
+                        {
+                          "text": "Step 7: Testing marketplace purchase...\n"
+                        },
+                        {
+                          "text": "Buy button not found in marketplace\n"
+                        },
+                        {
+                          "text": "Step 8: Asserting item ownership...\n"
+                        },
+                        {
+                          "text": "Ownership indicator not found\n"
+                        },
+                        {
+                          "text": "E2E Test Summary:\n"
+                        },
+                        {
+                          "text": "- Initial Balance: \u001b[33m0\u001b[39m\n"
+                        },
+                        {
+                          "text": "- Updated Balance: \u001b[33m0\u001b[39m\n"
+                        },
+                        {
+                          "text": "- Balance Change: \u001b[33m0\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:42089) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:05:45.266Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-f2d65b66f45f55dbd4d7",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 12,
+              "column": 3
+            },
+            {
+              "title": "API connectivity test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 11091,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Testing API connectivity...\n"
+                        },
+                        {
+                          "text": "Health check response: {\n  service: \u001b[32m'dujyo-blockchain'\u001b[39m,\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[33m1758744379\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Blockchain response: {\n  blocks: [\n    {\n      timestamp: \u001b[33m1758744175\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'0'\u001b[39m,\n      hash: \u001b[32m'1e91'\u001b[39m,\n      validator: \u001b[1mnull\u001b[22m\n    },\n    {\n      timestamp: \u001b[33m1758708259\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'0'\u001b[39m,\n      hash: \u001b[32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708884\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'genesis_hash_0000000000000000000000000000000000000000000000000000000000000000'\u001b[39m,\n      hash: \u001b[32m'2150'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708894\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2150'\u001b[39m,\n      hash: \u001b[32m'7f2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708904\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f2'\u001b[39m,\n      hash: \u001b[32m'7d2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708914\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708944\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708954\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d4'\u001b[39m,\n      hash: \u001b[32m'7d7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708964\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d7'\u001b[39m,\n      hash: \u001b[32m'7db'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708974\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7db'\u001b[39m,\n      hash: \u001b[32m'807'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708984\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7aa'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758708994\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7aa'\u001b[39m,\n      hash: \u001b[32m'805'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709004\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'798'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709014\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'798'\u001b[39m,\n      hash: \u001b[32m'7a4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709024\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a4'\u001b[39m,\n      hash: \u001b[32m'7c9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709196\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'241a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709206\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'241a'\u001b[39m,\n      hash: \u001b[32m'816'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709216\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'816'\u001b[39m,\n      hash: \u001b[32m'79f'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709246\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7d4'\u001b[39m,\n      hash: \u001b[32m'2411'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709256\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2411'\u001b[39m,\n      hash: \u001b[32m'7eb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709266\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7eb'\u001b[39m,\n      hash: \u001b[32m'803'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709276\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'7a1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709286\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a1'\u001b[39m,\n      hash: \u001b[32m'7d0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709296\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d0'\u001b[39m,\n      hash: \u001b[32m'7d3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709306\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7ce'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709316\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ce'\u001b[39m,\n      hash: \u001b[32m'800'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709326\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'800'\u001b[39m,\n      hash: \u001b[32m'79a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709336\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'79a'\u001b[39m,\n      hash: \u001b[32m'2413'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709346\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'2413'\u001b[39m,\n      hash: \u001b[32m'7ed'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709366\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'7a3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709386\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709396\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d5'\u001b[39m,\n      hash: \u001b[32m'7d9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709436\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d0'\u001b[39m,\n      hash: \u001b[32m'7cf'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709729\u001b[39m,\n      transactions: \u001b[36m[Array]\u001b[39m,\n      previous_hash: \u001b[32m'7ff'\u001b[39m,\n      hash: \u001b[32m'5cc9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709739\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'5cc9'\u001b[39m,\n      hash: \u001b[32m'85d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709749\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'85d'\u001b[39m,\n      hash: \u001b[32m'7dc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709759\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dc'\u001b[39m,\n      hash: \u001b[32m'80a'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709496\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7de'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709506\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7de'\u001b[39m,\n      hash: \u001b[32m'802'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709516\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709526\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'79d'\u001b[39m,\n      hash: \u001b[32m'7d8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709819\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7dd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709829\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dd'\u001b[39m,\n      hash: \u001b[32m'809'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709576\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'805'\u001b[39m,\n      hash: \u001b[32m'7a6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709879\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'809'\u001b[39m,\n      hash: \u001b[32m'7b0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709899\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d9'\u001b[39m,\n      hash: \u001b[32m'7e5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709909\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7e5'\u001b[39m,\n      hash: \u001b[32m'7da'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709646\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'7a2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709929\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'806'\u001b[39m,\n      hash: \u001b[32m'7a9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709666\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7d6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709949\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7dd'\u001b[39m,\n      hash: \u001b[32m'80c'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709686\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7db'\u001b[39m,\n      hash: \u001b[32m'808'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709696\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'808'\u001b[39m,\n      hash: \u001b[32m'7ac'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709706\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ac'\u001b[39m,\n      hash: \u001b[32m'7ff'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709989\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7df'\u001b[39m,\n      hash: \u001b[32m'812'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758709999\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'812'\u001b[39m,\n      hash: \u001b[32m'7ad'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710009\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ad'\u001b[39m,\n      hash: \u001b[32m'7f4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710019\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f4'\u001b[39m,\n      hash: \u001b[32m'7ca'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710029\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710039\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f5'\u001b[39m,\n      hash: \u001b[32m'7cd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710049\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7fa'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710059\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fa'\u001b[39m,\n      hash: \u001b[32m'7fb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710069\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fb'\u001b[39m,\n      hash: \u001b[32m'7fd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710209\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7c8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710309\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d1'\u001b[39m,\n      hash: \u001b[32m'7c7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710629\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fd'\u001b[39m,\n      hash: \u001b[32m'801'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710719\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7fe'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710909\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7a0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758710939\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7fe'\u001b[39m,\n      hash: \u001b[32m'806'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711020\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d3'\u001b[39m,\n      hash: \u001b[32m'7c0'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711030\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c0'\u001b[39m,\n      hash: \u001b[32m'7bd'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711040\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7bd'\u001b[39m,\n      hash: \u001b[32m'7f1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711050\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7f1'\u001b[39m,\n      hash: \u001b[32m'7c3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711162\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c3'\u001b[39m,\n      hash: \u001b[32m'7c6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711182\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f6'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711252\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c9'\u001b[39m,\n      hash: \u001b[32m'7cc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711262\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cc'\u001b[39m,\n      hash: \u001b[32m'7f7'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711282\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cf'\u001b[39m,\n      hash: \u001b[32m'7fc'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711332\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ca'\u001b[39m,\n      hash: \u001b[32m'7f3'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711362\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cd'\u001b[39m,\n      hash: \u001b[32m'7f9'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711502\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'791'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711512\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'791'\u001b[39m,\n      hash: \u001b[32m'799'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711532\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a2'\u001b[39m,\n      hash: \u001b[32m'7c4'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758711912\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'799'\u001b[39m,\n      hash: \u001b[32m'7a5'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758712102\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7d2'\u001b[39m,\n      hash: \u001b[32m'7c1'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758712952\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'803'\u001b[39m,\n      hash: \u001b[32m'79c'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714002\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'806'\u001b[39m,\n      hash: \u001b[32m'793'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714123\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7c8'\u001b[39m,\n      hash: \u001b[32m'7cb'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714213\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7a1'\u001b[39m,\n      hash: \u001b[32m'7c2'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714243\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7cb'\u001b[39m,\n      hash: \u001b[32m'7f8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714293\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7ff'\u001b[39m,\n      hash: \u001b[32m'804'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714303\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'804'\u001b[39m,\n      hash: \u001b[32m'795'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714563\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79b'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758714683\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'802'\u001b[39m,\n      hash: \u001b[32m'79e'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758715003\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'796'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758715876\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'807'\u001b[39m,\n      hash: \u001b[32m'7a8'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716436\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'799'\u001b[39m,\n      hash: \u001b[32m'7ab'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716898\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'809'\u001b[39m,\n      hash: \u001b[32m'7af'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758716998\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7af'\u001b[39m,\n      hash: \u001b[32m'80d'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    {\n      timestamp: \u001b[33m1758717768\u001b[39m,\n      transactions: [],\n      previous_hash: \u001b[32m'7de'\u001b[39m,\n      hash: \u001b[32m'80b'\u001b[39m,\n      validator: \u001b[32m'system'\u001b[39m\n    },\n    ... 29 more items\n  ],\n  total_blocks: \u001b[33m129\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:42433) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:06:12.068Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-ac65409b57847ac23734",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 249,
+              "column": 3
+            },
+            {
+              "title": "DEX functionality test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 11242,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Testing DEX functionality...\n"
+                        },
+                        {
+                          "text": "Pool data: {\n  success: \u001b[33mtrue\u001b[39m,\n  pool: {\n    created_at: \u001b[33m1758744175\u001b[39m,\n    fee_rate: \u001b[33m0.003\u001b[39m,\n    id: \u001b[32m'DUJYO_USDC'\u001b[39m,\n    reserve_a: \u001b[33m1000170\u001b[39m,\n    reserve_b: \u001b[33m999930.3743180775\u001b[39m,\n    token_a: \u001b[32m'DUJYO'\u001b[39m,\n    token_b: \u001b[32m'USDC'\u001b[39m,\n    total_supply: \u001b[33m1000049.9950005\u001b[39m\n  },\n  message: \u001b[32m'Pool retrieved successfully'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Login response: {\n  success: \u001b[33mtrue\u001b[39m,\n  token: \u001b[32m'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJYVzExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLCJleHAiOjE3NTg4MzA3ODIsImlhdCI6MTc1ODc0NDM4MiwiaXNzIjoieHdhdmUtYmxvY2tjaGFpbiJ9.xCJpKBiK19y7xYltG1dPt5t6d1AItHlG78c5Cv5-WJU'\u001b[39m,\n  message: \u001b[32m'Login successful'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Swap response status: \u001b[33m200\u001b[39m\n"
+                        },
+                        {
+                          "text": "Swap data: {\n  success: \u001b[33mtrue\u001b[39m,\n  message: \u001b[32m'Swap executed successfully'\u001b[39m,\n  tx_hash: \u001b[32m'swap_1758744382462'\u001b[39m,\n  amount_received: \u001b[33m9.967511978820404\u001b[39m,\n  price_impact: \u001b[33m0.0000029994600966272486\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:42447) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-09-24T20:06:14.327Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e3f014dbe01dd9179f3b-fab70b28df31fc2cff3b",
+              "file": "dujyo-e2e.spec.ts",
+              "line": 270,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-24T20:05:07.651Z",
+    "duration": 87998.58600000001,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

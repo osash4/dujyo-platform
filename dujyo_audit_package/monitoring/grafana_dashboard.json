@@ -1,0 +1,83 @@
+{
+  "dashboard": {
+    "title": "Dujyo Security & Performance Dashboard",
+    "panels": [
+      {
+        "title": "Nonce Collisions",
+        "targets": [
+          {
+            "expr": "rate(dujyo_nonce_collisions_total[5m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Withdrawal Failures",
+        "targets": [
+          {
+            "expr": "rate(dujyo_withdrawal_failures_total[5m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Integer Overflow Attempts",
+        "targets": [
+          {
+            "expr": "increase(dujyo_arithmetic_overflow_total[5m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Reentrancy Attempts",
+        "targets": [
+          {
+            "expr": "increase(dujyo_reentrancy_attempts_total[5m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Request Rate",
+        "targets": [
+          {
+            "expr": "rate(dujyo_http_requests_total[5m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Database Connection Pool",
+        "targets": [
+          {
+            "expr": "dujyo_database_pool_active_connections"
+          },
+          {
+            "expr": "dujyo_database_pool_max_connections"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Validator Registration Failures",
+        "targets": [
+          {
+            "expr": "rate(dujyo_validator_registration_failures_total[5m])"
+          }
+        ],
+        "type": "graph"
+      },
+      {
+        "title": "Consensus Failures",
+        "targets": [
+          {
+            "expr": "increase(dujyo_consensus_failures_total[5m])"
+          }
+        ],
+        "type": "graph"
+      }
+    ]
+  }
+}
+

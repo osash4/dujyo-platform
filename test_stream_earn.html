@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XWave Stream Earn Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test-section { background: #2a2a2a; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+        .log { background: #1e1e1e; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 XWave Stream Earn Test</h1>
+        
+        <div class="test-section">
+            <h2>Backend Health Check</h2>
+            <button onclick="testBackendHealth()">Test Backend</button>
+            <div id="backend-result" class="log"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Stream Earn Test</h2>
+            <button onclick="testStreamEarn()">Test Stream Earn</button>
+            <div id="stream-earn-result" class="log"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Balance Check</h2>
+            <button onclick="testBalance()">Check Balance</button>
+            <div id="balance-result" class="log"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Auto Stream Earn (Every 30 seconds)</h2>
+            <button onclick="startAutoStreamEarn()">Start Auto</button>
+            <button onclick="stopAutoStreamEarn()">Stop Auto</button>
+            <div id="auto-result" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let autoInterval = null;
+        let balance = 0;
+
+        async function testBackendHealth() {
+            const result = document.getElementById('backend-result');
+            result.textContent = 'Testing backend health...';
+            
+            try {
+                const response = await fetch('http://localhost:8083/health');
+                const data = await response.json();
+                result.textContent = `✅ Backend is healthy: ${JSON.stringify(data, null, 2)}`;
+                result.className = 'log success';
+            } catch (error) {
+                result.textContent = `❌ Backend error: ${error.message}`;
+                result.className = 'log error';
+            }
+        }
+
+        async function testStreamEarn() {
+            const result = document.getElementById('stream-earn-result');
+            result.textContent = 'Testing stream earn...';
+            
+            try {
+                const response = await fetch('http://localhost:8083/api/stream-earn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer test'
+                    },
+                    body: JSON.stringify({
+                        type_: 'listener',
+                        amount: 2,
+                        track_id: 'test_track',
+                        track_title: 'Test Track'
+                    })
+                });
+                
+                const data = await response.json();
+                balance = data.new_balance || balance;
+                result.textContent = `✅ Stream earn successful: ${JSON.stringify(data, null, 2)}`;
+                result.className = 'log success';
+            } catch (error) {
+                result.textContent = `❌ Stream earn error: ${error.message}`;
+                result.className = 'log error';
+            }
+        }
+
+        async function testBalance() {
+            const result = document.getElementById('balance-result');
+            result.textContent = 'Checking balance...';
+            
+            try {
+                const response = await fetch('http://localhost:8083/balance/test_user', {
+                    headers: {
+                        'Authorization': 'Bearer test'
+                    }
+                });
+                
+                const data = await response.json();
+                result.textContent = `✅ Balance: ${JSON.stringify(data, null, 2)}`;
+                result.className = 'log success';
+            } catch (error) {
+                result.textContent = `❌ Balance error: ${error.message}`;
+                result.className = 'log error';
+            }
+        }
+
+        function startAutoStreamEarn() {
+            if (autoInterval) {
+                clearInterval(autoInterval);
+            }
+            
+            const result = document.getElementById('auto-result');
+            result.textContent = 'Starting auto stream earn every 30 seconds...\n';
+            
+            autoInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('http://localhost:8083/api/stream-earn', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer test'
+                        },
+                        body: JSON.stringify({
+                            type_: 'listener',
+                            amount: 2,
+                            track_id: 'auto_test',
+                            track_title: 'Auto Test Track'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    const timestamp = new Date().toLocaleTimeString();
+                    result.textContent += `[${timestamp}] ✅ Earned ${data.tokens_earned} XWV, New Balance: ${data.new_balance}\n`;
+                    result.scrollTop = result.scrollHeight;
+                } catch (error) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    result.textContent += `[${timestamp}] ❌ Error: ${error.message}\n`;
+                    result.scrollTop = result.scrollHeight;
+                }
+            }, 30000);
+        }
+
+        function stopAutoStreamEarn() {
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+                const result = document.getElementById('auto-result');
+                result.textContent += 'Auto stream earn stopped.\n';
+            }
+        }
+
+        // Auto-start backend health check
+        window.onload = () => {
+            testBackendHealth();
+        };
+    </script>
+</body>
+</html>

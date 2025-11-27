@@ -1,0 +1,376 @@
+# 🆘 Troubleshooting para Artistas - XWave MVP
+
+**Versión:** MVP v0.1  
+**Última actualización:** Noviembre 2024
+
+---
+
+## 🔍 Problemas Comunes y Soluciones
+
+### 1. Error: "Artist is required"
+
+**Síntoma:**
+```
+{
+  "success": false,
+  "message": "Artist is required",
+  "content_id": "",
+  "file_url": null
+}
+```
+
+**Causa:**
+El campo `artist` es obligatorio en el form-data del upload pero no se está enviando.
+
+**Solución:**
+Agregar el campo `artist` al form-data con el mismo valor que `artist_name` del registro.
+
+**Ejemplo con cURL:**
+```bash
+curl -X POST http://localhost:8083/api/v1/upload/content \
+  -H "Authorization: Bearer {tu_token}" \
+  -F "file=@cancion.mp3" \
+  -F "title=Mi Canción" \
+  -F "artist=Tu Nombre Artístico" \  # ✅ REQUERIDO
+  -F "content_type=audio" \
+  -F "price=0.0"
+```
+
+**Ejemplo con Postman:**
+- Agregar campo `artist` (tipo: Text) con valor: tu `artist_name` del registro
+
+---
+
+### 2. Error: "JWT token invalid" o "Missing request extension"
+
+**Síntoma:**
+```
+{
+  "success": false,
+  "message": "Unauthorized" o "Missing request extension"
+}
+```
+
+**Causa:**
+- Token JWT expirado o mal formateado
+- Header de autorización incorrecto
+- Token no se está enviando correctamente
+
+**Solución:**
+1. Verificar que el token esté completo (no truncado)
+2. Asegurar que el header sea exactamente: `Authorization: Bearer {token}`
+3. Si el token expiró, hacer un nuevo registro o login
+
+**Ejemplo correcto:**
+```bash
+# ✅ CORRECTO
+curl -X POST http://localhost:8083/api/v1/upload/content \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  ...
+
+# ❌ INCORRECTO (sin "Bearer ")
+curl -X POST http://localhost:8083/api/v1/upload/content \
+  -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  ...
+```
+
+**Verificar token:**
+- El token debe comenzar con `eyJ` (base64)
+- Debe tener 3 partes separadas por puntos: `header.payload.signature`
+
+---
+
+### 3. Error: "Artist verification required"
+
+**Síntoma:**
+```
+{
+  "success": false,
+  "message": "Artist verification required. Please complete artist verification first.",
+  "content_id": "",
+  "file_url": null
+}
+```
+
+**Causa:**
+No se completó la verificación de artista antes de intentar subir contenido.
+
+**Solución:**
+1. Ejecutar el endpoint de verificación primero:
+```bash
+curl -X POST http://localhost:8083/api/v1/artist/request-verification \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+2. Verificar que la respuesta sea:
+```json
+{
+  "success": true,
+  "message": "Verification request submitted successfully. Auto-approved for MVP.",
+  "verified": true
+}
+```
+
+3. Esperar 1-2 segundos antes de intentar el upload
+
+**Nota:** En MVP, la verificación es automática, pero el endpoint debe ejecutarse al menos una vez.
+
+---
+
+### 4. Error: "File not found" o "Content not found"
+
+**Síntoma:**
+```
+HTTP/1.1 404 Not Found
+{
+  "message": "Content not found"
+}
+```
+
+**Causa:**
+- Content ID incorrecto
+- El upload no fue exitoso
+- El archivo no se guardó correctamente en el filesystem
+
+**Solución:**
+1. Verificar que el upload fue exitoso:
+   - Revisar la respuesta del upload
+   - Confirmar que recibiste un `content_id`
+   - Verificar que `success: true`
+
+2. Usar el `content_id` correcto de la respuesta del upload
+
+3. Verificar que el archivo existe:
+```bash
+# Ver archivos subidos
+ls -lh xwave-backend/uploads/audio/
+```
+
+4. Si el archivo no existe, intentar upload nuevamente
+
+---
+
+### 5. Error: "Database connection failed" o "Internal server error"
+
+**Síntoma:**
+```
+HTTP/1.1 500 Internal Server Error
+{
+  "message": "Internal server error"
+}
+```
+
+**Causa:**
+- Base de datos PostgreSQL no está corriendo
+- Variables de entorno incorrectas
+- Problema de conexión a la base de datos
+
+**Solución:**
+1. Verificar que PostgreSQL está corriendo:
+```bash
+# macOS
+brew services list | grep postgresql
+
+# Linux
+sudo systemctl status postgresql
+```
+
+2. Verificar variables de entorno en `.env`:
+```bash
+cat xwave-backend/.env
+# Debe tener:
+# DATABASE_URL=postgresql://usuario@localhost:5432/xwave_blockchain
+# JWT_SECRET=tu_secret_key
+```
+
+3. Verificar que la base de datos existe:
+```bash
+psql -U $(whoami) -d xwave_blockchain -c "SELECT 1;"
+```
+
+4. Revisar logs del servidor para más detalles
+
+---
+
+### 6. Error: "File too large"
+
+**Síntoma:**
+```
+{
+  "success": false,
+  "message": "File too large. Maximum size is 50MB. Your file is XX.XXMB.",
+  "content_id": "",
+  "file_url": null
+}
+```
+
+**Causa:**
+El archivo excede el límite de tamaño (50MB por defecto en MVP).
+
+**Solución:**
+1. Reducir el tamaño del archivo de audio
+2. Usar un formato más comprimido (MP3 en lugar de WAV)
+3. Comprimir el archivo antes de subirlo
+
+**Límites actuales:**
+- Tamaño máximo: 50MB
+- Formatos soportados: MP3, WAV, OGG, FLAC, M4A, AAC
+
+---
+
+### 7. Error: "Upload limit reached"
+
+**Síntoma:**
+```
+{
+  "success": false,
+  "message": "Upload limit reached. Maximum 10 uploads per day.",
+  "content_id": "",
+  "file_url": null
+}
+```
+
+**Causa:**
+Se alcanzó el límite de uploads por día (10 por defecto en MVP).
+
+**Solución:**
+1. Esperar hasta el día siguiente
+2. O contactar al administrador para resetear el límite
+
+**Nota:** Este es un límite de rate limiting para prevenir abuso. En producción, los límites pueden ser diferentes.
+
+---
+
+### 8. Error: "Title is required"
+
+**Síntoma:**
+```
+{
+  "success": false,
+  "message": "Title is required",
+  "content_id": "",
+  "file_url": null
+}
+```
+
+**Causa:**
+El campo `title` es obligatorio pero no se está enviando en el form-data.
+
+**Solución:**
+Agregar el campo `title` al form-data:
+```bash
+-F "title=Mi Canción"
+```
+
+**Campos requeridos en upload:**
+- ✅ `file`: Archivo de audio
+- ✅ `title`: Título de la canción
+- ✅ `artist`: Nombre del artista
+- ✅ `content_type`: "audio"
+- ⚠️ `description`: Opcional
+- ⚠️ `genre`: Opcional
+- ⚠️ `price`: Opcional (default: 0.0)
+
+---
+
+## 🔧 Comandos de Verificación
+
+### Verificar que el servidor está corriendo
+```bash
+curl http://localhost:8083/health
+```
+
+**Respuesta esperada:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-11-XX..."
+}
+```
+
+---
+
+### Verificar que el registro funciona
+```bash
+curl -X POST http://localhost:8083/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@test.com",
+    "password": "test123456",
+    "username": "testuser",
+    "artist_name": "Test Artist"
+  }'
+```
+
+---
+
+### Verificar que la verificación funciona
+```bash
+curl -X POST http://localhost:8083/api/v1/artist/request-verification \
+  -H "Authorization: Bearer {tu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+---
+
+### Verificar archivos subidos
+```bash
+# Listar archivos en uploads
+ls -lh xwave-backend/uploads/audio/
+
+# Ver tamaño total
+du -sh xwave-backend/uploads/
+```
+
+---
+
+### Verificar base de datos
+```bash
+# Conectar a PostgreSQL
+psql -U $(whoami) -d xwave_blockchain
+
+# Ver usuarios registrados
+SELECT user_id, email, username, artist_name FROM users;
+
+# Ver contenido subido
+SELECT content_id, title, artist_name, created_at FROM content;
+```
+
+---
+
+## 📞 Contacto de Soporte
+
+Si ninguno de estos pasos resuelve el problema:
+
+1. **Revisar logs del servidor:**
+   ```bash
+   # Ver logs en tiempo real
+   tail -f xwave-backend/server.log
+   ```
+
+2. **Contactar soporte:**
+   - WhatsApp/Telegram: `[AGREGAR_NUMERO]`
+   - Email: `[AGREGAR_EMAIL]`
+
+3. **Proporcionar información:**
+   - Descripción del error
+   - Endpoint que falló
+   - Headers y body del request
+   - Logs relevantes del servidor
+
+---
+
+## 📚 Recursos Adicionales
+
+- **Guía completa de onboarding:** `ONBOARDING_ARTISTS.md`
+- **Guía rápida para artistas:** `QUICK_START_ARTIST.md`
+- **Plan de acción:** `ONBOARDING_ACTION_PLAN.md`
+- **Testing técnico:** `TESTING_MVP.md`
+
+---
+
+**Última actualización:** Noviembre 2024
+

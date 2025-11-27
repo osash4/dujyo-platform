@@ -1,0 +1,101 @@
+{
+  "timestamp": "2025-09-27T23:19:02-04:00",
+  "test_results": [
+    {
+      "name": "Backend Compilation",
+      "status": "PASS",
+      "details": "All Rust code compiles without errors",
+      "duration": "0"
+    },
+    {
+      "name": "Frontend Build",
+      "status": "PASS",
+      "details": "React app builds without errors",
+      "duration": "0"
+    },
+    {
+      "name": "Database Connection",
+      "status": "PASS",
+      "details": "PostgreSQL connection established",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: blocks",
+      "status": "PASS",
+      "details": "Table exists and is queryable",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: transactions",
+      "status": "PASS",
+      "details": "Table exists and is queryable",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: balances",
+      "status": "PASS",
+      "details": "Table exists and is queryable",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: native_token_balances",
+      "status": "WARN",
+      "details": "Table may not exist",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: multisig_wallets",
+      "status": "WARN",
+      "details": "Table may not exist",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: vesting_schedules",
+      "status": "WARN",
+      "details": "Table may not exist",
+      "duration": "0"
+    },
+    {
+      "name": "Database Table: staking_contracts",
+      "status": "WARN",
+      "details": "Table may not exist",
+      "duration": "0"
+    },
+    {
+      "name": "Server Status",
+      "status": "PASS",
+      "details": "Server is running on port 8083",
+      "duration": "0"
+    },
+    {
+      "name": "Health Check",
+      "status": "PASS",
+      "details": "HTTP 200 returned as expected",
+      "duration": "1.0"
+    },
+    {
+      "name": "Blocks List",
+      "status": "PASS",
+      "details": "HTTP 200 returned as expected",
+      "duration": "0"
+    },
+    {
+      "name": "Pools List",
+      "status": "PASS",
+      "details": "HTTP 200 returned as expected",
+      "duration": "0"
+    },
+    {
+      "name": "Token Stats",
+      "status": "PASS",
+      "details": "HTTP 200 returned as expected",
+      "duration": "0"
+    },
+    {
+      "name": "Supply Distribution",
+      "status": "FAIL",
+      "details": "Expected HTTP 200, got 404",
+      "duration": "0"
+    }
+  ]
+}

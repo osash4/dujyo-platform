@@ -1,0 +1,86 @@
+name: Security Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run nightly security tests
+    - cron: '0 2 * * *'
+
+jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: xwave_test
+          POSTGRES_USER: xwave
+          POSTGRES_PASSWORD: xwave_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            xwave-backend/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      
+      - name: Run Database Migrations
+        run: |
+          export DATABASE_URL="postgresql://xwave:xwave_password@localhost:5432/xwave_test"
+          for migration in xwave-backend/migrations/*.sql; do
+            echo "Running migration: $migration"
+            psql "$DATABASE_URL" -f "$migration" || true
+          done
+      
+      - name: Run Security Tests
+        env:
+          TEST_DATABASE_URL: postgresql://xwave:xwave_password@localhost:5432/xwave_test
+        run: |
+          cd xwave-backend
+          cargo test --test critical_security_tests -- --ignored --nocapture
+      
+      - name: Run Cargo Audit
+        run: |
+          cargo install cargo-audit
+          cd xwave-backend
+          cargo audit
+      
+      - name: Run Clippy
+        run: |
+          cd xwave-backend
+          cargo clippy -- -D warnings
+      
+      - name: Check Formatting
+        run: |
+          cd xwave-backend
+          cargo fmt -- --check
+

@@ -1,0 +1,637 @@
+# 🎨 XWave - Onboarding de Artistas Testers MVP
+
+**Versión:** MVP v0.1  
+**Fecha:** Noviembre 2024  
+**Objetivo:** Onboardear 3-5 artistas testers para validar el flujo completo del MVP
+
+---
+
+## 📋 Índice
+
+1. [Checklist de Preparación](#checklist-de-preparación)
+2. [Plantillas de Comunicación](#plantillas-de-comunicación)
+3. [Flujo del Artista](#flujo-del-artista)
+4. [Sistema de Feedback](#sistema-de-feedback)
+5. [Troubleshooting](#troubleshooting)
+
+---
+
+## ✅ Checklist de Preparación
+
+### Pre-Onboarding
+
+- [ ] **3-5 artistas identificados**
+  - [ ] Nombres y contactos (WhatsApp/Email)
+  - [ ] Confirmar disponibilidad (15-20 min)
+  - [ ] Nivel de confianza técnica (básico/medio/avanzado)
+
+- [ ] **Sistema listo**
+  - [ ] Servidor backend corriendo (`http://localhost:8083` o URL de staging)
+  - [ ] Base de datos configurada y accesible
+  - [ ] Endpoints probados con `cargo run --bin test-mvp-flow`
+  - [ ] Directorio `./uploads/` con permisos correctos
+
+- [ ] **Comunicación preparada**
+  - [ ] Mensaje de invitación personalizado
+  - [ ] Instrucciones paso a paso
+  - [ ] Canal de feedback configurado (Google Forms/Telegram)
+
+- [ ] **Soporte listo**
+  - [ ] Tiempo reservado para asistencia en vivo
+  - [ ] Documentación de troubleshooting
+  - [ ] Acceso a logs del servidor
+
+### Durante el Onboarding
+
+- [ ] **Sesión con cada artista**
+  - [ ] Enviar invitación personalizada
+  - [ ] Guiar registro y verificación
+  - [ ] Asistir en upload de primera canción
+  - [ ] Verificar reproducción exitosa
+  - [ ] Recopilar feedback inmediato
+
+- [ ] **Monitoreo**
+  - [ ] Verificar logs del servidor
+  - [ ] Confirmar datos en base de datos
+  - [ ] Verificar archivos en `./uploads/`
+
+### Post-Onboarding
+
+- [ ] **Feedback consolidado**
+  - [ ] Revisar respuestas de formularios
+  - [ ] Identificar bugs críticos
+  - [ ] Priorizar mejoras urgentes
+  - [ ] Agradecer a artistas testers
+
+---
+
+## 📧 Plantillas de Comunicación
+
+### 1. Mensaje de Invitación (WhatsApp/Telegram)
+
+```
+¡Hola [NOMBRE]! 👋
+
+Te escribo porque estamos lanzando XWave, una plataforma streaming Web3 para artistas, y queremos que seas uno de nuestros primeros testers.
+
+🎯 ¿Qué es XWave?
+Es una plataforma donde los artistas pueden subir su música y ganar tokens mientras los fans escuchan. Estamos en fase MVP (versión temprana) y buscamos feedback real de artistas como tú.
+
+⏱️ ¿Cuánto tiempo toma?
+Solo 15-20 minutos. Te guiaré paso a paso:
+1. Registro rápido
+2. Verificación como artista
+3. Subir una canción de prueba
+4. Reproducir tu música
+5. Darnos tu feedback
+
+🎁 ¿Qué obtienes?
+- Acceso temprano a la plataforma
+- Tu opinión será clave para mejorar XWave
+- Posibilidad de ser artista fundador
+
+¿Te animas? Podemos hacerlo ahora o agendar un momento que te funcione mejor.
+
+¡Gracias por tu apoyo! 🙏
+```
+
+### 2. Email de Invitación (Más formal)
+
+```
+Asunto: Invitación a XWave MVP - Sé uno de nuestros primeros artistas testers
+
+Hola [NOMBRE],
+
+Espero que estés bien. Te escribo para invitarte a ser uno de los primeros artistas en probar XWave, nuestra nueva plataforma streaming Web3.
+
+¿QUÉ ES XWAVE?
+XWave es una plataforma donde los artistas pueden:
+- Subir su música de forma sencilla
+- Ganar tokens mientras los fans escuchan
+- Mantener control total sobre su contenido
+
+Estamos en fase MVP (versión temprana) y buscamos feedback real de artistas como tú para mejorar antes del lanzamiento público.
+
+¿QUÉ NECESITAMOS DE TI?
+Solo 15-20 minutos de tu tiempo para:
+1. Registrarte en la plataforma
+2. Verificarte como artista
+3. Subir una canción de prueba
+4. Probar la reproducción
+5. Compartir tu feedback honesto
+
+¿QUÉ OBTIENES?
+- Acceso temprano a la plataforma
+- Tu opinión será clave para el desarrollo
+- Posibilidad de ser artista fundador
+
+¿CUÁNDO?
+Podemos agendar un momento que te funcione. Estaré disponible para guiarte paso a paso.
+
+Si estás interesado, responde a este email y coordinamos.
+
+¡Gracias por tu apoyo!
+
+[TU NOMBRE]
+Fundador - XWave
+```
+
+### 3. Mensaje de Inicio de Sesión
+
+```
+¡Perfecto! Vamos a empezar. 🚀
+
+PASO 1: REGISTRO
+1. Abre tu navegador y ve a: [URL_FRONTEND] o usa la API directamente
+2. Haz clic en "Registrarse" o "Sign Up"
+3. Completa:
+   - Email: [tu email]
+   - Password: [elige una contraseña]
+   - Username: [tu nombre de usuario]
+   - Artist Name: [tu nombre artístico]
+
+Si prefieres, puedo hacer el registro por ti con tus datos. ¿Qué prefieres?
+
+Una vez registrado, te daré el siguiente paso. 👇
+```
+
+### 4. Mensaje de Confirmación Post-Registro
+
+```
+¡Excelente! Ya estás registrado. ✅
+
+Ahora vamos con el PASO 2: VERIFICACIÓN COMO ARTISTA
+
+Esto es automático en MVP, así que solo necesitas hacer una solicitud:
+- Endpoint: POST /api/v1/artist/request-verification
+- Se aprueba automáticamente
+
+¿Listo para continuar? Te guío en el siguiente paso.
+```
+
+### 5. Mensaje de Upload
+
+```
+¡Perfecto! Ya eres artista verificado. 🎨
+
+PASO 3: SUBIR TU PRIMERA CANCIÓN
+
+Necesitas:
+- Un archivo de audio (MP3, WAV, etc.)
+- Título de la canción
+- Descripción (opcional)
+- Género (opcional)
+
+Puedes usar una canción que ya tengas o una de prueba.
+
+¿Tienes un archivo listo? Te guío para subirlo.
+```
+
+### 6. Mensaje de Éxito y Feedback
+
+```
+¡Increíble! 🎉 Tu canción está subida y funcionando.
+
+PASO 4: REPRODUCCIÓN
+- Tu canción debería estar disponible en tu perfil
+- Puedes reproducirla desde el player
+
+PASO 5: FEEDBACK
+Ahora necesitamos tu opinión honesta:
+
+🔗 [LINK_GOOGLE_FORMS] o responde aquí mismo:
+
+1. ¿Qué funcionó bien?
+2. ¿Qué se rompió o no funcionó?
+3. ¿Qué falta o qué mejorarías?
+4. ¿Volverías a usar la plataforma?
+
+¡Gracias por tu tiempo y feedback! 🙏
+```
+
+---
+
+## 🎯 Flujo del Artista
+
+### Timeline: 15-20 minutos
+
+#### **PASO 1: Registro (2-3 min)**
+
+**Objetivo:** Crear cuenta de usuario
+
+**Instrucciones:**
+1. Ir a la URL de registro o usar API directamente
+2. Completar formulario:
+   - Email: `artista@ejemplo.com`
+   - Password: `password123` (mínimo 6 caracteres)
+   - Username: `artista_test`
+   - Artist Name: `Artista Test`
+
+**Endpoint:**
+```bash
+POST /register
+Content-Type: application/json
+
+{
+  "email": "artista@ejemplo.com",
+  "password": "password123",
+  "username": "artista_test",
+  "artist_name": "Artista Test"
+}
+```
+
+**Resultado esperado:**
+- Token JWT recibido
+- User ID generado
+- Usuario creado en base de datos
+
+**Verificación:**
+- ✅ Token recibido
+- ✅ Puedes usar el token para requests autenticados
+
+---
+
+#### **PASO 2: Verificación Artista (1-2 min)**
+
+**Objetivo:** Verificarse como artista (requisito para subir música)
+
+**Instrucciones:**
+1. Usar el token del registro
+2. Hacer request de verificación
+
+**Endpoint:**
+```bash
+POST /api/v1/artist/request-verification
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{}
+```
+
+**Resultado esperado:**
+- Verificación aprobada automáticamente (MVP)
+- Mensaje de confirmación
+
+**Verificación:**
+- ✅ `verified: true` en respuesta
+- ✅ Puedes proceder a upload
+
+---
+
+#### **PASO 3: Upload de Canción (5-7 min)**
+
+**Objetivo:** Subir primera canción de prueba
+
+**Instrucciones:**
+1. Preparar archivo de audio (MP3, WAV, etc.)
+2. Completar metadata:
+   - Título: "Mi Primera Canción"
+   - Descripción: "Canción de prueba para XWave MVP"
+   - Género: "Pop" (o el que prefieras)
+   - Tipo: "audio"
+   - Precio: 0.0 (gratis para prueba)
+
+**Endpoint:**
+```bash
+POST /api/v1/upload/content
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+
+file: [archivo_audio.mp3]
+title: "Mi Primera Canción"
+description: "Canción de prueba"
+genre: "Pop"
+content_type: "audio"
+price: "0.0"
+```
+
+**Resultado esperado:**
+- Content ID generado
+- Archivo guardado en `./uploads/audio/`
+- Metadata guardada en base de datos
+- File URL generado
+
+**Verificación:**
+- ✅ Content ID recibido
+- ✅ Archivo visible en filesystem
+- ✅ Metadata en base de datos
+
+---
+
+#### **PASO 4: Listar Contenido (2-3 min)**
+
+**Objetivo:** Ver tu contenido subido
+
+**Instrucciones:**
+1. Obtener tu `artist_id` (wallet_address del registro)
+2. Hacer request de listado
+
+**Endpoint:**
+```bash
+GET /api/v1/content/artist/{artist_id}
+Authorization: Bearer {token}
+```
+
+**Resultado esperado:**
+- Lista con tu canción subida
+- Metadata completa visible
+
+**Verificación:**
+- ✅ Canción aparece en la lista
+- ✅ Metadata correcta (título, descripción, etc.)
+
+---
+
+#### **PASO 5: Reproducir Canción (2-3 min)**
+
+**Objetivo:** Reproducir el archivo de audio
+
+**Instrucciones:**
+1. Usar el `content_id` del upload
+2. Hacer request para servir el archivo
+
+**Endpoint:**
+```bash
+GET /api/v1/content/{content_id}/file
+Authorization: Bearer {token}
+```
+
+**Resultado esperado:**
+- Archivo de audio servido
+- Headers correctos (Content-Type: audio/mpeg)
+- Archivo reproducible
+
+**Verificación:**
+- ✅ Archivo descargable/reproducible
+- ✅ Headers correctos
+- ✅ Tamaño de archivo correcto
+
+---
+
+#### **PASO 6: Feedback (3-5 min)**
+
+**Objetivo:** Recopilar feedback del artista
+
+**Instrucciones:**
+1. Completar formulario de feedback
+2. O responder preguntas directamente
+
+**Preguntas clave:**
+1. ¿Qué funcionó bien?
+2. ¿Qué se rompió o no funcionó?
+3. ¿Qué falta o qué mejorarías?
+4. ¿Volverías a usar la plataforma?
+5. ¿Recomendarías XWave a otros artistas?
+
+---
+
+## 📝 Sistema de Feedback
+
+### Opción 1: Google Forms
+
+**Template de preguntas:**
+
+```
+TÍTULO: Feedback XWave MVP - Artista Tester
+
+SECCIÓN 1: Información Básica
+- Nombre artístico: [Texto corto]
+- Email: [Texto corto]
+- Fecha de prueba: [Fecha]
+
+SECCIÓN 2: Experiencia General
+- ¿Cómo calificarías tu experiencia general? [Escala 1-5]
+- ¿Completaste todo el flujo exitosamente? [Sí/No]
+- ¿Cuánto tiempo te tomó? [Texto corto]
+
+SECCIÓN 3: Qué Funcionó Bien
+- ¿Qué aspectos te gustaron? [Párrafo]
+- ¿Qué fue más fácil de usar? [Párrafo]
+
+SECCIÓN 4: Problemas Encontrados
+- ¿Encontraste algún error o bug? [Párrafo]
+- ¿Qué fue más difícil o confuso? [Párrafo]
+- ¿Algo no funcionó como esperabas? [Párrafo]
+
+SECCIÓN 5: Mejoras Sugeridas
+- ¿Qué funcionalidad falta? [Párrafo]
+- ¿Qué mejorarías? [Párrafo]
+- ¿Qué agregarías? [Párrafo]
+
+SECCIÓN 6: Recomendación
+- ¿Volverías a usar XWave? [Sí/No/Tal vez]
+- ¿Recomendarías XWave a otros artistas? [Sí/No/Tal vez]
+- Comentarios adicionales: [Párrafo]
+```
+
+**Link de ejemplo:** `https://forms.gle/[ID_DEL_FORMULARIO]`
+
+---
+
+### Opción 2: Telegram/WhatsApp
+
+**Preguntas rápidas:**
+
+```
+🎯 FEEDBACK XWAVE MVP
+
+1️⃣ ¿Qué funcionó bien?
+[Responde aquí]
+
+2️⃣ ¿Qué se rompió o no funcionó?
+[Responde aquí]
+
+3️⃣ ¿Qué falta o qué mejorarías?
+[Responde aquí]
+
+4️⃣ ¿Volverías a usar la plataforma?
+✅ Sí / ❌ No / 🤔 Tal vez
+
+5️⃣ ¿Recomendarías XWave a otros artistas?
+✅ Sí / ❌ No / 🤔 Tal vez
+
+6️⃣ Comentarios adicionales:
+[Responde aquí]
+
+¡Gracias por tu feedback! 🙏
+```
+
+---
+
+### Opción 3: Documento Compartido (Google Docs)
+
+**Template:**
+
+```
+FEEDBACK XWAVE MVP - [NOMBRE ARTISTA]
+
+Fecha: [FECHA]
+Email: [EMAIL]
+
+EXPERIENCIA GENERAL
+- Calificación: [1-5]
+- Tiempo total: [MINUTOS]
+- ¿Completó el flujo?: [SÍ/NO]
+
+QUÉ FUNCIONÓ BIEN
+[Texto libre]
+
+PROBLEMAS ENCONTRADOS
+[Texto libre]
+
+MEJORAS SUGERIDAS
+[Texto libre]
+
+RECOMENDACIÓN
+- ¿Volvería a usar?: [SÍ/NO/TAL VEZ]
+- ¿Recomendaría?: [SÍ/NO/TAL VEZ]
+
+COMENTARIOS ADICIONALES
+[Texto libre]
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Problemas Comunes
+
+#### **Error: "JWT token invalid"**
+
+**Causa:** Token expirado o mal formateado
+
+**Solución:**
+- Verificar que el token esté completo
+- Asegurar que el header sea: `Authorization: Bearer {token}`
+- Si expiró, hacer nuevo registro o login
+
+---
+
+#### **Error: "Artist verification required"**
+
+**Causa:** No se completó la verificación de artista
+
+**Solución:**
+- Ejecutar `POST /api/v1/artist/request-verification`
+- Verificar que `verified: true` en respuesta
+- Esperar 1-2 segundos antes de intentar upload
+
+---
+
+#### **Error: "File not found"**
+
+**Causa:** Archivo no se guardó correctamente
+
+**Solución:**
+- Verificar que el upload fue exitoso
+- Revisar logs del servidor
+- Verificar permisos en `./uploads/`
+- Intentar upload nuevamente
+
+---
+
+#### **Error: "Content not found"**
+
+**Causa:** Content ID incorrecto o contenido no existe
+
+**Solución:**
+- Verificar que el upload fue exitoso
+- Usar el `content_id` correcto de la respuesta
+- Listar contenido para verificar IDs disponibles
+
+---
+
+#### **Error: "Database connection failed"**
+
+**Causa:** Base de datos no accesible
+
+**Solución:**
+- Verificar que PostgreSQL esté corriendo
+- Revisar variables de entorno (DATABASE_URL)
+- Verificar logs del servidor
+
+---
+
+### Comandos de Verificación
+
+**Verificar servidor:**
+```bash
+curl http://localhost:8083/health
+```
+
+**Verificar base de datos:**
+```bash
+# Conectar a PostgreSQL y verificar tablas
+psql -U postgres -d xwave -c "SELECT COUNT(*) FROM users;"
+psql -U postgres -d xwave -c "SELECT COUNT(*) FROM content;"
+```
+
+**Verificar archivos:**
+```bash
+ls -lh ./uploads/audio/
+```
+
+**Verificar logs:**
+```bash
+# Ver logs del servidor en tiempo real
+tail -f server.log
+```
+
+---
+
+## 📊 Métricas de Éxito
+
+### KPIs del Onboarding
+
+- **Tasa de completación:** % de artistas que completan todo el flujo
+- **Tiempo promedio:** Tiempo total por artista
+- **Tasa de errores:** % de artistas que encuentran bugs
+- **Satisfacción:** Calificación promedio (1-5)
+- **Recomendación:** % que recomendaría XWave
+
+### Objetivos MVP
+
+- ✅ 100% de artistas completan registro
+- ✅ 80%+ completan upload exitoso
+- ✅ < 20% encuentran bugs críticos
+- ✅ 4+ de satisfacción promedio
+- ✅ 60%+ recomendarían XWave
+
+---
+
+## 🎁 Incentivos para Artistas Testers
+
+### Opciones de Incentivos
+
+1. **Acceso temprano:** Ser de los primeros en usar la plataforma
+2. **Badge de fundador:** Reconocimiento como artista fundador
+3. **Tokens de prueba:** Tokens de prueba para experimentar
+4. **Feedback directo:** Su opinión influye en el desarrollo
+5. **Mentión en lanzamiento:** Reconocimiento público (opcional)
+
+---
+
+## 📞 Contacto de Soporte
+
+**Durante el onboarding:**
+- WhatsApp/Telegram: [TU_NUMERO]
+- Email: [TU_EMAIL]
+- Horario: [HORARIO_DISPONIBLE]
+
+**Para emergencias:**
+- [CONTACTO_URGENTE]
+
+---
+
+## 📚 Recursos Adicionales
+
+- **Documentación técnica:** Ver `TESTING_MVP.md`
+- **Script de testing:** `cargo run --bin test-mvp-flow`
+- **Logs del servidor:** Revisar salida de consola
+- **Base de datos:** Ver `DATABASE_SETUP.md`
+
+---
+
+**Última actualización:** Noviembre 2024  
+**Versión:** 1.0
+

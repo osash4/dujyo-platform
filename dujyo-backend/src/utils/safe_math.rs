@@ -301,10 +301,10 @@ impl SafeMath {
         if value > u64_max_f64 {
             return Err(SafeMathError::Overflow);
         }
-        
+
         // Convert to u64
         let result = value as u64;
-        
+
         // ✅ FIX: Detect overflow when value conceptually exceeds u64::MAX
         // Due to f64 precision, u64::MAX as f64 + 1.0 == u64::MAX as f64,
         // but when converted to u64, it can produce unexpected results.

@@ -1,0 +1,532 @@
+.user-stats-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.claim-success-banner {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: bold;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.tx-hash {
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+.stats-header {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  font-weight: bold;
+}
+
+.profile-info h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.user-id {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.level-card {
+  text-align: center;
+}
+
+.level-badge-large {
+  background: linear-gradient(135deg, #ff9500 0%, #ff5f6d 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+}
+
+.xp-progress {
+  min-width: 300px;
+}
+
+.xp-bar-large {
+  height: 16px;
+  background: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.xp-fill-large {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+}
+
+.xp-text-large {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.rewards-section,
+.badges-section,
+.discoveries-section,
+.genres-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.rewards-section h2,
+.badges-section h2,
+.discoveries-section h2,
+.genres-section h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.reward-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.reward-card.pending {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+.reward-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.reward-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.reward-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.claimable-rewards {
+  background: rgba(46, 204, 113, 0.1);
+  border: 2px solid #2ecc71;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.claimable-rewards h3 {
+  color: #27ae60;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.claimable-reward-item {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.reward-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reward-type {
+  font-weight: bold;
+  color: #2c3e50;
+  text-transform: capitalize;
+}
+
+.reward-description {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.reward-expiry {
+  font-size: 0.8rem;
+  color: #e74c3c;
+}
+
+.reward-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2ecc71;
+}
+
+.claim-button {
+  width: 100%;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.claim-button:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3);
+}
+
+.claim-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.badge-card {
+  background: white;
+  border: 3px solid;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.badge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.badge-rarity {
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.soulbound-tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #e74c3c;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.badge-icon-large {
+  font-size: 4rem;
+  margin: 1rem 0;
+}
+
+.badge-name {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge-description {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.badge-earned {
+  color: #95a5a6;
+  font-size: 0.8rem;
+}
+
+.discoveries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.discovery-item {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.discovery-info h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.artist-name {
+  color: #7f8c8d;
+  margin-bottom: 0.25rem;
+}
+
+.discovery-date {
+  color: #95a5a6;
+  font-size: 0.85rem;
+}
+
+.discovery-growth {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.growth-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.growth-label {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  min-width: 80px;
+}
+
+.growth-value {
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.growth-multiplier {
+  font-weight: bold;
+  color: #2ecc71;
+}
+
+.discovery-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.reward-earned {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.genres-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.genre-item {
+  padding: 1rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+}
+
+.genre-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.genre-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.genre-accuracy {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.genre-bar {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.genre-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+}
+
+/* Loading & Error States */
+.loading-spinner,
+.error-message {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: white;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.retry-button {
+  background: white;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+  padding: 0.75rem 2rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #e74c3c;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stats-header {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .xp-progress {
+    min-width: 100%;
+  }
+
+  .discovery-item {
+    grid-template-columns: 1fr;
+  }
+
+  .discovery-rewards {
+    align-items: flex-start;
+  }
+}
+

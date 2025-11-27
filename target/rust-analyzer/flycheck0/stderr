@@ -1,0 +1,3 @@
+  53.842521322s  INFO prepare_target{force=false package_id=xwavve-backend v0.1.0 (/Volumes/DobleDHD 1/xwave/xwave-backend) target="integration_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for xwavve-backend v0.1.0 (/Volumes/DobleDHD 1/xwave/xwave-backend)/Check { test: true }/TargetInner { kind: "test", name: "integration_tests", benched: false, ..: with_path("/Volumes/DobleDHD 1/xwave/xwave-backend/tests/integration_tests.rs", Edition2021) }
+  53.843966365s  INFO prepare_target{force=false package_id=xwavve-backend v0.1.0 (/Volumes/DobleDHD 1/xwave/xwave-backend) target="integration_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(Stale)
+    Checking xwavve-backend v0.1.0 (/Volumes/DobleDHD 1/xwave/xwave-backend)

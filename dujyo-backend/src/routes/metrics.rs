@@ -71,7 +71,7 @@ pub async fn get_metrics_simple() -> Result<Json<MetricsResponse>, StatusCode> {
     
     // Redis metrics (without AppState, we can't check connection)
     let redis_queries = REDIS_QUERIES.load(Ordering::Relaxed);
-    let total_time = REDIS_QUERY_TIME_MS.load(Ordering::Relaxed);
+        let total_time = REDIS_QUERY_TIME_MS.load(Ordering::Relaxed);
     let avg_response_time_ms = if redis_queries > 0 {
         total_time as f64 / redis_queries as f64
     } else {

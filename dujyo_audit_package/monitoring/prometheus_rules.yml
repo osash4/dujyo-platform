@@ -1,0 +1,110 @@
+groups:
+  - name: xwave_security_alerts
+    interval: 30s
+    rules:
+      # Alert on nonce collisions (should never happen)
+      - alert: NonceCollisionDetected
+        expr: increase(xwave_nonce_collisions_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nonce collision detected"
+          description: "A nonce collision was detected. This should never happen with server-side generation."
+
+      # Alert on failed withdrawals (potential attack)
+      - alert: HighWithdrawalFailureRate
+        expr: rate(xwave_withdrawal_failures_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "High withdrawal failure rate"
+          description: "Withdrawal failure rate is {{ $value }} failures/second. Possible attack."
+
+      # Alert on validator registration failures
+      - alert: HighValidatorRegistrationFailures
+        expr: rate(xwave_validator_registration_failures_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: medium
+        annotations:
+          summary: "High validator registration failure rate"
+          description: "Validator registration failure rate is {{ $value }} failures/second."
+
+      # Alert on integer overflow attempts
+      - alert: IntegerOverflowDetected
+        expr: increase(xwave_arithmetic_overflow_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Integer overflow detected"
+          description: "An integer overflow was detected in arithmetic operations."
+
+      # Alert on reentrancy attempts
+      - alert: ReentrancyAttemptDetected
+        expr: increase(xwave_reentrancy_attempts_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Reentrancy attempt detected"
+          description: "A reentrancy attempt was detected in DEX operations."
+
+  - name: xwave_performance_alerts
+    interval: 30s
+    rules:
+      # Alert on high request rate (potential DDoS)
+      - alert: HighRequestRate
+        expr: rate(xwave_http_requests_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "High request rate detected"
+          description: "Request rate is {{ $value }} requests/second. Possible DDoS attack."
+
+      # Alert on database connection pool exhaustion
+      - alert: DatabasePoolExhausted
+        expr: xwave_database_pool_active_connections / xwave_database_pool_max_connections > 0.9
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Database connection pool is {{ $value | humanizePercentage }} full."
+
+      # Alert on slow database queries
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(xwave_database_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: medium
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile query time is {{ $value }}s."
+
+  - name: xwave_consensus_alerts
+    interval: 30s
+    rules:
+      # Alert on consensus failures
+      - alert: ConsensusFailure
+        expr: increase(xwave_consensus_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consensus failure detected"
+          description: "A consensus failure was detected. Block production may be affected."
+
+      # Alert on validator slashing
+      - alert: ValidatorSlashing
+        expr: increase(xwave_validator_slashings_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: high
+        annotations:
+          summary: "Validator slashing detected"
+          description: "A validator was slashed. Check validator behavior."
+

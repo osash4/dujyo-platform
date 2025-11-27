@@ -1,0 +1,11 @@
+Vulnerability,PoC Test File,Expected Result,Status,Patch File,PR/Commit SHA,Confidence,Assumptions
+VULN-005: Integer Overflow,pocs/vuln_005_overflow_poc.rs,Overflow detected and prevented,PARTIALLY FIXED,patches/vuln_005_overflow_fix.patch,TBD,HIGH,Assumes all operations use SafeMath (NOT VERIFIED)
+VULN-006: Reentrancy,pocs/vuln_006_reentrancy_poc.rs,Reentrancy prevented,PARTIALLY FIXED,patches/vuln_006_reentrancy_fix.patch,TBD,HIGH,Assumes locks acquired in consistent order (NOT VERIFIED)
+VULN-007: JWT Secret,pocs/vuln_007_jwt_secret_poc.rs,JWT secret validated,FIXED,patches/vuln_007_jwt_secret_fix.patch,TBD,HIGH,Assumes JWT_SECRET configured in production (NOT VERIFIED)
+VULN-008: Vesting Validation,pocs/vuln_008_vesting_validation_poc.rs,Input validation passes,PARTIALLY FIXED,patches/vuln_008_vesting_validation_fix.patch,TBD,MEDIUM,Assumes all inputs pass validation (NOT VERIFIED)
+VULN-009: unwrap() Panics,pocs/vuln_009_unwrap_panic_poc.rs,No panics occur,PARTIALLY FIXED,patches/vuln_009_unwrap_fix.patch,TBD,HIGH,Assumes all critical unwrap() protected (NOT VERIFIED)
+VULN-010: Rollback Errors,pocs/vuln_010_rollback_errors_poc.rs,Rollback errors handled,NOT FIXED,patches/vuln_010_rollback_errors_fix.patch,TBD,HIGH,NONE
+VULN-011: Fail-Open Rate Limiter,pocs/vuln_011_fail_open_rate_limiter_poc.rs,Fail-closed behavior,NOT FIXED,patches/vuln_011_fail_open_rate_limiter_fix.patch,TBD,HIGH,NONE
+VULN-012: Time Manipulation,pocs/vuln_012_time_manipulation_poc.rs,Time validation passes,NOT FIXED,patches/vuln_012_time_manipulation_fix.patch,TBD,MEDIUM,Assumes NTP synchronized (NOT VERIFIED)
+VULN-013: DB Pool Fail-Open,pocs/vuln_013_db_pool_fail_open_poc.rs,Fail-closed behavior,NOT FIXED,patches/vuln_013_db_pool_fail_open_fix.patch,TBD,MEDIUM,Assumes pool correctly configured (NOT VERIFIED)
+

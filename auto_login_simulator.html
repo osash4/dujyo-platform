@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XWave Auto Login Simulator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .simulator-section { background: #2a2a2a; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .log { background: #1e1e1e; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+        .playing { background: #22c55e; }
+        .paused { background: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 XWave Auto Login Simulator</h1>
+        
+        <div class="simulator-section">
+            <h2>Auto Login</h2>
+            <button onclick="autoLogin()">🔐 Auto Login</button>
+            <div id="login-status" class="log">Status: Not logged in</div>
+        </div>
+
+        <div class="simulator-section">
+            <h2>Music Player Simulator</h2>
+            <button id="playBtn" onclick="togglePlay()" disabled>▶️ Play Music</button>
+            <button onclick="stopMusic()">⏹️ Stop</button>
+            <div id="status" class="log">Status: Stopped (Login required)</div>
+        </div>
+
+        <div class="simulator-section">
+            <h2>Stream Earn Simulation</h2>
+            <button onclick="startStreamEarnSimulation()" disabled id="streamBtn">Start Stream Earn</button>
+            <button onclick="stopStreamEarnSimulation()">Stop Stream Earn</button>
+            <div id="stream-earn-log" class="log">Stream Earn: Not running</div>
+        </div>
+
+        <div class="simulator-section">
+            <h2>Earnings Display</h2>
+            <div id="earnings-display" class="log">
+                Artist Earnings: 0 XWV
+                Listener Rewards: 0 XWV
+                Total Earned: 0 XWV
+                Daily Progress: 0.0 / 120 min
+                Stream Time: 0:00
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let isLoggedIn = false;
+        let streamEarnInterval = null;
+        let artistInterval = null;
+        let listenerInterval = null;
+        let totalEarned = 0;
+        let artistEarnings = 0;
+        let listenerRewards = 0;
+        let streamTime = 0;
+        let jwtToken = null;
+
+        async function autoLogin() {
+            const loginStatus = document.getElementById('login-status');
+            loginStatus.textContent = 'Logging in...';
+            
+            try {
+                // Login with the working address and signature
+                const response = await fetch('http://localhost:8083/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        address: 'XW2912A395F2F37BF3980E09296A139227764DECED',
+                        signature: '1234567890123456789012345678901234567890123456789012345678901234'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    jwtToken = data.token;
+                    localStorage.setItem('jwt_token', jwtToken);
+                    localStorage.setItem('user', JSON.stringify({
+                        uid: 'XW2912A395F2F37BF3980E09296A139227764DECED',
+                        email: 'test@xwave.com',
+                        role: 'listener'
+                    }));
+                    
+                    isLoggedIn = true;
+                    loginStatus.textContent = `✅ Logged in successfully!\nToken: ${jwtToken.substring(0, 50)}...`;
+                    loginStatus.className = 'log success';
+                    
+                    // Enable buttons
+                    document.getElementById('playBtn').disabled = false;
+                    document.getElementById('streamBtn').disabled = false;
+                    
+                } else {
+                    loginStatus.textContent = `❌ Login failed: ${data.message}`;
+                    loginStatus.className = 'log error';
+                }
+            } catch (error) {
+                loginStatus.textContent = `❌ Login error: ${error.message}`;
+                loginStatus.className = 'log error';
+            }
+        }
+
+        function togglePlay() {
+            if (!isLoggedIn) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('status');
+            
+            if (isPlaying) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        }
+
+        function playMusic() {
+            isPlaying = true;
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('status');
+            
+            playBtn.textContent = '⏸️ Pause Music';
+            playBtn.className = 'playing';
+            status.textContent = 'Status: Playing - XWave Theme';
+            
+            // Start stream earn simulation
+            startStreamEarnSimulation();
+        }
+
+        function pauseMusic() {
+            isPlaying = false;
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('status');
+            
+            playBtn.textContent = '▶️ Play Music';
+            playBtn.className = 'paused';
+            status.textContent = 'Status: Paused';
+            
+            // Stop stream earn simulation
+            stopStreamEarnSimulation();
+        }
+
+        function stopMusic() {
+            isPlaying = false;
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('status');
+            
+            playBtn.textContent = '▶️ Play Music';
+            playBtn.className = 'paused';
+            status.textContent = 'Status: Stopped';
+            
+            // Stop stream earn simulation
+            stopStreamEarnSimulation();
+            
+            // Reset earnings
+            totalEarned = 0;
+            artistEarnings = 0;
+            listenerRewards = 0;
+            streamTime = 0;
+            updateEarningsDisplay();
+        }
+
+        function startStreamEarnSimulation() {
+            if (!isPlaying || !isLoggedIn) return;
+            
+            const log = document.getElementById('stream-earn-log');
+            log.textContent = 'Stream Earn: Running (REAL API calls)';
+            
+            // Artist tokens every 30 seconds
+            artistInterval = setInterval(async () => {
+                if (!isPlaying) return;
+                
+                try {
+                    console.log('💰 Artist earning tokens (REAL API CALL)');
+                    
+                    const response = await fetch('http://localhost:8083/api/stream-earn', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type_: 'artist',
+                            amount: 5,
+                            track_id: 'simulated_track',
+                            track_title: 'XWave Theme (Simulated)'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        console.error(`Stream-earn failed: ${response.status}`);
+                        return;
+                    }
+
+                    const result = await response.json();
+                    console.log('Artist tokens earned REAL:', result);
+                    
+                    artistEarnings += 5;
+                    totalEarned += 5;
+                    streamTime += 30;
+                    updateEarningsDisplay();
+                    
+                    // Show notification
+                    showNotification('Artist', 5, 'XWV');
+                    
+                } catch (error) {
+                    console.error('Error earning artist tokens:', error);
+                }
+            }, 30000); // Every 30 seconds
+
+            // Listener tokens every 60 seconds
+            listenerInterval = setInterval(async () => {
+                if (!isPlaying) return;
+                
+                try {
+                    console.log('💰 Listener earning tokens (REAL API CALL)');
+                    
+                    const response = await fetch('http://localhost:8083/api/stream-earn', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type_: 'listener',
+                            amount: 2,
+                            track_id: 'simulated_track',
+                            track_title: 'XWave Theme (Simulated)'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        console.error(`Stream-earn failed: ${response.status}`);
+                        return;
+                    }
+
+                    const result = await response.json();
+                    console.log('Listener tokens earned REAL:', result);
+                    
+                    listenerRewards += 2;
+                    totalEarned += 2;
+                    streamTime += 60;
+                    updateEarningsDisplay();
+                    
+                    // Show notification
+                    showNotification('Listener', 2, 'XWV');
+                    
+                } catch (error) {
+                    console.error('Error earning listener tokens:', error);
+                }
+            }, 60000); // Every 60 seconds
+        }
+
+        function stopStreamEarnSimulation() {
+            if (artistInterval) {
+                clearInterval(artistInterval);
+                artistInterval = null;
+            }
+            
+            if (listenerInterval) {
+                clearInterval(listenerInterval);
+                listenerInterval = null;
+            }
+            
+            const log = document.getElementById('stream-earn-log');
+            log.textContent = 'Stream Earn: Stopped';
+        }
+
+        function updateEarningsDisplay() {
+            const display = document.getElementById('earnings-display');
+            const dailyProgress = Math.min((streamTime / 60) / 120 * 100, 100);
+            const streamTimeFormatted = `${Math.floor(streamTime / 60)}:${(streamTime % 60).toString().padStart(2, '0')}`;
+            
+            display.textContent = `Artist Earnings: ${artistEarnings} XWV
+Listener Rewards: ${listenerRewards} XWV
+Total Earned: ${totalEarned} XWV
+Daily Progress: ${(streamTime / 60).toFixed(1)} / 120 min (${dailyProgress.toFixed(1)}%)
+Stream Time: ${streamTimeFormatted}`;
+        }
+
+        function showNotification(type, amount, token) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #22c55e, #16a34a);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-weight: bold;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = `🎉 ${type} earned ${amount} ${token}!`;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Auto-login on page load
+        window.onload = () => {
+            autoLogin();
+        };
+    </script>
+</body>
+</html>

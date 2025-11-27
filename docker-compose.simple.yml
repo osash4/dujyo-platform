@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  # ===========================================
+  # POSTGRESQL DATABASE
+  # ===========================================
+  postgres:
+    image: postgres:15
+    container_name: xwave_postgres
+    environment:
+      POSTGRES_DB: xwave_dev
+      POSTGRES_USER: xwave_user
+      POSTGRES_PASSWORD: xwave_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./xwave-backend/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xwave_user -d xwave_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================
+  # REDIS CACHE
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    container_name: xwave_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================
+  # XWAVE BACKEND
+  # ===========================================
+  backend:
+    build:
+      context: ./xwave-backend
+      dockerfile: Dockerfile
+    container_name: xwave_backend
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=xwave_dev
+      - POSTGRES_USER=xwave_user
+      - POSTGRES_PASSWORD=xwave_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=xwave_jwt_secret_key_development
+      - JWT_EXPIRATION=86400
+      - BLOCKCHAIN_NETWORK=testnet
+      - RATE_LIMIT_REQUESTS_PER_MINUTE=60
+      - MIN_STREAM_DURATION=30
+      - ENVIRONMENT=development
+      - DEBUG_MODE=true
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/var/log/xwave
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # XWAVE FRONTEND
+  # ===========================================
+  frontend:
+    build:
+      context: ./xwave-frontend
+      dockerfile: Dockerfile
+    container_name: xwave_frontend
+    environment:
+      - VITE_API_URL=http://localhost:8080
+      - VITE_BLOCKCHAIN_URL=http://localhost:9000
+      - VITE_ENVIRONMENT=development
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./logs:/var/log/xwave
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # XWAVE BLOCKCHAIN
+  # ===========================================
+  blockchain:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    container_name: xwave_blockchain
+    environment:
+      - BLOCKCHAIN_NETWORK=testnet
+      - BLOCKCHAIN_PORT=9000
+      - BLOCKCHAIN_RPC_URL=http://localhost:9000
+    ports:
+      - "9000:9000"
+    volumes:
+      - blockchain_data:/var/lib/xwave/blockchain
+      - ./logs:/var/log/xwave
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===========================================
+  # NGINX LOAD BALANCER
+  # ===========================================
+  nginx:
+    image: nginx:alpine
+    container_name: xwave_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs:/var/log/nginx
+    depends_on:
+      - frontend
+      - backend
+      - blockchain
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  redis_data:
+  blockchain_data:
+
+networks:
+  default:
+    name: xwave_network

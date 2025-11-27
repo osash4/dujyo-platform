@@ -1,0 +1,109 @@
+name: Security Tests
+
+on:
+  push:
+    branches: [ main, develop, audit/conservative-fixes ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: xwave_blockchain
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install dependencies
+        run: |
+          cargo install cargo-audit
+          cargo install cargo-fuzz
+
+      - name: Run cargo fmt
+        run: cargo fmt -- --check
+
+      - name: Run cargo clippy
+        run: cargo clippy -- -D warnings
+
+      - name: Run cargo test
+        run: cargo test --all-features
+
+      - name: Run cargo audit
+        run: cargo audit
+
+      - name: Run security tests (ignored)
+        env:
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/xwave_blockchain
+          JWT_SECRET: test_jwt_secret_minimum_32_characters_long_for_security
+        run: |
+          cargo test --test vuln_005_006_007_008_009_tests -- --ignored --nocapture
+          cargo test --test vuln_010_rollback_errors_poc -- --ignored --nocapture
+          cargo test --test vuln_011_fail_open_rate_limiter_poc -- --ignored --nocapture
+
+      - name: Check for panics
+        run: |
+          # Check for unwrap() in critical paths
+          if grep -r "\.unwrap()" xwave-backend/src/server.rs | grep -v "//.*unwrap"; then
+            echo "⚠️  WARNING: unwrap() found in critical paths"
+            exit 1
+          fi
+
+      - name: Check for fail-open behavior
+        run: |
+          # Check for fail-open patterns
+          if grep -r "fail.*open\|return next.run" xwave-backend/src/middleware/rate_limiter.rs; then
+            echo "⚠️  WARNING: Fail-open behavior detected"
+            exit 1
+          fi
+
+      - name: Check for ignored rollback errors
+        run: |
+          # Check for ignored rollback errors
+          if grep -r "let _ = .*rollback" xwave-backend/src; then
+            echo "⚠️  WARNING: Rollback errors ignored"
+            exit 1
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: target/test-results/
+

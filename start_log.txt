@@ -1,0 +1,9 @@
+🚀 Iniciando XWave con ngrok (Backend + Frontend)
+==================================================
+
+1️⃣ Iniciando servidor backend...
+✅ Backend iniciado (PID: 55735)
+   Logs: backend.log
+
+⏳ Esperando a que el backend esté listo...
+[0;31m❌ El backend no respondió después de 30 segundos[0m

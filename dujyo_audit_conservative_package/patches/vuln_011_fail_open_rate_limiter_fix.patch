@@ -1,0 +1,19 @@
+--- a/xwave-backend/src/middleware/rate_limiter.rs
++++ b/xwave-backend/src/middleware/rate_limiter.rs
+@@ -105,9 +105,15 @@
+         Err(e) => {
+             warn!("Rate limit check failed for IP {}: {}", ip, e);
+-            // Fail open - allow request if rate limiter fails
+-            return next.run(request).await;
++            // ✅ SECURITY FIX VULN-011: Fail-closed behavior instead of fail-open
++            // If rate limiter fails, reject request to prevent DoS
++            error!("❌ CRITICAL: Rate limiter failed for IP {}, rejecting request (fail-closed)", ip);
++            return Err(StatusCode::SERVICE_UNAVAILABLE);
+         }
+     }
+ }
++
++// ✅ SECURITY FIX VULN-011: Add circuit breaker for rate limiter
++// If rate limiter fails > 1% of requests, activate circuit breaker
++// Circuit breaker should reject all requests until rate limiter recovers
+
