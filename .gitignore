@@ -1,5 +1,125 @@
-node_modules
-node_modules
-node_modules
-node_modules
+# Rust
 target/
+**/*.rs.bk
+Cargo.lock
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.yarn/
+
+# Logs
+*.log
+logs/
+*.log.*
+audit_logs/
+backend.log
+frontend.log
+server.log
+*.pid
+
+# Archivos de música/video grandes (usar Git LFS si es necesario)
+*.wav
+*.mp3
+*.mp4
+*.avi
+*.mov
+*.webm
+*.ogg
+music/src/*.wav
+dujyo-frontend/public/music/*.wav
+dujyo-frontend/dist/music/*.wav
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+*.swp
+*.swo
+*~
+
+# Archivos del sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Archivos temporales
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+.env.backup.*
+*.env.bak
+
+# Archivos de build
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+
+# Archivos de test
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# Archivos de deployment
+*.pid
+*.lock
+backend_pid.txt
+frontend_pid.txt
+ngrok*.log
+ngrok*.pid
+*_ngrok_url.txt
+
+# Archivos grandes y duplicados
+archive/
+duplicates-*/
+
+# Submódulos (si no se usan)
+pof-demo/
+
+# Archivos de auditoría comprimidos
+*.zip
+xwave_audit_*.zip
+
+# Archivos de base de datos
+*.sql.gz
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de blockchain
+*.json.gz
+backup-*/
