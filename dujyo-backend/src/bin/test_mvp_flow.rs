@@ -4,7 +4,11 @@ use std::collections::HashMap;
 use std::fs;
 use std::time::Duration;
 
-const BASE_URL: &str = "http://localhost:8083";
+fn get_base_url() -> String {
+    let host = std::env::var("HOST").unwrap_or_else(|_| "localhost".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8083".to_string());
+    format!("http://{}:{}", host, port)
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct RegisterRequest {
@@ -90,6 +94,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .timeout(Duration::from_secs(30))
         .build()?;
 
+    let base_url = get_base_url();
+    println!("🔗 Using base URL: {}", base_url);
+
     // Generate unique test data
     let timestamp = chrono::Utc::now().timestamp();
     let test_email = format!("test_{}@dujyo.test", timestamp);
@@ -109,7 +116,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let register_resp = client
-        .post(&format!("{}/register", BASE_URL))
+        .post(&format!("{}/register", base_url))
         .json(&register_req)
         .send()
         .await?;
@@ -149,7 +156,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let verification_req = VerificationRequest {};
 
     let verification_resp = client
-        .post(&format!("{}/api/v1/artist/request-verification", BASE_URL))
+        .post(&format!("{}/api/v1/artist/request-verification", base_url))
         .header("Authorization", format!("Bearer {}", auth_token))
         .json(&verification_req)
         .send()
@@ -197,7 +204,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .part("file", file_part);
 
     let upload_resp = client
-        .post(&format!("{}/api/v1/upload/content", BASE_URL))
+        .post(&format!("{}/api/v1/upload/content", base_url))
         .header("Authorization", format!("Bearer {}", auth_token))
         .multipart(form)
         .send()
@@ -236,7 +243,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let artist_id = user_id.clone(); // This might not be correct, but let's try
 
     let list_resp = client
-        .get(&format!("{}/api/v1/content/artist/{}", BASE_URL, artist_id))
+        .get(&format!("{}/api/v1/content/artist/{}", base_url, artist_id))
         .header("Authorization", format!("Bearer {}", auth_token))
         .send()
         .await?;
@@ -268,7 +275,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n🎵 STEP 6: Serving content file...");
     
     let file_resp = client
-        .get(&format!("{}/api/v1/content/{}/file", BASE_URL, content_id))
+        .get(&format!("{}/api/v1/content/{}/file", base_url, content_id))
         .header("Authorization", format!("Bearer {}", auth_token))
         .send()
         .await?;

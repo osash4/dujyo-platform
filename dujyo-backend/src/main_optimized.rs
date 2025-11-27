@@ -343,10 +343,12 @@ pub async fn start_optimized_server() -> Result<(), Box<dyn std::error::Error>> 
     let app = create_optimized_router(app_state);
 
     // Start server
-    let port = std::env::var("PORT").unwrap_or_else(|_| "8083".to_string());
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
+    let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8083".to_string()).parse().unwrap_or(8083);
+    let bind_addr = format!("{}:{}", host, port);
+    let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
     
-    info!("🌐 Dujyo Optimized Backend Server listening on port {}", port);
+    info!("🌐 Dujyo Optimized Backend Server starting on http://{}", bind_addr);
     info!("📊 Database optimization features enabled:");
     info!("  • Redis cache layer");
     info!("  • Read replica support");
