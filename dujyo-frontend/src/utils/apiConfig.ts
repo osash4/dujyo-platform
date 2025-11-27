@@ -71,6 +71,25 @@ export function getApiBaseUrl(): string {
  * Get WebSocket URL
  */
 export function getWebSocketUrl(): string {
+  // ✅ PRIORITY 1: Use VITE_WS_URL if explicitly set
+  const envWsUrl = import.meta.env.VITE_WS_URL;
+  if (envWsUrl) {
+    const cleanUrl = envWsUrl.replace(/\/$/, '').replace(/\/ws$/, '');
+    // Ensure it uses wss:// for production
+    let wsUrl = cleanUrl;
+    if (wsUrl.startsWith('https://')) {
+      wsUrl = wsUrl.replace('https://', 'wss://');
+      console.warn('⚠️ VITE_WS_URL uses https://, converting to wss://');
+    }
+    if (!wsUrl.startsWith('wss://') && !wsUrl.startsWith('ws://')) {
+      wsUrl = (wsUrl.includes('localhost') ? 'ws://' : 'wss://') + wsUrl;
+    }
+    const finalUrl = wsUrl.endsWith('/ws') ? wsUrl : wsUrl + '/ws';
+    console.log('🌐 Using WebSocket URL from environment:', finalUrl);
+    return finalUrl;
+  }
+
+  // ✅ PRIORITY 2: Construct from API URL
   const apiUrl = getApiBaseUrl();
   
   // If using relative URLs (ngrok), construct WS URL from current location
