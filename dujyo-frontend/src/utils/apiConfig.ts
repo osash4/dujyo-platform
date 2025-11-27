@@ -10,10 +10,11 @@
  * - In production: uses environment variable or default
  */
 export function getApiBaseUrl(): string {
-  // Check if we have an environment variable set
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl && !envUrl.includes('ngrok')) {
-    return envUrl;
+  // ✅ PRIORITY 1: Check environment variable (for Vercel/production)
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    // Remove trailing slash if present
+    return envUrl.replace(/\/$/, '');
   }
 
   // Check if we're running in browser
@@ -23,21 +24,31 @@ export function getApiBaseUrl(): string {
 
   const currentHost = window.location.hostname;
 
-  // ✅ FIX: Always use localhost in development (ignore ngrok for now)
-  // If on localhost, use localhost:8083
+  // ✅ PRIORITY 2: Production domain (dujyo.com)
+  if (currentHost === 'dujyo.com' || currentHost === 'www.dujyo.com') {
+    // In production, should use env var, but fallback to relative if not set
+    console.warn('⚠️ VITE_API_BASE_URL not set in production. Using relative URLs.');
+    return '';
+  }
+
+  // ✅ PRIORITY 3: Development (localhost)
   if (currentHost === 'localhost' || currentHost === '127.0.0.1' || currentHost === '') {
     return 'http://localhost:8083';
   }
 
-  // If accessing via ngrok (ngrok.io, ngrok-free.app, ngrok-free.dev)
+  // ✅ PRIORITY 4: Vercel preview deployments
+  if (currentHost.includes('vercel.app')) {
+    // Use env var if available, otherwise relative
+    return envUrl || '';
+  }
+
+  // ✅ PRIORITY 5: ngrok (development tunneling)
   if (
     currentHost.includes('ngrok.io') ||
     currentHost.includes('ngrok-free.app') ||
     currentHost.includes('ngrok-free.dev')
   ) {
     // Use relative URLs - Vite proxy will handle /api, /login, /register routes
-    // This works because Vite dev server proxies these routes to backend
-    // When accessed via ngrok, requests go through Vite server which proxies to backend
     console.log('🌐 Detected ngrok access, using relative URLs (Vite proxy)');
     return '';
   }
