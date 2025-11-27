@@ -1,0 +1,25 @@
+
+> xwave-entertainment@0.0.0 dev
+> vite
+
+Re-optimizing dependencies because vite config has changed
+
+  VITE v5.4.20  ready in 26937 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+7:29:33 PM [vite] ✨ new dependencies optimized: vite-plugin-node-polyfills/shims/buffer, vite-plugin-node-polyfills/shims/global, vite-plugin-node-polyfills/shims/process
+7:29:33 PM [vite] ✨ optimized dependencies changed. reloading
+8:04:39 PM [vite] hmr update /src/App.tsx, /src/index.css
+8:05:12 PM [vite] hmr update /src/App.tsx, /src/index.css
+8:17:34 PM [vite] hmr update /src/index.css, /src/components/discovery/DiscoveryLeaderboard.tsx, /src/components/discovery/UserDiscoveryStats.tsx
+8:17:34 PM [vite] hmr update /src/index.css, /src/components/discovery/DiscoveryLeaderboard.tsx, /src/components/discovery/UserDiscoveryStats.tsx
+8:17:34 PM [vite] hmr update /src/components/discovery/DiscoveryLeaderboard.tsx, /src/index.css
+8:17:34 PM [vite] hmr update /src/components/discovery/DiscoveryLeaderboard.css
+8:17:34 PM [vite] hmr update /src/components/discovery/UserDiscoveryStats.css
+8:17:34 PM [vite] hmr update /src/components/discovery/UserDiscoveryStats.tsx, /src/index.css
+8:17:34 PM [vite] hmr update /src/App.tsx, /src/index.css
