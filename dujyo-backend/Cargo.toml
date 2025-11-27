@@ -1,0 +1,64 @@
+[package]
+name = "xwavve-backend"
+version = "0.1.0"
+authors = ["Yare"]
+edition = "2021"
+
+[dependencies]
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.130"
+
+# Async runtime
+tokio = { version = "1.43", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.12.12", features = ["json", "multipart"] }
+
+# Base64 encoding
+base64 = "0.22.1"
+
+# Utilities
+chrono = { version = "0.4.19", features = ["serde"] }
+thiserror = "2.0.9"
+lazy_static = "1.4"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+rand = "0.9.2"
+hex = "0.4"
+sha2 = "0.10"
+ed25519-dalek = "2.1"
+bcrypt = "0.15"
+regex = "1.10"
+mime = "0.3"
+phf = { version = "0.11", features = ["macros"] }
+
+# Axum HTTP server dependencies
+axum = { version = "0.7", features = ["ws", "multipart"] } # ✅ FIX: Added multipart feature
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# WebSocket support
+futures-util = "0.3"
+tokio-tungstenite = "0.24"
+
+# Database dependencies
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json", "migrate"] }
+dotenv = "0.15"
+
+# JWT authentication
+jsonwebtoken = "9.3"
+
+# Redis for rate limiting and caching
+bb8 = "0.8"
+bb8-redis = "0.15"
+redis = { version = "0.25", features = ["tokio-comp"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+
+[[bin]]
+name = "xwavve-backend"
+path = "src/main.rs"

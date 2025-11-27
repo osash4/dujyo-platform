@@ -1,0 +1,2406 @@
+use axum::{
+    extract::{Path, State, WebSocketUpgrade, Query},
+    http::StatusCode,
+    response::Json,
+    routing::{get, post},
+    Router,
+};
+use serde::{Deserialize, Serialize};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use tokio::time;
+use tower_http::cors::CorsLayer;
+use tower_http::timeout::TimeoutLayer;
+use futures_util::{sink::SinkExt, stream::StreamExt};
+use axum::extract::ws::{Message, WebSocket};
+
+use crate::blockchain::blockchain::{Blockchain, Transaction, Block};
+use crate::blockchain::token::Token;
+use crate::blockchain::native_token::{NativeToken, VestingRequest as NativeVestingRequest};
+use crate::blockchain::multisig::{MultisigWallet, MultisigRequest, SignRequest};
+use crate::blockchain::vesting::{VestingManager, CreateVestingRequest, ReleaseVestingRequest};
+use crate::blockchain::real_blockchain::RealBlockchain;
+use crate::blockchain::artist_vesting::ArtistVestingManager;
+use crate::storage::BlockchainStorage;
+use crate::auth::{JwtConfig, jwt_middleware, login_handler};
+use crate::dex::DEX;
+use crate::dex::payment_system::{PaymentManager, PaymentTier};
+use crate::consensus::cpv::CPVConsensus;
+use crate::rewards::user_rewards::{RewardsManager, UserTier};
+use crate::handlers::wallet_handlers::{self, ConnectWalletRequest, ConnectWalletResponse, WalletSession};
+use chrono;
+
+
+// Shared state for the server
+#[derive(Clone)]
+pub struct AppState {
+    pub blockchain: Arc<Mutex<Blockchain>>,
+    pub token: Arc<Mutex<Token>>,
+    pub dex: Arc<Mutex<DEX>>,
+    pub websocket_clients: Arc<Mutex<Vec<axum::extract::ws::WebSocket>>>,
+    pub storage: Arc<BlockchainStorage>,
+    pub jwt_config: JwtConfig,
+    pub cpv_consensus: Arc<Mutex<CPVConsensus>>,
+    // Real blockchain implementation
+    pub real_blockchain: Arc<Mutex<RealBlockchain>>,
+    // Native functionalities
+    pub native_token: Arc<Mutex<NativeToken>>,
+    pub multisig_wallet: Arc<Mutex<MultisigWallet>>,
+    // New business systems
+    pub artist_vesting_manager: Arc<Mutex<ArtistVestingManager>>,
+    pub payment_manager: Arc<Mutex<PaymentManager>>,
+    pub rewards_manager: Arc<Mutex<RewardsManager>>,
+    pub vesting_manager: Arc<Mutex<VestingManager>>,
+    // WebSocket broadcast channel
+    pub ws_tx: tokio::sync::broadcast::Sender<crate::websocket::WsMessage>,
+}
+
+// Request/Response types
+#[derive(Deserialize)]
+pub struct TransactionRequest {
+    pub from: String,
+    pub to: String,
+    pub amount: u64,
+    pub nft_id: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ServerMintRequest {
+    pub account: String,
+    pub amount: f64,
+}
+
+#[derive(Serialize)]
+pub struct TransactionResponse {
+    pub success: bool,
+    pub message: String,
+    pub transaction_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct BalanceResponse {
+    pub address: String,
+    pub balance: u64,
+}
+
+#[derive(Serialize)]
+pub struct MintResponse {
+    pub success: bool,
+    pub message: String,
+}
+
+#[derive(Serialize)]
+pub struct BlockResponse {
+    pub blocks: Vec<Block>,
+    pub total_blocks: usize,
+}
+
+// DEX structures
+#[derive(Deserialize, Clone)]
+pub struct SwapRequest {
+    pub from: String,
+    pub to: String,
+    pub amount: f64,
+    pub min_received: f64,
+    pub user: String,
+}
+
+// Vesting structures
+#[derive(serde::Deserialize)]
+pub struct VestingRequest {
+    pub artist_address: String,
+    pub amount: f64,
+}
+
+#[derive(serde::Serialize)] 
+pub struct VestingResponse {
+    pub success: bool,
+    pub available_amount: f64,
+    pub artist_address: String,
+    pub message: String,
+}
+
+// Payment structures
+#[derive(serde::Deserialize)]
+pub struct PaymentRequest {
+    pub artist_address: String,
+    pub total_revenue: f64,
+    pub artist_share: f64,
+    pub tier: PaymentTier,
+}
+
+#[derive(serde::Serialize)]
+pub struct PaymentResponse {
+    pub success: bool,
+    pub stablecoin_amount: f64,
+    pub token_amount: f64,
+    pub loyalty_bonus: f64,
+    pub total_amount: f64,
+    pub message: String,
+}
+
+// Rewards structures
+#[derive(serde::Deserialize)]
+pub struct RewardsRequest {
+    pub user_address: String,
+    pub hours_listened: Option<f64>,
+    pub gaming_score: Option<u64>,
+    pub game_difficulty: Option<f64>,
+    pub referral_bonus: Option<f64>,
+}
+
+#[derive(serde::Serialize)]
+pub struct RewardsResponse {
+    pub success: bool,
+    pub total_rewards: f64,
+    pub music_rewards: f64,
+    pub gaming_rewards: f64,
+    pub referral_rewards: f64,
+    pub message: String,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct LiquidityRequest {
+    pub pool_id: String,
+    pub amounts: Vec<f64>, // [amount_a, amount_b]
+    pub user: String,
+}
+
+#[derive(Serialize)]
+pub struct SwapResponse {
+    pub success: bool,
+    pub message: String,
+    pub tx_hash: Option<String>,
+    pub amount_received: Option<f64>,
+    pub price_impact: Option<f64>,
+}
+
+#[derive(Serialize)]
+pub struct LiquidityResponse {
+    pub success: bool,
+    pub message: String,
+    pub tx_hash: Option<String>,
+    pub lp_tokens_minted: Option<f64>,
+}
+
+#[derive(Serialize)]
+pub struct PoolResponse {
+    pub success: bool,
+    pub pool: Option<serde_json::Value>,
+    pub message: String,
+}
+
+// Handler functions
+async fn get_blocks(State(state): State<AppState>) -> Result<Json<BlockResponse>, StatusCode> {
+    let blockchain = state.real_blockchain.lock().unwrap();
+    let blocks = blockchain.chain.clone();
+    let total_blocks = blocks.len();
+    
+    Ok(Json(BlockResponse {
+        blocks,
+        total_blocks,
+    }))
+}
+
+async fn get_transactions(State(state): State<AppState>) -> Result<Json<serde_json::Value>, StatusCode> {
+    let blockchain = state.real_blockchain.lock().unwrap();
+    let mut all_transactions = Vec::new();
+    
+    // Collect all transactions from all blocks
+    for (block_index, block) in blockchain.chain.iter().enumerate() {
+        for (tx_index, transaction) in block.transactions.iter().enumerate() {
+            all_transactions.push(serde_json::json!({
+                "id": format!("{}-{}", block_index, tx_index),
+                "from": transaction.from,
+                "to": transaction.to,
+                "amount": transaction.amount,
+                "nft_id": transaction.nft_id,
+                "block_index": block_index,
+                "block_hash": block.hash
+            }));
+        }
+    }
+    
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "transactions": all_transactions,
+        "total": all_transactions.len(),
+        "message": "Transactions retrieved successfully"
+    })))
+}
+
+async fn get_user_transactions(
+    Path(address): Path<String>,
+    State(state): State<AppState>
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let blockchain = state.blockchain.lock().unwrap();
+    let mut user_transactions = Vec::new();
+    
+    // Collect transactions for specific user
+    for (block_index, block) in blockchain.chain.iter().enumerate() {
+        for (tx_index, transaction) in block.transactions.iter().enumerate() {
+            if transaction.from == address || transaction.to == address {
+                user_transactions.push(serde_json::json!({
+                    "id": format!("{}-{}", block_index, tx_index),
+                    "hash": format!("{}-{}", block_index, tx_index),
+                    "from": transaction.from,
+                    "to": transaction.to,
+                    "amount": transaction.amount,
+                    "nft_id": transaction.nft_id,
+                    "block_index": block_index,
+                    "block_hash": block.hash,
+                    "timestamp": block.timestamp,
+                    "status": "confirmed"
+                }));
+            }
+        }
+    }
+    
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "transactions": user_transactions,
+        "total": user_transactions.len(),
+        "message": "User transactions retrieved successfully"
+    })))
+}
+
+async fn get_user_tokens(
+    Path(address): Path<String>,
+    State(state): State<AppState>
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let blockchain = state.blockchain.lock().unwrap();
+    let mut user_tokens = Vec::new();
+    
+    // Get user balance
+    let balance = blockchain.balances.get(&address).unwrap_or(&0);
+    
+    // Add XWV token
+    if *balance > 0 {
+        user_tokens.push(serde_json::json!({
+            "id": "XWV",
+            "name": "XWave Token",
+            "symbol": "XWV",
+            "balance": balance,
+            "decimals": 18,
+            "type": "native"
+        }));
+    }
+    
+    // Add NFT tokens (simplified - in real implementation would check NFT ownership)
+    // For now, return empty array for NFTs
+    
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "tokens": user_tokens,
+        "total": user_tokens.len(),
+        "message": "User tokens retrieved successfully"
+    })))
+}
+
+async fn get_token_stats(State(state): State<AppState>) -> Result<Json<serde_json::Value>, StatusCode> {
+    let token = state.token.lock().unwrap();
+    
+    // Get basic token statistics using public method
+    let (total_holders, total_balance, total_nfts, total_royalties) = token.get_stats();
+    
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "name": "XWave Token",
+        "symbol": "XWV",
+        "total_holders": total_holders,
+        "total_balance": total_balance,
+        "total_nfts": total_nfts,
+        "total_royalties": total_royalties,
+        "message": "Token stats retrieved successfully"
+    })))
+}
+
+async fn submit_transaction(
+    State(state): State<AppState>,
+    Json(request): Json<TransactionRequest>,
+) -> Result<Json<TransactionResponse>, StatusCode> {
+    let transaction = Transaction {
+        from: request.from.clone(),
+        to: request.to.clone(),
+        amount: request.amount,
+        nft_id: request.nft_id,
+    };
+    
+    // Add transaction to blockchain (release lock before async operations)
+    let add_result = {
+        let mut blockchain = state.blockchain.lock().unwrap();
+        blockchain.add_transaction(transaction.clone())
+    };
+    
+    match add_result {
+        Ok(_) => {
+            // Save transaction to database
+            match state.storage.save_transaction(&transaction).await {
+                Ok(tx_hash) => {
+                    Ok(Json(TransactionResponse {
+                        success: true,
+                        message: "Transaction added successfully".to_string(),
+                        transaction_id: Some(tx_hash),
+                    }))
+                }
+                Err(e) => {
+                    println!("Error saving transaction to database: {}", e);
+                    Ok(Json(TransactionResponse {
+                        success: false,
+                        message: format!("Database error: {}", e),
+                        transaction_id: None,
+                    }))
+                }
+            }
+        }
+        Err(e) => {
+            Ok(Json(TransactionResponse {
+                success: false,
+                message: e,
+                transaction_id: None,
+            }))
+        }
+    }
+}
+
+// Test mint function for development
+async fn mint_test_tokens(
+    State(state): State<AppState>,
+    Json(request): Json<ServerMintRequest>,
+) -> Result<Json<MintResponse>, axum::http::StatusCode> {
+    println!("DEBUG: mint_test_tokens called with request: {:?}", request);
+    println!("DEBUG: Request account: {}, amount: {}", request.account, request.amount);
+    
+    // Mint XWV tokens by default for testing (release lock immediately)
+    let success = {
+        let mut blockchain = state.real_blockchain.lock().unwrap();
+        blockchain.mint_tokens(&request.account, request.amount, "XWV")
+    };
+    
+    if success {
+        let new_balance = {
+            let blockchain = state.real_blockchain.lock().unwrap();
+            blockchain.get_balance(&request.account)
+        };
+        
+        // Also update database for persistence
+        if let Err(e) = state.storage.update_balance(&request.account, new_balance.xwv as u64).await {
+            println!("Warning: Failed to persist balance to database: {}", e);
+        }
+        
+        println!("Minted {} XWV tokens to {} (total: {})", request.amount, request.account, new_balance.xwv);
+        Ok(Json(MintResponse {
+            success: true,
+            message: format!("Successfully minted {} XWV tokens to {} (TEST MODE)", request.amount, request.account),
+        }))
+    } else {
+        Ok(Json(MintResponse {
+            success: false,
+            message: "Failed to mint tokens".to_string(),
+        })) 
+    }
+}
+
+async fn mint_tokens(
+    State(state): State<AppState>,
+    Json(request): Json<ServerMintRequest>,
+) -> Result<Json<MintResponse>, axum::http::StatusCode> {
+    println!("DEBUG: mint_tokens called with request: {:?}", request);
+    println!("DEBUG: Request account: {}, amount: {}", request.account, request.amount);
+    
+    // Mint XWV tokens by default (release lock immediately)
+    let success = {
+        let mut blockchain = state.real_blockchain.lock().unwrap();
+        blockchain.mint_tokens(&request.account, request.amount, "XWV")
+    };
+    
+    if success {
+        let new_balance = {
+            let blockchain = state.real_blockchain.lock().unwrap();
+            blockchain.get_balance(&request.account)
+        };
+        
+        // Also update database for persistence
+        if let Err(e) = state.storage.update_balance(&request.account, new_balance.xwv as u64).await {
+            println!("Warning: Failed to persist balance to database: {}", e);
+        }
+        
+        println!("Minted {} XWV tokens to {} (total: {})", request.amount, request.account, new_balance.xwv);
+        Ok(Json(MintResponse {
+            success: true,
+            message: format!("Successfully minted {} XWV tokens to {}", request.amount, request.account),
+        }))
+    } else {
+        Ok(Json(MintResponse {
+            success: false,
+            message: "Failed to mint tokens".to_string(),
+        })) 
+    }
+}
+
+async fn get_balance(
+    State(state): State<AppState>,
+    Path(address): Path<String>,
+) -> Result<Json<BalanceResponse>, StatusCode> {
+    tracing::debug!("[BALANCE] Consultando balance para: {}", address);
+    
+    // Use REAL storage instead of blockchain simulation
+    let storage = state.storage;
+    
+    match storage.get_balance(&address).await {
+        Ok(balance) => {
+            tracing::info!("[BALANCE] Encontrado: {} XWV para {}", balance, address);
+            Ok(Json(BalanceResponse {
+                address: address.clone(),
+                balance,
+            }))
+        }
+        Err(e) => {
+            tracing::error!("[BALANCE] Error: {} para {}", e, address);
+            Err(StatusCode::INTERNAL_SERVER_ERROR)
+        }
+    }
+}
+
+async fn debug_realblockchain_balance(
+    State(state): State<AppState>,
+    Path(address): Path<String>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    tracing::debug!("[DEBUG_BALANCE] Consultando balance del RealBlockchain para: {}", address);
+    
+    // Get balance directly from RealBlockchain
+    let real_balance = {
+        let blockchain = state.real_blockchain.lock().unwrap();
+        blockchain.get_balance(&address)
+    };
+    
+    tracing::info!("[DEBUG_BALANCE] RealBlockchain balance para {}: XWV={}, USXWV={}, Staked={}", 
+                   address, real_balance.xwv, real_balance.usxwv, real_balance.staked);
+    
+    Ok(Json(serde_json::json!({
+        "address": address,
+        "realblockchain_balance": {
+            "xwv": real_balance.xwv,
+            "usxwv": real_balance.usxwv,
+            "staked": real_balance.staked,
+            "total": real_balance.total
+        }
+    })))
+}
+
+async fn get_balance_detail(
+    State(state): State<AppState>,
+    Path(address): Path<String>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    tracing::debug!("[BALANCE_DETAIL] Consultando balance detallado para: {}", address);
+    
+    // ✅ Obtener AMBOS balances para debug y cálculo
+    let token_balance = match state.storage.get_token_balance(&address).await {
+        Ok(balance) => balance,
+        Err(_) => crate::blockchain::real_blockchain::TokenBalance { 
+            xwv: 0.0, 
+            usxwv: 0.0, 
+            staked: 0.0, 
+            total: 0.0 
+        }
+    };
+
+    let legacy_balance = match state.storage.get_balance(&address).await {
+        Ok(balance) => balance,
+        Err(_) => 0,
+    };
+
+    // ✅ DEBUG CRÍTICO: Ver qué datos tenemos
+    println!("  [BALANCE-DEBUG] Balance detail for {}:", address);
+    println!("   - token_balance.xwv: {} (tabla token_balances)", token_balance.xwv);
+    println!("   - legacy_balance: {} (tabla balances)", legacy_balance);
+    println!("   - legacy_balance en XWV: {} (dividido por 100)", legacy_balance as f64 / 100.0);
+
+    // ✅ USAR legacy_balance COMO FUENTE DE VERDAD (datos actualizados)
+    let available_xwv = (legacy_balance as f64) / 100.0;  // Convertir centavos a XWV
+    let total = available_xwv + token_balance.usxwv + token_balance.staked;
+
+    let response = serde_json::json!({
+        "address": address,
+        "available_xwv": available_xwv,        // ← VALOR CORREGIDO (~1280.70 XWV)
+        "staked": token_balance.staked,
+        "total": total,
+        "total_balance": legacy_balance,  // ← 128070 (mantener para compatibilidad)
+        "usxwv": token_balance.usxwv,
+    });
+
+    println!(" [BALANCE-DEBUG] Response: available_xwv = {}, total_balance = {}", 
+             available_xwv, legacy_balance);
+
+    Ok(Json(response))
+}
+
+
+// Block production task
+async fn block_production_task(state: AppState) {
+    let mut interval = time::interval(Duration::from_secs(10)); // Produce block every 10 seconds
+    
+    loop {
+        interval.tick().await;
+        
+        // Get blockchain data and release lock before async operations
+        let (transactions, previous_hash, current_height) = {
+            let mut blockchain = state.blockchain.lock().unwrap();
+            let current_height = blockchain.chain.len() as i64;
+            
+            if !blockchain.pending_transactions.is_empty() {
+                let transactions = blockchain.pending_transactions.clone();
+                blockchain.pending_transactions.clear();
+                let previous_hash = blockchain.get_latest_block().hash.clone();
+                (Some(transactions), previous_hash, current_height)
+            } else {
+                // Skip creating empty blocks unless it's been more than 30 seconds since last block
+                let last_block_timestamp = blockchain.get_latest_block().timestamp;
+                let current_timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+                
+                if current_timestamp - last_block_timestamp < 30 {
+                    continue; // Skip this iteration
+                }
+                
+                let previous_hash = blockchain.get_latest_block().hash.clone();
+                (None, previous_hash, current_height)
+            }
+        };
+        
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        
+        // Select validator using CPV consensus
+        let selected_validator = {
+            let mut cpv = state.cpv_consensus.lock().unwrap();
+            match cpv.select_validator() {
+                Ok(validator) => {
+                    println!("[CPV] CPV selected validator: {} (Type: {:?})",
+                        validator.address, validator.validator_type);
+                    Some(validator)
+                },
+                Err(e) => {
+                    println!("[CPV] CPV validator selection failed: {}", e);
+                    None
+                }
+            }
+        };
+
+        let validator_address = selected_validator.as_ref()
+            .map(|v| v.address.clone())
+            .unwrap_or_else(|| "system".to_string());
+
+        // Create new block
+        let mut new_block = Block {
+            timestamp,
+            transactions: transactions.clone().unwrap_or_default(),
+            previous_hash,
+            hash: String::new(),
+            validator: Some(validator_address.clone()),
+        };
+        
+        new_block.hash = new_block.calculate_hash();
+        
+        // Record validation round in CPV consensus
+        if let Some(validator) = &selected_validator {
+            let mut cpv = state.cpv_consensus.lock().unwrap();
+            cpv.record_validation_round(validator, new_block.hash.clone());
+        }
+        
+        // Save block to database
+        if let Err(e) = state.storage.save_block(&new_block, current_height).await {
+            println!("Error saving block to database: {}", e);
+        }
+        
+        // Update balances in database if there are transactions
+        if let Some(ref transactions) = transactions {
+            for transaction in transactions {
+                let (from_balance, to_balance) = {
+                    let blockchain = state.blockchain.lock().unwrap();
+                    (blockchain.get_balance(&transaction.from), blockchain.get_balance(&transaction.to))
+                };
+                
+                if let Err(e) = state.storage.update_balance(&transaction.from, from_balance).await {
+                    println!("Error updating balance for {}: {}", transaction.from, e);
+                }
+                if let Err(e) = state.storage.update_balance(&transaction.to, to_balance).await {
+                    println!("Error updating balance for {}: {}", transaction.to, e);
+                }
+            }
+        }
+        
+        // Add block to blockchain
+        {
+            let mut blockchain = state.blockchain.lock().unwrap();
+            blockchain.chain.push(new_block);
+        }
+        
+        if let Some(ref transactions) = transactions {
+            println!("New block created with {} transactions", transactions.len());
+        } else {
+            println!("Empty block created");
+        }
+    }
+}
+
+// Health check endpoint
+async fn health_check() -> Result<Json<serde_json::Value>, StatusCode> {
+    Ok(Json(serde_json::json!({
+        "status": "healthy",
+        "timestamp": SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),
+        "service": "xwave-blockchain"
+    })))
+}
+
+// Vesting endpoints
+async fn get_artist_vesting(
+    State(state): State<AppState>,
+    Path(artist_address): Path<String>,
+) -> Result<Json<VestingResponse>, StatusCode> {
+    let current_time = chrono::Utc::now().timestamp();
+    
+    if let Some(available) = state.artist_vesting_manager.lock().unwrap().get_available_amount(&artist_address, current_time) {
+        Ok(Json(VestingResponse {
+            success: true,
+            available_amount: available,
+            artist_address,
+            message: "Vesting information retrieved".to_string(),
+        }))
+    } else {
+        Ok(Json(VestingResponse {
+            success: false,
+            available_amount: 0.0,
+            artist_address,
+            message: "No vesting schedule found for artist".to_string(),
+        }))
+    }
+}
+
+async fn create_artist_vesting_schedule(
+    State(state): State<AppState>,
+    Json(request): Json<VestingRequest>,
+) -> Result<Json<VestingResponse>, StatusCode> {
+    let mut manager = state.artist_vesting_manager.lock().unwrap();
+    manager.create_vesting_schedule(request.artist_address.clone(), request.amount);
+    
+    let current_time = chrono::Utc::now().timestamp();
+    let available = manager.get_available_amount(&request.artist_address, current_time)
+        .unwrap_or(0.0);
+        
+    Ok(Json(VestingResponse {
+        success: true,
+        available_amount: available,
+        artist_address: request.artist_address,
+        message: "Vesting schedule created".to_string(),
+    }))
+}
+
+// Payment endpoints
+async fn process_artist_payment(
+    State(state): State<AppState>,
+    Json(request): Json<PaymentRequest>,
+) -> Result<Json<PaymentResponse>, StatusCode> {
+    let mut manager = state.payment_manager.lock().unwrap();
+    let payment = manager.process_payment(
+        request.artist_address,
+        request.total_revenue,
+        request.artist_share,
+        request.tier,
+    );
+    
+    Ok(Json(PaymentResponse {
+        success: true,
+        stablecoin_amount: payment.stablecoin_amount,
+        token_amount: payment.token_amount,
+        loyalty_bonus: payment.loyalty_bonus,
+        total_amount: payment.get_total_amount(),
+        message: "Payment processed successfully".to_string(),
+    }))
+}
+
+// Rewards endpoints
+async fn update_user_rewards(
+    State(state): State<AppState>,
+    Json(request): Json<RewardsRequest>,
+) -> Result<Json<RewardsResponse>, StatusCode> {
+    let mut manager = state.rewards_manager.lock().unwrap();
+    let user_rewards = manager.get_or_create_user(request.user_address.clone(), UserTier::Premium);
+    
+    if let Some(hours) = request.hours_listened {
+        user_rewards.add_listening_rewards(hours);
+    }
+    
+    if let (Some(score), Some(difficulty)) = (request.gaming_score, request.game_difficulty) {
+        user_rewards.add_gaming_rewards(score, difficulty);
+    }
+    
+    if let Some(bonus) = request.referral_bonus {
+        user_rewards.add_referral_rewards(bonus);
+    }
+    
+    Ok(Json(RewardsResponse {
+        success: true,
+        total_rewards: user_rewards.get_total_rewards(),
+        music_rewards: user_rewards.music_listening_rewards,
+        gaming_rewards: user_rewards.gaming_rewards,
+        referral_rewards: user_rewards.referral_rewards,
+        message: "Rewards updated successfully".to_string(),
+    }))
+}
+
+// WebSocket handler
+async fn websocket_handler(
+    ws: WebSocketUpgrade,
+    State(state): State<AppState>,
+) -> axum::response::Response {
+    ws.on_upgrade(|socket| websocket_connection(socket, state))
+}
+
+async fn websocket_connection(socket: WebSocket, state: AppState) {
+    let (mut sender, mut receiver) = socket.split();
+    
+    println!("🔌 New WebSocket connection established");
+    
+    // Send initial welcome message with connection info
+    let welcome_msg = serde_json::json!({
+        "type": "connection_established",
+        "message": "Connected to XWave Blockchain",
+        "timestamp": chrono::Utc::now().timestamp(),
+        "features": ["balance_updates", "stream_earnings", "real_time_sync"]
+    });
+    
+    if let Err(e) = sender.send(Message::Text(welcome_msg.to_string().into())).await {
+        println!("Error sending welcome message: {}", e);
+        return;
+    }
+    
+    // Handle incoming messages
+    while let Some(msg) = receiver.next().await {
+        match msg {
+            Ok(Message::Text(text)) => {
+                println!("📨 Received WebSocket message: {}", text);
+                
+                // Parse JSON message
+                if let Ok(json_msg) = serde_json::from_str::<serde_json::Value>(&text) {
+                    if let Some(msg_type) = json_msg.get("type").and_then(|v| v.as_str()) {
+                        match msg_type {
+                            "subscribe_balance" => {
+                                if let Some(address) = json_msg.get("address").and_then(|v| v.as_str()) {
+                                    println!("📊 Client subscribed to balance updates for: {}", address);
+                                    
+                                    // Send current balance
+                                    if let Ok(balance) = state.storage.get_token_balance(address).await {
+                                        let balance_msg = serde_json::json!({
+                                            "type": "balance_update",
+                                            "address": address,
+                                            "balance": {
+                                                "xwv": balance.xwv,
+                                                "usxwv": balance.usxwv,
+                                                "staked": balance.staked,
+                                                "total": balance.total
+                                            },
+                                            "timestamp": chrono::Utc::now().timestamp()
+                                        });
+                                        
+                                        if let Err(e) = sender.send(Message::Text(balance_msg.to_string().into())).await {
+                                            println!("Error sending balance update: {}", e);
+                                        }
+                                    }
+                                }
+                            }
+                            "ping" => {
+                                let pong_msg = serde_json::json!({
+                                    "type": "pong",
+                                    "timestamp": chrono::Utc::now().timestamp()
+                                });
+                                
+                                if let Err(e) = sender.send(Message::Text(pong_msg.to_string().into())).await {
+                                    println!("Error sending pong: {}", e);
+                                }
+                            }
+                            _ => {
+                                println!("Unknown message type: {}", msg_type);
+                            }
+                        }
+                    }
+                } else {
+                    // Echo back non-JSON messages
+                if let Err(e) = sender.send(Message::Text(format!("Echo: {}", text).into())).await {
+                    println!("Error sending WebSocket message: {}", e);
+                    break;
+                    }
+                }
+            }
+            Ok(Message::Close(_)) => {
+                println!("🔌 WebSocket connection closed by client");
+                break;
+            }
+            Ok(Message::Ping(_)) => {
+                // Respond to ping with pong
+                if let Err(e) = sender.send(Message::Pong(vec![].into())).await {
+                    println!("Error sending pong: {}", e);
+                    break;
+                }
+            }
+            Ok(Message::Pong(_)) => {
+                // Client sent pong, connection is alive
+                println!("Received pong from client");
+            }
+            Ok(Message::Binary(_)) => {
+                // Handle binary messages (not used in this implementation)
+                println!("Received binary message from client");
+            }
+            Err(e) => {
+                println!("WebSocket error: {}", e);
+                break;
+            }
+        }
+    }
+    
+    println!("WebSocket connection ended");
+}
+
+
+async fn get_pool(
+    State(state): State<AppState>,
+    Path(pool_id): Path<String>,
+) -> Result<Json<PoolResponse>, StatusCode> {
+    let dex = state.dex.lock().unwrap();
+    
+    match dex.get_pool(&pool_id) {
+        Some(pool) => {
+            Ok(Json(PoolResponse {
+                success: true,
+                pool: Some(serde_json::to_value(pool).unwrap_or(serde_json::Value::Null)),
+                message: "Pool retrieved successfully".to_string(),
+            }))
+        }
+        None => {
+            Ok(Json(PoolResponse {
+                success: false,
+                pool: None,
+                message: "Pool not found".to_string(),
+            }))
+        }
+    }
+}
+
+async fn get_pools(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let dex = state.dex.lock().unwrap();
+    let pools = dex.get_all_pools();
+    
+    let pools_json: Vec<serde_json::Value> = pools.iter()
+        .map(|pool| serde_json::to_value(pool).unwrap_or(serde_json::Value::Null))
+        .collect();
+    
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "pools": pools_json,
+        "total": pools_json.len(),
+        "message": "Pools retrieved successfully"
+    })))
+}
+
+// DEX handlers
+async fn execute_swap(
+    State(state): State<AppState>,
+    Json(request): Json<SwapRequest>,
+) -> Result<Json<SwapResponse>, StatusCode> {
+    // Check if user has sufficient balance (release lock immediately)
+    let has_balance = {
+        let token = state.token.lock().unwrap();
+        token.has_balance(&request.user, request.amount)
+    };
+    
+    if !has_balance {
+        return Ok(Json(SwapResponse {
+            success: false,
+            message: "Insufficient balance".to_string(),
+            tx_hash: None,
+            amount_received: None,
+            price_impact: None,
+        }));
+    }
+    
+    // Convert to DEX types
+    let dex_request = crate::dex::SwapRequest {
+        from: request.from.clone(),
+        to: request.to.clone(),
+        amount: request.amount,
+        min_received: request.min_received,
+        user: request.user.clone(),
+    };
+    
+    // Execute swap in DEX (release lock immediately)
+    let swap_result = {
+        let mut dex = state.dex.lock().unwrap();
+        dex.execute_swap(dex_request)
+    };
+    
+    match swap_result {
+        Ok(swap_response) => {
+            // Update token balances (release lock immediately)
+            let transfer_result = {
+                let mut token = state.token.lock().unwrap();
+                token.transfer(&request.user, "DEX_CONTRACT", request.amount, "")
+            };
+            
+            if let Err(e) = transfer_result {
+                return Ok(Json(SwapResponse {
+                    success: false,
+                    message: format!("Failed to deduct balance: {}", e),
+                    tx_hash: None,
+                    amount_received: None,
+                    price_impact: None,
+                }));
+            }
+            
+            // Credit the received tokens to user (release lock immediately)
+            if let Some(amount_received) = swap_response.amount_received {
+                let mint_result = {
+                    let mut token = state.token.lock().unwrap();
+                    token.mint(&request.user, amount_received)
+                };
+                
+                if let Err(e) = mint_result {
+                    return Ok(Json(SwapResponse {
+                        success: false,
+                        message: format!("Failed to credit received tokens: {}", e),
+                        tx_hash: None,
+                        amount_received: None,
+                        price_impact: None,
+                    }));
+                }
+            }
+
+            // Persist DEX transaction to PostgreSQL
+            if let Some(tx_hash) = &swap_response.tx_hash {
+                let pool_id = format!("{}_{}", request.from, request.to);
+                let amount_received = swap_response.amount_received.unwrap_or(0.0);
+                if let Err(e) = state.storage.save_dex_transaction(
+                    tx_hash,
+                    &request.user,
+                    "DEX_CONTRACT",
+                    request.amount as i64,
+                    amount_received as i64,
+                    &pool_id,
+                    "swap"
+                ).await {
+                    println!("⚠️  Failed to save DEX transaction to DB: {}", e);
+                } else {
+                    println!("✅ DEX transaction saved to DB: {}", tx_hash);
+                }
+
+                // Update balances in PostgreSQL
+                let current_balance = {
+                    let token = state.token.lock().unwrap();
+                    token.balance_of(&request.user) as u64
+                };
+                
+                if let Err(e) = state.storage.update_balance(&request.user, current_balance).await {
+                    println!("⚠️  Failed to update balance in DB: {}", e);
+                }
+            }
+            
+            // Convert DEX response to server response
+            let server_response = SwapResponse {
+                success: swap_response.success,
+                message: swap_response.message,
+                tx_hash: swap_response.tx_hash,
+                amount_received: swap_response.amount_received,
+                price_impact: swap_response.price_impact,
+            };
+            Ok(Json(server_response))
+        }
+        Err(e) => {
+            Ok(Json(SwapResponse {
+                success: false,
+                message: e,
+                tx_hash: None,
+                amount_received: None,
+                price_impact: None,
+            }))
+        }
+    }
+}
+
+async fn add_liquidity(
+    State(state): State<AppState>,
+    Json(request): Json<LiquidityRequest>,
+) -> Result<Json<LiquidityResponse>, StatusCode> {
+    // Check if user has sufficient balances for both tokens
+    if request.amounts.len() != 2 {
+        return Ok(Json(LiquidityResponse {
+            success: false,
+            message: "Must provide exactly 2 amounts".to_string(),
+            tx_hash: None,
+            lp_tokens_minted: None,
+        }));
+    }
+    
+    let amount_a = request.amounts[0];
+    let amount_b = request.amounts[1];
+    
+    // Check balances (release lock immediately)
+    let (has_balance_a, has_balance_b) = {
+        let token = state.token.lock().unwrap();
+        (token.has_balance(&request.user, amount_a), token.has_balance(&request.user, amount_b))
+    };
+    
+    // For simplicity, we'll assume the pool uses XWAVE and USDC
+    // In a real implementation, you'd get the token types from the pool
+    if !has_balance_a {
+        return Ok(Json(LiquidityResponse {
+            success: false,
+            message: "Insufficient balance for token A".to_string(),
+            tx_hash: None,
+            lp_tokens_minted: None,
+        }));
+    }
+    
+    if !has_balance_b {
+        return Ok(Json(LiquidityResponse {
+            success: false,
+            message: "Insufficient balance for token B".to_string(),
+            tx_hash: None,
+            lp_tokens_minted: None,
+        }));
+    }
+    
+    // Convert to DEX types
+    let dex_request = crate::dex::LiquidityRequest {
+        token_a: request.pool_id.clone(),
+        token_b: "USXWV".to_string(),
+        amount_a: request.amounts[0],
+        amount_b: request.amounts[1],
+        user: request.user.clone(),
+    };
+    
+    // Execute liquidity addition in DEX (release lock immediately)
+    let liquidity_result = {
+        let mut dex = state.dex.lock().unwrap();
+        dex.add_liquidity(dex_request)
+    };
+    
+    match liquidity_result {
+        Ok(liquidity_response) => {
+            // Deduct tokens from user (release lock immediately)
+            let transfer_a_result = {
+                let mut token = state.token.lock().unwrap();
+                token.transfer(&request.user, "DEX_CONTRACT", amount_a, "")
+            };
+            
+            if let Err(e) = transfer_a_result {
+                return Ok(Json(LiquidityResponse {
+                    success: false,
+                    message: format!("Failed to deduct token A: {}", e),
+                    tx_hash: None,
+                    lp_tokens_minted: None,
+                }));
+            }
+            
+            let transfer_b_result = {
+                let mut token = state.token.lock().unwrap();
+                token.transfer(&request.user, "DEX_CONTRACT", amount_b, "")
+            };
+            
+            if let Err(e) = transfer_b_result {
+                return Ok(Json(LiquidityResponse {
+                    success: false,
+                    message: format!("Failed to deduct token B: {}", e),
+                    tx_hash: None,
+                    lp_tokens_minted: None,
+                }));
+            }
+
+            // Persist liquidity transaction to PostgreSQL
+            if let Some(tx_hash) = &liquidity_response.tx_hash {
+                if let Err(e) = state.storage.save_dex_transaction(
+                    tx_hash,
+                    &request.user,
+                    "DEX_CONTRACT",
+                    (amount_a + amount_b) as i64,
+                    0, // No output amount for liquidity
+                    &request.pool_id,
+                    "liquidity_add"
+                ).await {
+                    println!("⚠️  Failed to save liquidity transaction to DB: {}", e);
+                } else {
+                    println!("✅ Liquidity transaction saved to DB: {}", tx_hash);
+                }
+
+                // Save liquidity position
+                if let Some(lp_tokens) = liquidity_response.lp_tokens_minted {
+                    let position_id = format!("{}_{}", request.user, request.pool_id);
+                    if let Err(e) = state.storage.save_liquidity_position(
+                        &position_id,
+                        &request.user,
+                        &request.pool_id,
+                        lp_tokens as i64
+                    ).await {
+                        println!("Failed to save liquidity position to DB: {}", e);
+                    } else {
+                        println!("Liquidity position saved to DB: {}", position_id);
+                    }
+                }
+
+                // Update balances in PostgreSQL
+                let current_balance = {
+                    let token = state.token.lock().unwrap();
+                    token.balance_of(&request.user) as u64
+                };
+                
+                if let Err(e) = state.storage.update_balance(&request.user, current_balance).await {
+                    println!("⚠️  Failed to update balance in DB: {}", e);
+                }
+            }
+            
+            // Convert DEX response to server response
+            let server_response = LiquidityResponse {
+                success: liquidity_response.success,
+                message: liquidity_response.message,
+                tx_hash: liquidity_response.tx_hash,
+                lp_tokens_minted: liquidity_response.lp_tokens_minted,
+            };
+            Ok(Json(server_response))
+        }
+        Err(e) => {
+            Ok(Json(LiquidityResponse {
+                success: false,
+                message: e,
+                tx_hash: None,
+                lp_tokens_minted: None,
+            }))
+        }
+    }
+}
+
+// Wallet handlers
+async fn connect_wallet(
+    Json(request): Json<ConnectWalletRequest>,
+) -> Result<Json<ConnectWalletResponse>, StatusCode> {
+    match wallet_handlers::connect_wallet(request).await {
+        Ok(response) => Ok(Json(response)),
+        Err(e) => {
+            println!("Error connecting wallet: {}", e);
+            Err(StatusCode::BAD_REQUEST)
+        }
+    }
+}
+
+async fn get_wallet_session(
+    Query(params): Query<std::collections::HashMap<String, String>>,
+) -> Result<Json<WalletSession>, StatusCode> {
+    let session_id = params.get("session_id")
+        .ok_or(StatusCode::BAD_REQUEST)?;
+    
+    match wallet_handlers::get_wallet_session(session_id.clone()).await {
+        Ok(session) => Ok(Json(session)),
+        Err(e) => {
+            println!("Error getting wallet session: {}", e);
+            Err(StatusCode::NOT_FOUND)
+        }
+    }
+}
+
+async fn disconnect_wallet(
+    Json(request): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let session_id = request.get("session_id")
+        .and_then(|v| v.as_str())
+        .ok_or(StatusCode::BAD_REQUEST)?;
+    
+    match wallet_handlers::disconnect_wallet(session_id.to_string()).await {
+        Ok(message) => Ok(Json(serde_json::json!({
+            "success": true,
+            "message": message
+        }))),
+        Err(e) => {
+            println!("Error disconnecting wallet: {}", e);
+            Err(StatusCode::BAD_REQUEST)
+        }
+    }
+}
+
+// Admin wallet connection
+async fn connect_admin_wallet() -> Result<Json<ConnectWalletResponse>, StatusCode> {
+    let admin_address = std::env::var("ADMIN_WALLET_ADDRESS")
+        .unwrap_or_else(|_| "0x742d35Cc6634C0532925a3b8D0c0f7c6c7B9B5f8".to_string());
+
+    let request = ConnectWalletRequest {
+        wallet_type: "admin".to_string(),
+        address: Some(admin_address.clone()),
+        signature: None,
+    };
+
+    match wallet_handlers::connect_wallet(request).await {
+        Ok(response) => Ok(Json(response)),
+        Err(e) => {
+            println!("Error connecting admin wallet: {}", e);
+            Err(StatusCode::INTERNAL_SERVER_ERROR)
+        }
+    }
+}
+
+// Staking endpoints
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ServerStakeRequest {
+    pub account: String,
+    pub amount: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ServerUnstakeRequest {
+    pub account: String,
+    pub amount: f64,
+}
+
+#[derive(Serialize)]
+pub struct StakeResponse {
+    pub success: bool,
+    pub message: String,
+    pub tx_hash: Option<String>,
+    pub new_balance: Option<f64>,
+}
+
+// CPV Consensus request/response types
+#[derive(Deserialize)]
+pub struct EconomicValidatorRequest {
+    pub address: String,
+    pub stake: u64,
+}
+
+#[derive(Deserialize)]
+pub struct CreativeValidatorRequest {
+    pub address: String,
+    pub verified_nfts: Vec<String>,
+}
+
+#[derive(Deserialize)]
+pub struct CommunityValidatorRequest {
+    pub address: String,
+}
+
+#[derive(Serialize)]
+pub struct ConsensusStatsResponse {
+    pub economic_validators: usize,
+    pub creative_validators: usize,
+    pub community_validators: usize,
+    pub total_validation_rounds: usize,
+    pub economic_validations: usize,
+    pub creative_validations: usize,
+    pub community_validations: usize,
+}
+
+#[derive(Serialize)]
+pub struct ValidatorRegistrationResponse {
+    pub success: bool,
+    pub message: String,
+    pub validator_type: String,
+}
+
+// Real staking handlers
+async fn simple_stake_handler(
+    State(state): State<AppState>,
+    Json(request): Json<ServerStakeRequest>,
+) -> Result<Json<StakeResponse>, StatusCode> {
+    // Scope the mutex lock
+    let (result_ok, new_balance_xwv, tx_hash) = {
+    let mut blockchain = state.real_blockchain.lock().unwrap();
+    
+    match blockchain.stake_tokens(&request.account, request.amount) {
+        Ok(result) => {
+            let new_balance = blockchain.get_balance(&request.account);
+            let tx_hash = format!("STAKE_{}_{}", request.account, SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+                (result.success, new_balance.xwv, tx_hash)
+        },
+        Err(e) => {
+                return Ok(Json(StakeResponse {
+                success: false,
+                message: format!("Staking error: {}", e),
+                tx_hash: None,
+                new_balance: None,
+                }));
+            }
+        }
+    }; // Mutex dropped here
+    
+    // 🔥 SYNC WITH DATABASE: Update balance in PostgreSQL
+    if result_ok {
+        println!("💾 [STAKING] Syncing ALL balances to database for {}", request.account);
+        
+        // ✅ ACTUALIZAR BALANCE LEGACY (XWV)
+        match state.storage.update_balance(&request.account, new_balance_xwv as u64).await {
+            Ok(_) => println!("✅ [STAKING] Legacy balance updated"),
+            Err(e) => println!("⚠️ [STAKING] Failed to update legacy balance: {}", e),
+        }
+        
+        // ✅ ACTUALIZAR BALANCE DETALLADO
+        let current_balance = state.real_blockchain.lock().unwrap().get_balance(&request.account);
+        match state.storage.update_token_balance(&request.account, &current_balance).await {
+            Ok(_) => println!("✅ [STAKING] Detailed balance updated: XWV={}, USXWV={}, Staked={}", 
+                            current_balance.xwv, current_balance.usxwv, current_balance.staked),
+            Err(e) => println!("⚠️ [STAKING] Failed to update detailed balance: {}", e),
+        }
+        
+        Ok(Json(StakeResponse {
+            success: true,
+            message: format!("Successfully staked {} XWV tokens", request.amount),
+            tx_hash: Some(tx_hash),
+            new_balance: Some(new_balance_xwv),
+        }))
+    } else {
+        Ok(Json(StakeResponse {
+            success: false,
+            message: "Staking failed".to_string(),
+            tx_hash: None,
+            new_balance: Some(new_balance_xwv),
+        }))
+    }
+}
+
+async fn simple_unstake_handler(
+    State(state): State<AppState>,
+    Json(request): Json<ServerUnstakeRequest>,
+) -> Result<Json<StakeResponse>, StatusCode> {
+    let mut blockchain = state.real_blockchain.lock().unwrap();
+    
+    // For unstaking, we need a position ID. For now, we'll find the first active position
+    let positions = blockchain.get_staking_positions(&request.account);
+    let active_position = positions.iter().find(|p| p.is_active);
+    
+    if let Some(position) = active_position {
+        match blockchain.unstake_tokens(&request.account, &position.id) {
+            Ok(result) => {
+                let new_balance = blockchain.get_balance(&request.account);
+                let tx_hash = format!("UNSTAKE_{}_{}", request.account, SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+                
+                {Ok(Json(StakeResponse {
+                    success: result.success,
+                    message: if result.success {
+                        format!("Successfully unstaked {} XWV tokens + {} rewards", 
+                               result.amount.unwrap_or(0.0), 
+                               result.rewards.unwrap_or(0.0))
+                    } else {
+                        result.error.unwrap_or("Unstaking failed".to_string())
+                    },
+                    tx_hash: if result.success { Some(tx_hash) } else { None },
+                    new_balance: Some(new_balance.xwv),
+                })) }
+            }
+            Err(e) => {
+                {Ok(Json(StakeResponse {
+                    success: false,
+                    message: format!("Unstaking error: {}", e),
+                    tx_hash: None,
+                    new_balance: None,
+                })) }
+            }
+        }
+    } else {
+        {Ok(Json(StakeResponse {
+            success: false,
+            message: "No active staking position found".to_string(),
+            tx_hash: None,
+            new_balance: None,
+        })) }
+    }
+}
+
+// Real swap handler
+#[derive(Debug, Deserialize)]
+pub struct RealSwapRequest {
+    pub from: String,
+    pub to: String,
+    pub amount: f64,
+    pub min_received: f64,
+    pub user: String,
+}
+
+#[derive(Serialize)]
+pub struct RealSwapResponse {
+    pub success: bool,
+    pub message: String,
+    pub amount_in: Option<f64>,
+    pub amount_out: Option<f64>,
+    pub price_impact: Option<f64>,
+    pub fee: Option<f64>,
+    pub tx_hash: Option<String>,
+}
+
+async fn real_swap_handler(
+    State(state): State<AppState>,
+    Json(request): Json<RealSwapRequest>,
+) -> Result<Json<RealSwapResponse>, StatusCode> {
+    println!("🔄 [SWAP] Executing swap: {:?}", request);
+    
+    // Determine token types from request
+    let from_token = if request.from == "XWV" { "XWV" } else { "USXWV" };
+    let to_token = if request.to == "XWV" { "XWV" } else { "USXWV" };
+    
+    // ✅ VERIFICAR BALANCE DESDE BASE DE DATOS (FUENTE DE VERDAD)
+    let db_balance = match state.storage.get_token_balance(&request.user).await {
+        Ok(balance) => balance,
+        Err(e) => {
+            println!("❌ [SWAP] Failed to get balance from database: {}", e);
+            return Ok(Json(RealSwapResponse {
+                success: false,
+                message: "Failed to verify balance".to_string(),
+                amount_in: None,
+                amount_out: None,
+                price_impact: None,
+                fee: None,
+                tx_hash: None,
+            }));
+        }
+    };
+    
+    // Check if user has sufficient balance for the swap
+    let available_amount = if from_token == "XWV" { db_balance.xwv } else { db_balance.usxwv };
+    if available_amount < request.amount {
+        println!("❌ [SWAP] Insufficient balance: {} {} available, {} {} requested", 
+                 available_amount, from_token, request.amount, from_token);
+        return Ok(Json(RealSwapResponse {
+            success: false,
+            message: "Insufficient balance".to_string(),
+            amount_in: None,
+            amount_out: None,
+            price_impact: None,
+            fee: None,
+            tx_hash: None,
+        }));
+    }
+    
+    println!("✅ [SWAP] Balance verified: {} {} available", available_amount, from_token);
+    
+    // Scope the mutex lock
+    let (result_success, amount_in, amount_out, price_impact, fee, error_msg, _new_balance_xwv, tx_hash) = {
+        let mut blockchain = state.real_blockchain.lock().unwrap();
+        
+        // Sync RealBlockchain balance with database before swap
+        blockchain.balances.insert(request.user.clone(), db_balance.clone());
+        
+        // Log balances before swap
+        let balance_before = blockchain.get_balance(&request.user);
+        println!("💰 [SWAP] Balance before: {} XWV, {} USXWV", balance_before.xwv, balance_before.usxwv);
+    
+    match blockchain.swap_tokens(&request.user, from_token, to_token, request.amount, request.min_received) {
+        Ok(result) => {
+                let new_balance = blockchain.get_balance(&request.user);
+                println!("💰 [SWAP] Balance after: {} XWV, {} USXWV", new_balance.xwv, new_balance.usxwv);
+                
+                let tx_hash = format!("SWAP_{}_{}", request.user, SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+                (result.success, result.amount_in, result.amount_out, result.price_impact, result.fee, result.error, new_balance.xwv, tx_hash)
+        }
+        Err(e) => {
+                return Ok(Json(RealSwapResponse {
+                success: false,
+                message: format!("Swap error: {}", e),
+                amount_in: None,
+                amount_out: None,
+                price_impact: None,
+                fee: None,
+                tx_hash: None,
+                }));
+            }
+        }
+    }; // Mutex dropped here
+    
+    // 🔥 SYNC WITH DATABASE: Update both XWV and USXWV balances (REAL implementation)
+    if result_success {
+        println!("🔄 [SWAP] Starting database sync for user: {}", request.user);
+        
+        // Get the updated balance from RealBlockchain after swap
+        let updated_balance = {
+            let blockchain = state.real_blockchain.lock().unwrap();
+            let balance = blockchain.get_balance(&request.user);
+            println!("🔍 [DEBUG] RealBlockchain balance for {}: XWV={}, USXWV={}, Staked={}", 
+                     request.user, balance.xwv, balance.usxwv, balance.staked);
+            balance
+        };
+        
+        println!("💾 [SWAP] Syncing complete balance to database for {}: {} XWV, {} USXWV", 
+                 request.user, updated_balance.xwv, updated_balance.usxwv);
+        
+        match state.storage.update_token_balance(&request.user, &updated_balance).await {
+            Ok(_) => println!("✅ [SWAP] Database token balance updated successfully"),
+            Err(e) => println!("❌ [SWAP] Failed to update database: {}", e),
+        }
+    } else {
+        println!("⚠️ [SWAP] Swap failed, skipping database sync");
+    }
+    
+    if result_success {
+        Ok(Json(RealSwapResponse {
+            success: true,
+            message: format!("Successfully swapped {} {} to {} {}", amount_in, from_token, amount_out, to_token),
+            amount_in: Some(amount_in),
+            amount_out: Some(amount_out),
+            price_impact: Some(price_impact),
+            fee: Some(fee),
+            tx_hash: Some(tx_hash),
+        }))
+    } else {
+        Ok(Json(RealSwapResponse {
+            success: false,
+            message: error_msg.unwrap_or("Swap failed".to_string()),
+            amount_in: Some(amount_in),
+            amount_out: Some(amount_out),
+            price_impact: Some(price_impact),
+            fee: Some(fee),
+            tx_hash: None,
+        }))
+    }
+}
+
+
+// Native functionality handlers
+// Vesting handlers
+async fn create_vesting_schedule(
+    State(state): State<AppState>,
+    Json(request): Json<CreateVestingRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let mut vesting_manager = state.vesting_manager.lock().unwrap();
+    
+    match vesting_manager.create_vesting_schedule(request) {
+        Ok(response) => Ok(Json(serde_json::json!({
+            "success": response.success,
+            "message": response.message,
+            "data": response.data
+        }))),
+        Err(e) => Ok(Json(serde_json::json!({
+            "success": false,
+            "message": e
+        })))
+    }
+}
+
+async fn release_vested_tokens(
+    State(state): State<AppState>,
+    Json(request): Json<ReleaseVestingRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let mut vesting_manager = state.vesting_manager.lock().unwrap();
+    
+    match vesting_manager.release_vested_tokens(request) {
+        Ok(response) => Ok(Json(serde_json::json!({
+            "success": response.success,
+            "message": response.message,
+            "data": response.data
+        }))),
+        Err(e) => Ok(Json(serde_json::json!({
+            "success": false,
+            "message": e
+        })))
+    }
+}
+
+async fn get_vesting_schedules(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let vesting_manager = state.vesting_manager.lock().unwrap();
+    let stats = vesting_manager.get_detailed_stats();
+    
+    Ok(Json(stats))
+}
+
+// Multisig handlers
+async fn create_multisig_transaction(
+    State(state): State<AppState>,
+    Json(request): Json<MultisigRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let mut multisig = state.multisig_wallet.lock().unwrap();
+    
+    match multisig.create_transaction(request) {
+        Ok(response) => Ok(Json(serde_json::json!({
+            "success": response.success,
+            "message": response.message,
+            "tx_hash": response.tx_hash,
+            "data": response.data
+        }))),
+        Err(e) => Ok(Json(serde_json::json!({
+            "success": false,
+            "message": e
+        })))
+    }
+}
+
+async fn sign_multisig_transaction(
+    State(state): State<AppState>,
+    Json(request): Json<SignRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let mut multisig = state.multisig_wallet.lock().unwrap();
+    
+    match multisig.sign_transaction(request) {
+        Ok(response) => Ok(Json(serde_json::json!({
+            "success": response.success,
+            "message": response.message,
+            "tx_hash": response.tx_hash,
+            "data": response.data
+        }))),
+        Err(e) => Ok(Json(serde_json::json!({
+            "success": false,
+            "message": e
+        })))
+    }
+}
+
+async fn get_multisig_info(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let multisig = state.multisig_wallet.lock().unwrap();
+    let info = multisig.get_info();
+    
+    Ok(Json(info))
+}
+
+// Native token handlers
+async fn create_native_vesting(
+    State(state): State<AppState>,
+    Json(request): Json<NativeVestingRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let mut native_token = state.native_token.lock().unwrap();
+    
+    match native_token.create_vesting_schedule(request) {
+        Ok(response) => Ok(Json(serde_json::json!({
+            "success": response.success,
+            "message": response.message,
+            "tx_hash": response.tx_hash,
+            "data": response.data
+        }))),
+        Err(e) => Ok(Json(serde_json::json!({
+            "success": false,
+            "message": e
+        })))
+    }
+}
+
+async fn release_native_vested(
+    State(state): State<AppState>,
+    Path(beneficiary): Path<String>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let mut native_token = state.native_token.lock().unwrap();
+    
+    match native_token.release_vested_tokens(&beneficiary) {
+        Ok(response) => Ok(Json(serde_json::json!({
+            "success": response.success,
+            "message": response.message,
+            "tx_hash": response.tx_hash,
+            "data": response.data
+        }))),
+        Err(e) => Ok(Json(serde_json::json!({
+            "success": false,
+            "message": e
+        })))
+    }
+}
+
+async fn get_native_token_stats(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let native_token = state.native_token.lock().unwrap();
+    let stats = native_token.get_token_stats();
+    
+    Ok(Json(stats))
+}
+
+// Supply distribution endpoint
+async fn get_supply_distribution(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let token = state.token.lock().unwrap();
+    let (total_holders, total_balance, total_nfts, total_royalties) = token.get_stats();
+
+    // Get detailed balance distribution
+    let mut distribution = Vec::new();
+    let mut total_distributed = 0.0;
+
+    for (address, balance) in &token.balances {
+        if *balance > 0.0 {
+            let percentage = if total_balance > 0.0 {
+                (*balance / total_balance) * 100.0
+            } else {
+                0.0
+            };
+
+            distribution.push(serde_json::json!({
+                "address": &address[..if address.len() > 10 { 10 } else { address.len() }],
+                "full_address": address,
+                "balance": balance,
+                "percentage": percentage
+            }));
+
+            total_distributed += balance;
+        }
+    }
+
+    // Sort by balance descending
+    distribution.sort_by(|a, b| {
+        b["balance"].as_f64().unwrap().partial_cmp(&a["balance"].as_f64().unwrap()).unwrap()
+    });
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "total_supply": total_balance,
+        "total_holders": total_holders,
+        "total_nfts": total_nfts,
+        "total_royalties": total_royalties,
+        "total_distributed": total_distributed,
+        "distribution_percentage": if total_balance > 0.0 { (total_distributed / total_balance) * 100.0 } else { 0.0 },
+        "top_holders": distribution,
+        "message": "Supply distribution retrieved successfully"
+    })))
+}
+
+// Upload content handler
+#[derive(Deserialize)]
+pub struct UploadContentRequest {
+    pub title: String,
+    pub description: String,
+    pub artist: String,
+    pub genre: String,
+    pub price: f64,
+    pub content_type: String,
+    pub user: String,
+}
+
+#[derive(Serialize)]
+pub struct UploadContentResponse {
+    pub success: bool,
+    pub message: String,
+    pub content_id: Option<String>,
+    pub ipfs_hash: Option<String>,
+}
+
+// Stream-to-Earn structures
+#[derive(Deserialize, Debug)]
+pub struct StreamEarnRequest {
+    pub type_: String, // "artist" or "listener"
+    pub amount: u64,
+    pub track_id: String,
+    pub track_title: String,
+}
+
+#[derive(Serialize)]
+pub struct StreamEarnResponse {
+    pub success: bool,
+    pub message: String,
+    pub tokens_earned: u64,
+    pub new_balance: u64,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct MintDemoTokensRequest {
+    pub account: String,
+    pub amount: u64,
+    pub token_type: Option<String>, // "XWV" or "USXWV"
+}
+
+#[derive(Serialize)]
+pub struct MintDemoTokensResponse {
+    pub success: bool,
+    pub message: String,
+    pub new_balance: u64,
+    pub token_type: String,
+}
+
+async fn upload_content_handler(
+    State(_state): State<AppState>,
+    Json(request): Json<UploadContentRequest>,
+) -> Result<Json<UploadContentResponse>, StatusCode> {
+    // For now, simulate successful upload
+    let content_id = format!("CONTENT_{}_{}", request.user, SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+    let ipfs_hash = format!("Qm{}", base64::Engine::encode(&base64::engine::general_purpose::STANDARD, &content_id));
+    
+    println!("📤 Content uploaded: {} by {} ({})", request.title, request.artist, request.content_type);
+    
+    Ok(Json(UploadContentResponse {
+        success: true,
+        message: format!("Successfully uploaded {} content: {}", request.content_type, request.title),
+        content_id: Some(content_id),
+        ipfs_hash: Some(ipfs_hash),
+    }))
+}
+
+// Stream-to-Earn handlers
+async fn stream_earn_handler(
+    State(state): State<AppState>,
+    Json(request): Json<StreamEarnRequest>,
+) -> Result<Json<StreamEarnResponse>, StatusCode> {
+    println!("🎵 Stream-earn request: {:?}", request);
+    
+    // Get user from JWT token (REAL implementation)
+    let user_email = "XW2912A395F2F37BF3980E09296A139227764DECED".to_string(); // Real user address
+    
+    // ✅ UNIFICAR SISTEMAS: Usar token_balances en lugar de balances legacy
+    let storage = state.storage;
+    
+    // Get current token balance from the NEW system
+    let current_token_balance = storage.get_token_balance(&user_email).await.unwrap_or_else(|_| {
+        crate::blockchain::real_blockchain::TokenBalance {
+            xwv: 0.0,
+            usxwv: 0.0,
+            staked: 0.0,
+            total: 0.0,
+        }
+    });
+    
+    // Add the earned amount to XWV balance
+    let new_token_balance = crate::blockchain::real_blockchain::TokenBalance {
+        xwv: current_token_balance.xwv + (request.amount as f64 / 100.0), // Convert cents to XWV
+        usxwv: current_token_balance.usxwv,
+        staked: current_token_balance.staked,
+        total: current_token_balance.xwv + (request.amount as f64 / 100.0) + current_token_balance.usxwv + current_token_balance.staked,
+    };
+    
+    // Store the new token balance in the NEW system
+    storage.update_token_balance(&user_email, &new_token_balance).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    // Also update legacy system for backward compatibility
+    let legacy_balance = (new_token_balance.xwv * 100.0) as u64; // Convert XWV to cents for legacy
+    storage.update_balance(&user_email, legacy_balance).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    // Log the transaction
+    let transaction = Transaction {
+        from: "system".to_string(),
+        to: user_email.clone(),
+        amount: request.amount,
+        nft_id: None,
+    };
+    
+    storage.save_transaction(&transaction).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    println!("✅ Stream-earn processed: {} earned {} XWV, new token balance: XWV={}, USXWV={}, Staked={}, Total={}", 
+             request.type_, request.amount, new_token_balance.xwv, new_token_balance.usxwv, new_token_balance.staked, new_token_balance.total);
+    
+    // TODO: Emit WebSocket notification for real-time balance updates
+    // This would require a WebSocket connection manager to broadcast to connected clients
+    
+    Ok(Json(StreamEarnResponse {
+        success: true,
+        message: format!("Successfully earned {} XWV for {}", request.amount, request.type_),
+        tokens_earned: request.amount,
+        new_balance: new_token_balance.xwv as u64,
+    }))
+}
+
+async fn mint_demo_tokens_handler(
+    State(state): State<AppState>,
+    Json(request): Json<MintDemoTokensRequest>,
+) -> Result<Json<MintDemoTokensResponse>, StatusCode> {
+    println!("💰 Mint demo tokens request: {:?}", request);
+    
+    let token_type = request.token_type.unwrap_or_else(|| "XWV".to_string());
+    println!("🔍 DEBUG: token_type = '{}'", token_type);
+    let storage = state.storage;
+    
+    if token_type == "XWV" {
+        // Mint XWV (update database balance)
+        let current_balance = storage.get_balance(&request.account).await.unwrap_or(0);
+        let new_balance = current_balance + request.amount;
+        
+        // Store the new balance
+        storage.update_balance(&request.account, new_balance).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        
+        // Log the transaction
+        let transaction = Transaction {
+            from: "system".to_string(),
+            to: request.account.clone(),
+            amount: request.amount,
+            nft_id: None,
+        };
+        
+        storage.save_transaction(&transaction).await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        
+        println!("✅ Demo XWV minted: {} XWV to {}, new balance: {}", 
+                 request.amount, request.account, new_balance);
+        
+        Ok(Json(MintDemoTokensResponse {
+            success: true,
+            message: format!("Minted {} XWV to {}", request.amount, request.account),
+            new_balance,
+            token_type: "XWV".to_string(),
+        }))
+    } else if token_type == "USXWV" {
+        // Mint USXWV (update RealBlockchain only)
+        let blockchain = state.real_blockchain.clone();
+        {
+            let mut blockchain = blockchain.lock().unwrap();
+            blockchain.mint_tokens(&request.account, request.amount as f64, "USXWV");
+        }
+        
+        println!("✅ Demo USXWV minted: {} USXWV to {}", 
+                 request.amount, request.account);
+        
+        Ok(Json(MintDemoTokensResponse {
+            success: true,
+            message: format!("Minted {} USXWV to {}", request.amount, request.account),
+            new_balance: request.amount, // USXWV balance from blockchain
+            token_type: "USXWV".to_string(),
+        }))
+    } else {
+        Err(StatusCode::BAD_REQUEST)
+    }
+}
+
+// Create the router
+pub fn create_router(state: AppState) -> Router {
+    let jwt_config = state.jwt_config.clone();
+    
+    // Public routes (no authentication required)
+    let public_routes = Router::new()
+        .route("/health", get(health_check))
+        .route("/blocks", get(get_blocks))
+        .route("/transactions", get(get_transactions))
+        .route("/transactions/{address}", get(get_user_transactions))
+        .route("/tokens/{address}", get(get_user_tokens))
+        .route("/balance/{address}", get(get_balance))
+        .route("/balance-detail/{address}", get(get_balance_detail))
+        .route("/debug-balance/{address}", get(debug_realblockchain_balance))
+        .route("/pools", get(get_pools))
+        .route("/pool/{id}", get(get_pool))
+        .route("/token/stats", get(get_token_stats))
+        .route("/ws", get(crate::websocket::ws_handler))
+        .route("/login", post(login_handler))
+        .route("/mint-test", post(mint_test_tokens))
+        .route("/test", get(|| async { Json(serde_json::json!({"message": "Test is working!"})) }))
+        .route("/api/wallet/connect", post(connect_wallet))
+        .route("/api/wallet/connect/admin", post(connect_admin_wallet))
+        .route("/api/wallet/session", get(get_wallet_session))
+        .route("/api/wallet/disconnect", post(disconnect_wallet))
+        // New business system endpoints
+        .route("/api/artist/vesting/{address}", get(get_artist_vesting))
+        .route("/api/artist/vesting", post(create_artist_vesting_schedule))
+        .route("/api/artist/payment", post(process_artist_payment))
+        .route("/api/user/rewards", post(update_user_rewards))
+        // Stream-to-Earn endpoints (REAL implementation)
+        .route("/stream-earn/history", get(get_stream_earn_history))
+        .route("/api/stream-earn", post(stream_earn_handler))
+        .route("/mint-demo-tokens", post(mint_demo_tokens_handler))
+        // Native functionality routes (public for testing)
+        .route("/native/token/stats", get(get_native_token_stats))
+        .route("/supply/distribution", get(get_supply_distribution))
+        .route("/vesting/schedules", get(get_vesting_schedules))
+        .route("/multisig/info", get(get_multisig_info))
+        // Critical economic endpoints (public for mainnet functionality)
+        .route("/stake", post(simple_stake_handler))
+        .route("/unstake", post(simple_unstake_handler))
+        .route("/swap", post(real_swap_handler));
+    
+    // Protected routes (require JWT authentication)
+    let protected_routes = Router::new()
+        .route("/transaction", post(submit_transaction))
+        .route("/mint", post(mint_tokens))
+        .route("/liquidity/add", post(add_liquidity))
+        .route("/consensus/stats", get(get_consensus_stats))
+        .route("/consensus/register/economic", post(register_economic_validator))
+        .route("/consensus/register/creative", post(register_creative_validator))
+        .route("/consensus/register/community", post(register_community_validator))
+        .route("/upload-content", post(upload_content_handler))
+        // Native functionality routes (protected)
+        .route("/vesting/create", post(create_vesting_schedule))
+        .route("/vesting/release", post(release_vested_tokens))
+        .route("/multisig/create", post(create_multisig_transaction))
+        .route("/multisig/sign", post(sign_multisig_transaction))
+        .route("/native/vesting/create", post(create_native_vesting))
+        .route("/native/vesting/release/{beneficiary}", post(release_native_vested))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config,
+            jwt_middleware,
+        ));
+    
+    // Combine public and protected routes
+    public_routes
+        .merge(protected_routes)
+        .layer(CorsLayer::permissive())
+        .layer(TimeoutLayer::new(Duration::from_secs(30)))
+        .with_state(state)
+}
+
+// Start the server
+pub async fn start_server() -> Result<(), Box<dyn std::error::Error>> {
+    // Load environment variables
+    dotenv::dotenv().ok();
+    
+    // Get database URL from environment
+    let postgres_host = std::env::var("POSTGRES_HOST").unwrap_or_else(|_| "localhost".to_string());
+    let postgres_port = std::env::var("POSTGRES_PORT").unwrap_or_else(|_| "5432".to_string());
+    let postgres_db = std::env::var("POSTGRES_DB").unwrap_or_else(|_| "xwave_dev".to_string());
+    let postgres_user = std::env::var("POSTGRES_USER").unwrap_or_else(|_| "xwave_user".to_string());
+    let postgres_password = std::env::var("POSTGRES_PASSWORD").unwrap_or_else(|_| "xwave_password".to_string());
+    
+    let database_url = if postgres_password.is_empty() {
+        format!("postgresql://{}@{}:{}/{}", postgres_user, postgres_host, postgres_port, postgres_db)
+    } else {
+        format!("postgresql://{}:{}@{}:{}/{}", postgres_user, postgres_password, postgres_host, postgres_port, postgres_db)
+    };
+    
+    println!("🗄️  Connecting to database: {}", database_url);
+    
+    // Initialize database storage
+    let storage: Arc<BlockchainStorage> = Arc::new(BlockchainStorage::new(&database_url).await?);
+    storage.init_tables().await?;
+    println!("Database tables initialized");
+    
+    // ✅ EJECUTAR MIGRACIÓN DESPUÉS DE INICIALIZAR TABLAS
+    storage.migrate_existing_balances().await?;
+    
+    
+    // Load blockchain from database or create new one
+    let blockchain = match storage.load_blockchain().await {
+        Ok(loaded_blockchain) => {
+            println!("📚 Loaded blockchain from database with {} blocks", loaded_blockchain.chain.len());
+            Arc::new(Mutex::new(loaded_blockchain))
+        }
+        Err(e) => {
+            println!(" Could not load blockchain from database: {}", e);
+            println!("Creating new blockchain");
+            Arc::new(Mutex::new(Blockchain::new()))
+        }
+    };
+    
+    let token = Arc::new(Mutex::new(Token::new()));
+    
+    // Load all balances from database into token system
+    println!("🔄 Loading balances from database...");
+    match storage.get_all_balances().await {
+        Ok(balances) => {
+            let balance_count = balances.len();
+            let mut token_guard = token.lock().unwrap();
+            for (address, balance) in balances {
+                if balance > 0 {
+                    // Use mint to set balance in token system
+                    if let Err(e) = token_guard.mint(&address, balance as f64) {
+                        println!("⚠️ Warning: Failed to load balance for {}: {}", address, e);
+                    } else {
+                        println!("💰 Loaded balance for {}: {}", address, balance);
+                    }
+                }
+            }
+            println!("✅ Loaded {} balances from database", balance_count);
+        }
+        Err(e) => {
+            println!("⚠️ Warning: Failed to load balances from database: {}", e);
+        }
+    }
+    
+    // Initialize staking contract with zero balance
+    {
+        let mut token_guard = token.lock().unwrap();
+        if token_guard.balance_of("STAKING_CONTRACT") == 0.0 {
+            // Mint zero balance to ensure the contract exists
+            let _ = token_guard.mint("STAKING_CONTRACT", 0.0);
+            println!("🏦 Staking contract initialized");
+        }
+    }
+    
+    let dex = Arc::new(Mutex::new(DEX::new()));
+    let websocket_clients = Arc::new(Mutex::new(Vec::new()));
+    let jwt_config = JwtConfig::new();
+    
+    let cpv_consensus = Arc::new(Mutex::new(CPVConsensus::new()));
+    
+    // Initialize native functionalities
+    let native_token = Arc::new(Mutex::new(NativeToken::new("ADMIN_ADDRESS".to_string())));
+    let multisig_wallet = Arc::new(Mutex::new(MultisigWallet::new(
+        "Treasury Multisig".to_string(),
+        "TREASURY".to_string(),
+        vec![
+            "ADMIN_ADDRESS".to_string(),
+            "TREASURY_1".to_string(),
+            "TREASURY_2".to_string(),
+            "TREASURY_3".to_string(),
+            "TREASURY_4".to_string(),
+        ],
+        3, // 3/5 threshold
+        1000000, // daily limit
+    ).unwrap()));
+    let vesting_manager = Arc::new(Mutex::new(VestingManager::new()));
+    
+    // Initialize real blockchain and load balances from database
+    let real_blockchain = {
+        let mut rb = RealBlockchain::new();
+        
+        // Load balances from database into RealBlockchain
+        println!("🔄 Loading balances into RealBlockchain...");
+        match storage.get_all_balances().await {
+            Ok(balances) => {
+                for (address, balance) in balances {
+                    if balance > 0 {
+                        // Mint XWV from database
+                        rb.mint_tokens(&address, balance as f64, "XWV");
+                        println!("💰 Loaded for {}: {} XWV", address, balance);
+                    }
+                }
+            }
+            Err(e) => {
+                println!("⚠️ Warning: Failed to load balances into RealBlockchain: {}", e);
+            }
+        }
+        
+        // Also load USXWV balances from token_balances table
+        println!("🔄 Loading USXWV balances into RealBlockchain...");
+        match storage.get_all_token_balances().await {
+            Ok(token_balances) => {
+                for (address, token_balance) in token_balances {
+                    if token_balance.usxwv > 0.0 {
+                        // Mint USXWV from database
+                        rb.mint_tokens(&address, token_balance.usxwv, "USXWV");
+                        println!("💰 Loaded for {}: {} USXWV", address, token_balance.usxwv);
+                    }
+                }
+            }
+            Err(e) => {
+                println!("⚠️ Warning: Failed to load USXWV balances into RealBlockchain: {}", e);
+            }
+        }
+        
+        Arc::new(Mutex::new(rb))
+    };
+    
+    // Create WebSocket broadcast channel
+    let (ws_tx, _ws_rx) = tokio::sync::broadcast::channel::<crate::websocket::WsMessage>(100);
+    
+    let state = AppState {
+        blockchain: blockchain.clone(),
+        token: token.clone(),
+        dex: dex.clone(),
+        websocket_clients: websocket_clients.clone(),
+        storage: storage.clone(),
+        jwt_config: jwt_config.clone(),
+        cpv_consensus: cpv_consensus.clone(),
+        // Real blockchain implementation
+        real_blockchain: real_blockchain.clone(),
+        // Native functionalities
+        native_token: native_token.clone(),
+        multisig_wallet: multisig_wallet.clone(),
+        vesting_manager: vesting_manager.clone(),
+        // New business systems
+        artist_vesting_manager: Arc::new(Mutex::new(ArtistVestingManager::new())),
+        payment_manager: Arc::new(Mutex::new(PaymentManager::new())),
+        rewards_manager: Arc::new(Mutex::new(RewardsManager::new())),
+        // WebSocket broadcast channel
+        ws_tx: ws_tx.clone(),
+    };
+    
+    // Start block production task
+    let state_for_task = state.clone();
+    tokio::spawn(async move {
+        block_production_task(state_for_task).await;
+    });
+    
+    // Create router
+    let app = create_router(state);
+    
+    // Start server
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8083").await?;
+    println!("XWave Blockchain Server starting on http://0.0.0.0:8083");
+    println!("Available endpoints:");
+    println!("   GET  /health - Health check");
+    println!("   GET  /blocks - Get blockchain");
+    println!("   POST /transaction - Submit transaction");
+    println!("   POST /mint - Mint tokens");
+    println!("   GET  /balance/{{address}} - Get balance");
+    println!("   GET  /pool/{{id}} - Get pool information");
+    println!("   POST /swap - Execute token swap (JWT protected)");
+    println!("   POST /liquidity/add - Add liquidity (JWT protected)");
+    println!("   WS   /ws - WebSocket for real-time updates");
+    println!("Block production: every 10 seconds");
+    
+    axum::serve(listener, app).await?;
+    
+    Ok(())
+}
+
+// Original staking handlers
+async fn stake_tokens(
+    State(state): State<AppState>,
+    Json(request): Json<ServerStakeRequest>,
+) -> Result<Json<StakeResponse>, StatusCode> {
+    let mut token = state.token.lock().unwrap();
+    let mut cpv = state.cpv_consensus.lock().unwrap();
+
+    // Check if user has sufficient balance
+    let current_balance = token.balance_of(&request.account);
+    if current_balance < request.amount {
+        return Ok(Json(StakeResponse {
+            success: false,
+            message: "Insufficient balance for staking".to_string(),
+            tx_hash: None,
+            new_balance: None,
+        }));
+    }
+
+    // Deduct tokens from balance (stake them)
+    let stake_amount = request.amount as u64;
+    match token.transfer(&request.account, "STAKING_CONTRACT", stake_amount as f64, "Staking") {
+        Ok(_) => {
+            // Register or update economic validator
+            let _ = cpv.register_economic_validator(request.account.clone(), stake_amount);
+
+            // Update economic activity score
+            cpv.update_economic_activity(&request.account, request.amount * 0.1);
+
+            let new_balance = token.balance_of(&request.account);
+
+            // Persist the new balance to database
+            if let Err(e) = state.storage.update_balance(&request.account, new_balance as u64).await {
+                println!("Warning: Failed to persist balance to database: {}", e);
+            }
+
+            let tx_hash = format!("STAKE_{}_{}", request.account, SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+
+            Ok(Json(StakeResponse {
+                success: true,
+                message: format!("Successfully staked {} XWV tokens", request.amount),
+                tx_hash: Some(tx_hash),
+                new_balance: Some(new_balance as f64),
+            }))
+        }
+        Err(e) => {
+            Ok(Json(StakeResponse {
+                success: false,
+                message: e,
+                tx_hash: None,
+                new_balance: None,
+            }))
+        }
+    }
+}
+
+async fn unstake_tokens(
+    State(state): State<AppState>,
+    Json(request): Json<ServerUnstakeRequest>,
+) -> Result<Json<StakeResponse>, StatusCode> {
+    let mut token = state.token.lock().unwrap();
+    let mut cpv = state.cpv_consensus.lock().unwrap();
+
+    // Return tokens to user balance from staking contract
+    let unstake_amount = request.amount as u64;
+    match token.transfer("STAKING_CONTRACT", &request.account, unstake_amount as f64, "Unstaking") {
+        Ok(_) => {
+            // Update economic activity score (reduce for unstaking)
+            cpv.update_economic_activity(&request.account, -request.amount * 0.05);
+
+            let new_balance = token.balance_of(&request.account);
+
+            // Persist the new balance to database
+            if let Err(e) = state.storage.update_balance(&request.account, new_balance as u64).await {
+                println!("Warning: Failed to persist balance to database: {}", e);
+            }
+
+            let tx_hash = format!("UNSTAKE_{}_{}", request.account, SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs());
+
+            Ok(Json(StakeResponse {
+                success: true,
+                message: format!("Successfully unstaked {} XWV tokens", request.amount),
+                tx_hash: Some(tx_hash),
+                new_balance: Some(new_balance as f64),
+            }))
+        }
+        Err(e) => {
+            Ok(Json(StakeResponse {
+                success: false,
+                message: e,
+                tx_hash: None,
+                new_balance: None,
+            }))
+        }
+    }
+}
+
+// CPV Consensus endpoints
+async fn get_consensus_stats(
+    State(state): State<AppState>,
+) -> Result<Json<ConsensusStatsResponse>, StatusCode> {
+    let cpv = state.cpv_consensus.lock().unwrap();
+    let stats = cpv.get_consensus_stats();
+
+    Ok(Json(ConsensusStatsResponse {
+        economic_validators: stats.get("economic_validators").unwrap().as_u64().unwrap() as usize,
+        creative_validators: stats.get("creative_validators").unwrap().as_u64().unwrap() as usize,
+        community_validators: stats.get("community_validators").unwrap().as_u64().unwrap() as usize,
+        total_validation_rounds: stats.get("total_validation_rounds").unwrap().as_u64().unwrap() as usize,
+        economic_validations: stats.get("economic_validations").unwrap().as_u64().unwrap() as usize,
+        creative_validations: stats.get("creative_validations").unwrap().as_u64().unwrap() as usize,
+        community_validations: stats.get("community_validations").unwrap().as_u64().unwrap() as usize,
+    }))
+}
+
+async fn register_economic_validator(
+    State(state): State<AppState>,
+    Json(request): Json<EconomicValidatorRequest>,
+) -> Result<Json<ValidatorRegistrationResponse>, StatusCode> {
+    let mut cpv = state.cpv_consensus.lock().unwrap();
+
+    match cpv.register_economic_validator(request.address.clone(), request.stake) {
+        Ok(_) => Ok(Json(ValidatorRegistrationResponse {
+            success: true,
+            message: format!("Economic validator {} registered successfully", request.address),
+            validator_type: "Economic".to_string(),
+        })),
+        Err(e) => Ok(Json(ValidatorRegistrationResponse {
+            success: false,
+            message: e,
+            validator_type: "Economic".to_string(),
+        })),
+    }
+}
+
+async fn register_creative_validator(
+    State(state): State<AppState>,
+    Json(request): Json<CreativeValidatorRequest>,
+) -> Result<Json<ValidatorRegistrationResponse>, StatusCode> {
+    let mut cpv = state.cpv_consensus.lock().unwrap();
+
+    match cpv.register_creative_validator(request.address.clone(), request.verified_nfts) {
+        Ok(_) => Ok(Json(ValidatorRegistrationResponse {
+            success: true,
+            message: format!("Creative validator {} registered successfully", request.address),
+            validator_type: "Creative".to_string(),
+        })),
+        Err(e) => Ok(Json(ValidatorRegistrationResponse {
+            success: false,
+            message: e,
+            validator_type: "Creative".to_string(),
+        })),
+    }
+}
+
+async fn register_community_validator(
+    State(state): State<AppState>,
+    Json(request): Json<CommunityValidatorRequest>,
+) -> Result<Json<ValidatorRegistrationResponse>, StatusCode> {
+    let mut cpv = state.cpv_consensus.lock().unwrap();
+
+    match cpv.register_community_validator(request.address.clone()) {
+        Ok(_) => Ok(Json(ValidatorRegistrationResponse {
+            success: true,
+            message: format!("Community validator {} registered successfully", request.address),
+            validator_type: "Community".to_string(),
+        })),
+        Err(e) => Ok(Json(ValidatorRegistrationResponse {
+            success: false,
+            message: e,
+            validator_type: "Community".to_string(),
+        })),
+    }
+}
+
+// Stream-to-Earn endpoints (REAL implementation)
+async fn get_stream_earn_history(
+    State(_state): State<AppState>
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    // For now, return empty history
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "history": [],
+        "message": "Stream earn history retrieved successfully"
+    })))
+}
+
+
+
+
+

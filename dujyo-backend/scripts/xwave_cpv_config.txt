@@ -1,0 +1,20 @@
+DUJYO_CPV_CONFIG
+Total Daily Rewards: 30000 DYO
+
+ECONOMIC VALIDATORS:
+Pool ID: ECONOMIC_POOL
+Reward Rate: 10 DYO per validation
+Min Stake: 1000 DYO
+Max Daily Rewards: 10000 DYO
+
+CREATIVE VALIDATORS:
+Pool ID: CREATIVE_POOL
+Reward Rate: 15 DYO per validation
+Min Stake: 0 DYO
+Max Daily Rewards: 15000 DYO
+
+COMMUNITY VALIDATORS:
+Pool ID: COMMUNITY_POOL
+Reward Rate: 5 DYO per validation
+Min Stake: 0 DYO
+Max Daily Rewards: 5000 DYO

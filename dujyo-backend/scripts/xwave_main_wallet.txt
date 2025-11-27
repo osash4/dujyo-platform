@@ -1,0 +1,7 @@
+DUJYO_MAIN_WALLET
+Address: XW923f451ff1784cfd
+Public Key: a8220efaa7ea2842
+Private Key: 227f79fc4bb15f06
+Seed Phrase: make mammal man manage mandate mango mansion manual maple marble march margin marine market marriage mask mass master match material math matrix matter maximum
+Type: MAIN_TREASURY
+Created: 2025-01-25 20:30:00 UTC

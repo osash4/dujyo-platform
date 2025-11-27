@@ -1,0 +1,106 @@
+[package]
+name = "xwavve-backend"
+version = "0.1.0"
+authors = ["Yare"]
+edition = "2021"
+
+[dependencies]
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.130"
+
+# Async runtime
+tokio = { version = "1.43", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.12.12", features = ["json", "multipart"] }
+
+# Base64 encoding
+base64 = "0.22.1"
+
+# Utilities
+chrono = { version = "0.4.19", features = ["serde"] }
+thiserror = "2.0.9"
+lazy_static = "1.4"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+rand = "0.9.2"
+
+# Axum HTTP server dependencies
+axum = { version = "0.8.6", features = ["ws", "macros", "multipart"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace", "timeout"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# WebSocket support
+futures-util = "0.3"
+tokio-tungstenite = "0.28.0"
+
+# Database dependencies - OPTIMIZED
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json", "migrate", "decimal"] }
+# ⚠️ SECURITY NOTE: dotenv 0.15.0 is unmaintained but no newer version available
+# Consider migrating to dotenvy (maintained fork) in future
+dotenv = "0.15"
+
+# Redis Cache Layer - NEW
+redis = { version = "0.23", features = ["tokio-comp", "connection-manager", "cluster", "json"] }
+bb8 = "0.8"  # Connection pooling for Redis
+bb8-redis = "0.14"
+
+# Circuit Breaker - NEW
+circuit_breaker = "0.1"
+tokio-retry = "0.3"
+
+# Metrics and Monitoring - NEW
+# ✅ SECURITY FIX: Updated prometheus to fix protobuf vulnerability (RUSTSEC-2024-0437)
+prometheus = "0.14"
+metrics = "0.21"
+metrics-exporter-prometheus = "0.12"
+
+# Rate Limiting - NEW
+governor = "0.6"
+nonzero_ext = "0.3"
+
+# Input Validation - NEW
+# ✅ SECURITY FIX: Updated validator to fix idna vulnerability (RUSTSEC-2024-0421)
+validator = { version = "0.19", features = ["derive"] }
+regex = "1.10"
+
+# Monitoring and Error Tracking - NEW
+backtrace = "0.3"
+
+# Async Traits - NEW
+async-trait = "0.1"
+
+# JWT authentication
+jsonwebtoken = { version = "9.3" }
+
+# Password hashing
+bcrypt = "0.15"
+
+# Encryption dependencies
+aes = "0.8"
+block-modes = "0.8"
+hex = "0.4"
+
+# Cryptographic dependencies
+ed25519-dalek = "2.0"
+sha2 = "0.10"
+
+# Actix Web for compatibility
+actix-web = "4.4"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[lib]
+name = "xwavve_backend"
+path = "src/lib.rs"
+
+[[bin]]
+name = "xwavve-backend"
+path = "src/main.rs"
+
+[[bin]]
+name = "test-mvp-flow"
+path = "src/bin/test_mvp_flow.rs"
