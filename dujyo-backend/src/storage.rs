@@ -127,6 +127,19 @@ impl BlockchainStorage {
             .execute(&self.pool)
             .await?;
 
+        // Create indexes for users table
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
+            .execute(&self.pool)
+            .await?;
+
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_wallet ON users(wallet_address)")
+            .execute(&self.pool)
+            .await?;
+
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)")
+            .execute(&self.pool)
+            .await?;
+
         Ok(())
     }
 
