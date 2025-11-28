@@ -21,10 +21,8 @@ import {
 } from 'lucide-react';
 import { LanguageSelector } from '../components/onboarding/LanguageSelector';
 import { useAuth } from '../auth/AuthContext';
-import { usePlayerContext } from '../contexts/PlayerContext';
 import { useWallet } from '../hooks/useWallet';
 import { getApiBaseUrl } from '../utils/apiConfig';
-import GlobalPlayer from '../components/Player/GlobalPlayer';
 import MainHeader from '../components/Layout/MainHeader';
 import Logo from '../components/common/Logo';
 
@@ -37,7 +35,6 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut, user } = useAuth();
-  const { currentTrack, playerPosition } = usePlayerContext();
   const { account } = useWallet();
   const [weeklyEarnings, setWeeklyEarnings] = useState(0);
   const [streamCount, setStreamCount] = useState(0);
@@ -419,14 +416,6 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children }) => {
           {children}
         </main>
       </div>
-
-      {/* Global Player */}
-      {currentTrack && (
-        <GlobalPlayer 
-          track={currentTrack}
-          position={playerPosition}
-        />
-      )}
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (

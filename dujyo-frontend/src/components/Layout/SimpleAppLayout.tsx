@@ -1,10 +1,8 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
-import { usePlayerContext } from '../../contexts/PlayerContext';
 import { useWallet } from '../../hooks/useWallet';
 import { getApiBaseUrl } from '../../utils/apiConfig';
-import GlobalPlayer from '../Player/GlobalPlayer';
 import SpotifyBottomNav from './BottomNav';
 import MainHeader from './MainHeader';
 import Logo from '../common/Logo';
@@ -25,7 +23,6 @@ const SimpleAppLayout: React.FC<SimpleAppLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut, getUserRole, user } = useAuth();
-  const { currentTrack, playerPosition } = usePlayerContext();
   const { account } = useWallet();
   const [userEarnings, setUserEarnings] = useState(0);
   const [isLoadingEarnings, setIsLoadingEarnings] = useState(false);
@@ -499,14 +496,6 @@ const SimpleAppLayout: React.FC<SimpleAppLayoutProps> = ({ children }) => {
       </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Global Player - Show when there's a track */}
-      {currentTrack && (
-        <GlobalPlayer 
-          track={currentTrack}
-          position={playerPosition}
-        />
-      )}
     </div>
   );
 };

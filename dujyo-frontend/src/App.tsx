@@ -5,7 +5,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 
 import { BlockchainProvider } from './contexts/BlockchainContext';
 import { WebSocketProvider, useWebSocket } from './contexts/WebSocketContext';
-import { PlayerProvider } from './contexts/PlayerContext';
+import { PlayerProvider, usePlayerContext } from './contexts/PlayerContext';
 import { EventBusProvider } from './contexts/EventBusContext';
 
 import { WalletDashboard } from './components/wallet/WalletDashboard';
@@ -13,6 +13,7 @@ import { ArtistPortal } from './components/artist/ArtistPortal';
 import { ContentMarketplace } from './components/marketplace/ContentMarketplace';
 import { WalletConnector } from './components/wallet/WalletConnector';
 import SimpleAppLayout from './components/Layout/SimpleAppLayout';
+import GlobalPlayer from './components/Player/GlobalPlayer';
 
 // Artist Layout and Components
 import ArtistLayout from './layouts/ArtistLayout';
@@ -104,6 +105,7 @@ const App: React.FC = () => {
 
 const AppRoutes: React.FC = () => {
   const { loading, error, isConnected } = useWebSocket();
+  const { currentTrack, playerPosition } = usePlayerContext();
   const [showHelpCenter, setShowHelpCenter] = React.useState(false);
   const [showTour, setShowTour] = React.useState(false);
 
@@ -307,6 +309,14 @@ const AppRoutes: React.FC = () => {
         {/* 404 - Catch all unmatched routes */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
+      {/* Global Player - Persists across all page navigations */}
+      {currentTrack && (
+        <GlobalPlayer 
+          track={currentTrack}
+          position={playerPosition}
+        />
+      )}
     </>
   );
 };
