@@ -15,7 +15,7 @@
           "value": "http"
         }
       ],
-      "destination": "https://dujyo.com/:1",
+      "destination": "https://dujyo.com/$1",
       "permanent": true
     }
   ],
