@@ -183,6 +183,46 @@ impl BlockchainStorage {
             .execute(&self.pool)
             .await?;
 
+        // Create content table (for videos, audio, gaming content)
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS content (
+                content_id VARCHAR(255) PRIMARY KEY,
+                artist_id VARCHAR(255) NOT NULL,
+                artist_name VARCHAR(255) NOT NULL,
+                title VARCHAR(500) NOT NULL,
+                description TEXT,
+                genre VARCHAR(100),
+                content_type VARCHAR(50) NOT NULL,
+                file_url VARCHAR(1000),
+                ipfs_hash VARCHAR(255),
+                thumbnail_url VARCHAR(1000),
+                price DECIMAL(20, 6) DEFAULT 0.0,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+            "#
+        )
+        .execute(&self.pool)
+        .await
+        .map_err(|e| {
+            eprintln!("❌ Error creating content table: {}", e);
+            e
+        })?;
+        eprintln!("✅ Content table created or already exists.");
+
+        // Create indexes for content table
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_content_artist_id ON content(artist_id)")
+            .execute(&self.pool)
+            .await?;
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_content_type ON content(content_type)")
+            .execute(&self.pool)
+            .await?;
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_content_created_at ON content(created_at DESC)")
+            .execute(&self.pool)
+            .await?;
+        eprintln!("✅ Content table indexes created.");
+
         // Verify users table exists
         let users_exists: bool = sqlx::query_scalar(
             "SELECT EXISTS (
