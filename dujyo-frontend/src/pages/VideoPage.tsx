@@ -200,30 +200,8 @@ interface WatchTimeMilestone {
 }
 
 const VideoPage: React.FC = () => {
-  // Use console.error which won't be removed in production
-  console.error('🎬 VideoPage: Component rendering...');
-  
-  // Safely get player context with error handling
-  let playTrack: (track: any) => void = () => {};
-  let setPlayerPosition: (position: 'top' | 'bottom') => void = () => {};
-  
-  try {
-    console.error('🎬 VideoPage: Getting PlayerContext...');
-    const playerContext = usePlayerContext();
-    playTrack = playerContext.playTrack;
-    setPlayerPosition = playerContext.setPlayerPosition;
-    console.error('🎬 VideoPage: PlayerContext obtained successfully');
-  } catch (error) {
-    console.error('❌ VideoPage: PlayerContext error:', error);
-    console.error('❌ VideoPage: Error details:', {
-      name: (error as Error)?.name,
-      message: (error as Error)?.message,
-      stack: (error as Error)?.stack
-    });
-    // Re-throw to let ErrorBoundary catch it
-    throw error;
-  }
-  
+  // Access PlayerContext directly like MusicPage and GamingPage do
+  const { playTrack, setPlayerPosition } = usePlayerContext();
   const { user } = useAuth();
   const { connect, account, isConnecting } = useWallet();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -261,11 +239,9 @@ const VideoPage: React.FC = () => {
     if (!account) return;
     
     try {
-      console.error('🎬 VideoPage: Fetching creator earnings...');
       const apiBaseUrl = getApiBaseUrl();
       const token = localStorage.getItem('jwt_token');
       
-      console.error(`🎬 VideoPage: API URL: ${apiBaseUrl}/api/earnings/creator/${account}`);
       const response = await fetch(`${apiBaseUrl}/api/earnings/creator/${account}`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
@@ -278,14 +254,11 @@ const VideoPage: React.FC = () => {
         setCreatorEarnings(data.totalEarnings || 0);
         setUserTier(data.tier || 'Bronze');
         setEngagementPoints(data.engagementPoints || 0);
-        console.error('✅ VideoPage: Creator earnings fetched:', data);
-      } else {
-        // Endpoint might not exist yet, that's okay
-        console.warn('⚠️ VideoPage: Creator earnings endpoint not available:', response.status);
       }
+      // Silently fail if endpoint doesn't exist yet
     } catch (error) {
       // Silently fail - this endpoint might not be implemented yet
-      console.warn('⚠️ VideoPage: Error fetching creator earnings (non-critical):', error);
+      console.warn('Error fetching creator earnings (non-critical):', error);
     }
   }, [account]);
 
