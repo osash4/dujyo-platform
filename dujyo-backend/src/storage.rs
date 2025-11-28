@@ -164,24 +164,37 @@ impl BlockchainStorage {
         }
 
         // Add new columns to users table if they don't exist (migration)
-        let alter_queries = vec![
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(255)",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(1000)",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS public_profile BOOLEAN DEFAULT true",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS show_listening_activity BOOLEAN DEFAULT false",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS data_collection BOOLEAN DEFAULT true",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS theme VARCHAR(20) DEFAULT 'dark'",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'en'",
+        // PostgreSQL doesn't support IF NOT EXISTS for ADD COLUMN, so we check first
+        let columns_to_add = vec![
+            ("display_name", "VARCHAR(255)"),
+            ("bio", "TEXT"),
+            ("avatar_url", "VARCHAR(1000)"),
+            ("public_profile", "BOOLEAN DEFAULT true"),
+            ("show_listening_activity", "BOOLEAN DEFAULT false"),
+            ("data_collection", "BOOLEAN DEFAULT true"),
+            ("theme", "VARCHAR(20) DEFAULT 'dark'"),
+            ("language", "VARCHAR(10) DEFAULT 'en'"),
         ];
         
-        for query in alter_queries {
-            if let Err(e) = sqlx::query(query)
-                .execute(&self.pool)
-                .await
-            {
-                // Column may already exist, which is fine
-                eprintln!("⚠️ Warning: Could not add column (may already exist): {}", e);
+        for (column_name, column_type) in columns_to_add {
+            let column_exists: bool = sqlx::query_scalar(
+                "SELECT EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = 'users' AND column_name = $1
+                )"
+            )
+            .bind(column_name)
+            .fetch_one(&self.pool)
+            .await
+            .unwrap_or(false);
+            
+            if !column_exists {
+                let alter_query = format!("ALTER TABLE users ADD COLUMN {} {}", column_name, column_type);
+                if let Err(e) = sqlx::query(&alter_query).execute(&self.pool).await {
+                    eprintln!("⚠️ Warning: Could not add column {}: {}", column_name, e);
+                } else {
+                    eprintln!("✅ Added column {} to users table", column_name);
+                }
             }
         }
         eprintln!("✅ User profile columns checked/added");
