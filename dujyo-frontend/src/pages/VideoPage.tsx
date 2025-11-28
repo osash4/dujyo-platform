@@ -200,18 +200,19 @@ interface WatchTimeMilestone {
 }
 
 const VideoPage: React.FC = () => {
-  console.log('🎬 VideoPage: Component rendering...');
+  // Use console.error which won't be removed in production
+  console.error('🎬 VideoPage: Component rendering...');
   
   // Safely get player context with error handling
   let playTrack: (track: any) => void = () => {};
   let setPlayerPosition: (position: 'top' | 'bottom') => void = () => {};
   
   try {
-    console.log('🎬 VideoPage: Getting PlayerContext...');
+    console.error('🎬 VideoPage: Getting PlayerContext...');
     const playerContext = usePlayerContext();
     playTrack = playerContext.playTrack;
     setPlayerPosition = playerContext.setPlayerPosition;
-    console.log('🎬 VideoPage: PlayerContext obtained successfully');
+    console.error('🎬 VideoPage: PlayerContext obtained successfully');
   } catch (error) {
     console.error('❌ VideoPage: PlayerContext error:', error);
     console.error('❌ VideoPage: Error details:', {
@@ -219,6 +220,8 @@ const VideoPage: React.FC = () => {
       message: (error as Error)?.message,
       stack: (error as Error)?.stack
     });
+    // Re-throw to let ErrorBoundary catch it
+    throw error;
   }
   
   const { user } = useAuth();

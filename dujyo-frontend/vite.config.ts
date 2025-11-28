@@ -62,8 +62,10 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: isProduction, // Remove console.log in production
+          drop_console: false, // Keep console for debugging (especially console.error)
           drop_debugger: isProduction,
+          // Keep console.error and console.warn
+          pure_funcs: isProduction ? ['console.log', 'console.info', 'console.debug'] : [],
         },
       },
       // Code splitting and chunk optimization
