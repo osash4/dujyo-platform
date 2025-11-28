@@ -1529,10 +1529,6 @@ const translations: Translations = {
     en: 'Select Content Type',
     es: 'Selecciona el Tipo de Contenido',
   },
-  'upload.title': {
-    en: 'Title',
-    es: 'Título',
-  },
   'upload.description': {
     en: 'Description',
     es: 'Descripción',
