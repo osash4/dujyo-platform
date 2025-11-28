@@ -101,6 +101,10 @@ const FuturisticChart: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching blockchain data:', error);
+        // If error is JSON parsing, log it specifically
+        if (error instanceof SyntaxError) {
+          console.warn('Received non-JSON response from blockchain endpoint');
+        }
         // If all else fails, show empty chart
         setData([]);
       } finally {
