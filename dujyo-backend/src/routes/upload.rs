@@ -589,6 +589,76 @@ pub async fn list_artist_content_handler(
     }))
 }
 
+/// GET /api/v1/content/videos or /api/videos
+/// List all public videos (no authentication required)
+/// Returns videos filtered by content_type = 'video'
+pub async fn list_videos_handler(
+    State(state): State<AppState>,
+) -> Result<Json<ListContentResponse>, StatusCode> {
+    let pool = &state.storage.pool;
+    
+    // Query videos from database, ordered by created_at DESC
+    let content_rows_result = sqlx::query(
+        r#"
+        SELECT 
+            content_id,
+            artist_id,
+            artist_name,
+            title,
+            description,
+            genre,
+            content_type,
+            file_url,
+            ipfs_hash,
+            thumbnail_url,
+            price::float8 as price,
+            created_at,
+            updated_at
+        FROM content
+        WHERE content_type = 'video'
+        ORDER BY created_at DESC
+        LIMIT 100
+        "#
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Error querying videos from database: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    // Map rows to ContentItem
+    let content_rows: Vec<ContentItem> = content_rows_result
+        .into_iter()
+        .map(|row| ContentItem {
+            content_id: row.get::<String, _>("content_id"),
+            artist_id: row.get::<String, _>("artist_id"),
+            artist_name: row.get::<String, _>("artist_name"),
+            title: row.get::<String, _>("title"),
+            description: row.get::<Option<String>, _>("description"),
+            genre: row.get::<Option<String>, _>("genre"),
+            content_type: row.get::<String, _>("content_type"),
+            file_url: row.get::<Option<String>, _>("file_url"),
+            ipfs_hash: row.get::<Option<String>, _>("ipfs_hash"),
+            thumbnail_url: row.get::<Option<String>, _>("thumbnail_url"),
+            price: row.get::<f64, _>("price"),
+            created_at: row.get::<chrono::DateTime<chrono::Utc>, _>("created_at"),
+            updated_at: row.get::<chrono::DateTime<chrono::Utc>, _>("updated_at"),
+        })
+        .collect();
+
+    let total = content_rows.len();
+
+    println!("✅ Retrieved {} videos", total);
+
+    Ok(Json(ListContentResponse {
+        success: true,
+        message: format!("Retrieved {} videos", total),
+        content: content_rows,
+        total,
+    }))
+}
+
 // ============================================================================
 // FILE SERVING HANDLER
 // ============================================================================
@@ -753,5 +823,6 @@ pub fn content_routes() -> Router<AppState> {
     Router::new()
         .route("/artist/{artist_id}", get(list_artist_content_handler))
         .route("/{content_id}/file", get(serve_content_file_handler))
+        .route("/videos", get(list_videos_handler)) // ✅ Public endpoint to list all videos
 }
 
