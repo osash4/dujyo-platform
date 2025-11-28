@@ -299,6 +299,112 @@ const translations: Translations = {
     en: 'Delete',
     es: 'Eliminar',
   },
+  
+  // Navigation
+  'nav.discover': {
+    en: 'Discover',
+    es: 'Descubrir',
+  },
+  'nav.music': {
+    en: 'Music',
+    es: 'Música',
+  },
+  'nav.videos': {
+    en: 'Videos',
+    es: 'Videos',
+  },
+  'nav.games': {
+    en: 'Games',
+    es: 'Juegos',
+  },
+  'nav.gaming': {
+    en: 'Gaming',
+    es: 'Gaming',
+  },
+  'nav.shop': {
+    en: 'Shop',
+    es: 'Tienda',
+  },
+  'nav.marketplace': {
+    en: 'Marketplace',
+    es: 'Mercado',
+  },
+  'nav.dex': {
+    en: 'DEX',
+    es: 'DEX',
+  },
+  'nav.myProfile': {
+    en: 'My Profile',
+    es: 'Mi Perfil',
+  },
+  'nav.artistProfile': {
+    en: 'Artist Profile',
+    es: 'Perfil de Artista',
+  },
+  'nav.validatorProfile': {
+    en: 'Validator Profile',
+    es: 'Perfil de Validador',
+  },
+  'nav.adminProfile': {
+    en: 'Admin Profile',
+    es: 'Perfil de Admin',
+  },
+  'nav.profile': {
+    en: 'Profile',
+    es: 'Perfil',
+  },
+  'nav.settings': {
+    en: 'Settings',
+    es: 'Configuración',
+  },
+  'nav.home': {
+    en: 'Home',
+    es: 'Inicio',
+  },
+  'nav.multistreamingDashboard': {
+    en: 'Multistreaming Dashboard',
+    es: 'Panel de Multidifusión',
+  },
+  'nav.validatorHub': {
+    en: 'Validator Hub',
+    es: 'Centro de Validadores',
+  },
+  'nav.validationPanel': {
+    en: 'Validation Panel',
+    es: 'Panel de Validación',
+  },
+  'nav.cpvConsensus': {
+    en: 'CPV Consensus',
+    es: 'Consenso CPV',
+  },
+  'nav.rewards': {
+    en: 'Rewards',
+    es: 'Recompensas',
+  },
+  'nav.networkStats': {
+    en: 'Network Stats',
+    es: 'Estadísticas de Red',
+  },
+  'nav.adminPanel': {
+    en: 'Admin Panel',
+    es: 'Panel de Admin',
+  },
+  'nav.userManagement': {
+    en: 'User Management',
+    es: 'Gestión de Usuarios',
+  },
+  'nav.contentModeration': {
+    en: 'Content Moderation',
+    es: 'Moderación de Contenido',
+  },
+  'nav.blockchain': {
+    en: 'Blockchain',
+    es: 'Blockchain',
+  },
+  'nav.systemAnalytics': {
+    en: 'System Analytics',
+    es: 'Analíticas del Sistema',
+  },
 };
 
 /**

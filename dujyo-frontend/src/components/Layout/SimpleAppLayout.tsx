@@ -14,6 +14,7 @@ import {
   Wallet, Coins
 } from 'lucide-react';
 import { LanguageSelector } from '../onboarding/LanguageSelector';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SimpleAppLayoutProps {
   children: ReactNode;
@@ -24,6 +25,7 @@ const SimpleAppLayout: React.FC<SimpleAppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { signOut, getUserRole, user } = useAuth();
   const { account } = useWallet();
+  const { t } = useLanguage();
   const [userEarnings, setUserEarnings] = useState(0);
   const [isLoadingEarnings, setIsLoadingEarnings] = useState(false);
   
@@ -109,50 +111,50 @@ const SimpleAppLayout: React.FC<SimpleAppLayoutProps> = ({ children }) => {
     switch (userRole) {
       case 'listener':
         return [
-          { path: '/', icon: Home, label: 'Discover', color: '#8B5CF6' },
-          { path: '/music', icon: Music, label: 'Music', color: '#F59E0B' },
-          { path: '/video', icon: Video, label: 'Videos', color: '#00F5FF' },
-          { path: '/gaming', icon: Gamepad, label: 'Games', color: '#EA580C' },
-          { path: '/marketplace', icon: ShoppingCart, label: 'Shop', color: '#FFD700' },
-          { path: '/dex', icon: TrendingUp, label: 'DEX', color: '#FF6B6B' },
-          { path: '/profile', icon: User, label: 'My Profile', color: '#4ECDC4' },
-          { path: '/settings', icon: Settings, label: 'Settings', color: '#9CA3AF' },
+          { path: '/', icon: Home, label: t('nav.discover'), color: '#8B5CF6' },
+          { path: '/music', icon: Music, label: t('nav.music'), color: '#F59E0B' },
+          { path: '/video', icon: Video, label: t('nav.videos'), color: '#00F5FF' },
+          { path: '/gaming', icon: Gamepad, label: t('nav.games'), color: '#EA580C' },
+          { path: '/marketplace', icon: ShoppingCart, label: t('nav.shop'), color: '#FFD700' },
+          { path: '/dex', icon: TrendingUp, label: t('nav.dex'), color: '#FF6B6B' },
+          { path: '/profile', icon: User, label: t('nav.myProfile'), color: '#4ECDC4' },
+          { path: '/settings', icon: Settings, label: t('nav.settings'), color: '#9CA3AF' },
         ];
 
       case 'artist':
         return [
-          { path: '/artist/dashboard', icon: Palette, label: 'Multistreaming Dashboard', color: '#F59E0B' },
-          { path: '/music', icon: Music, label: 'Music', color: '#F59E0B' },
-          { path: '/video', icon: Video, label: 'Videos', color: '#00F5FF' },
-          { path: '/gaming', icon: Gamepad, label: 'Gaming', color: '#EA580C' },
-          { path: '/marketplace', icon: ShoppingCart, label: 'Marketplace', color: '#FFD700' },
-          { path: '/profile', icon: User, label: 'Artist Profile', color: '#4ECDC4' },
+          { path: '/artist/dashboard', icon: Palette, label: t('nav.multistreamingDashboard'), color: '#F59E0B' },
+          { path: '/music', icon: Music, label: t('nav.music'), color: '#F59E0B' },
+          { path: '/video', icon: Video, label: t('nav.videos'), color: '#00F5FF' },
+          { path: '/gaming', icon: Gamepad, label: t('nav.gaming'), color: '#EA580C' },
+          { path: '/marketplace', icon: ShoppingCart, label: t('nav.marketplace'), color: '#FFD700' },
+          { path: '/profile', icon: User, label: t('nav.artistProfile'), color: '#4ECDC4' },
         ];
 
       case 'validator':
         return [
-          { path: '/', icon: Home, label: 'Validator Hub', color: '#8B5CF6' },
-          { path: '/validator', icon: Shield, label: 'Validation Panel', color: '#00F5FF' },
-          { path: '/consensus', icon: BarChart3, label: 'CPV Consensus', color: '#8B5CF6' },
-          { path: '/validator/rewards', icon: TrendingUp, label: 'Rewards', color: '#FFD700' },
-          { path: '/validator/stats', icon: BarChart3, label: 'Network Stats', color: '#EA580C' },
-          { path: '/profile', icon: User, label: 'Validator Profile', color: '#4ECDC4' },
+          { path: '/', icon: Home, label: t('nav.validatorHub'), color: '#8B5CF6' },
+          { path: '/validator', icon: Shield, label: t('nav.validationPanel'), color: '#00F5FF' },
+          { path: '/consensus', icon: BarChart3, label: t('nav.cpvConsensus'), color: '#8B5CF6' },
+          { path: '/validator/rewards', icon: TrendingUp, label: t('nav.rewards'), color: '#FFD700' },
+          { path: '/validator/stats', icon: BarChart3, label: t('nav.networkStats'), color: '#EA580C' },
+          { path: '/profile', icon: User, label: t('nav.validatorProfile'), color: '#4ECDC4' },
         ];
 
       case 'admin':
         return [
-          { path: '/', icon: Home, label: 'Admin Panel', color: '#8B5CF6' },
-          { path: '/admin/users', icon: User, label: 'User Management', color: '#F59E0B' },
-          { path: '/admin/content', icon: Music, label: 'Content Moderation', color: '#00F5FF' },
-          { path: '/admin/blockchain', icon: Shield, label: 'Blockchain', color: '#EA580C' },
-          { path: '/admin/analytics', icon: BarChart3, label: 'System Analytics', color: '#8B5CF6' },
-          { path: '/profile', icon: User, label: 'Admin Profile', color: '#4ECDC4' },
+          { path: '/', icon: Home, label: t('nav.adminPanel'), color: '#8B5CF6' },
+          { path: '/admin/users', icon: User, label: t('nav.userManagement'), color: '#F59E0B' },
+          { path: '/admin/content', icon: Music, label: t('nav.contentModeration'), color: '#00F5FF' },
+          { path: '/admin/blockchain', icon: Shield, label: t('nav.blockchain'), color: '#EA580C' },
+          { path: '/admin/analytics', icon: BarChart3, label: t('nav.systemAnalytics'), color: '#8B5CF6' },
+          { path: '/profile', icon: User, label: t('nav.adminProfile'), color: '#4ECDC4' },
         ];
 
       default:
         return [
-          { path: '/', icon: Home, label: 'Home', color: '#8B5CF6' },
-          { path: '/profile', icon: User, label: 'Profile', color: '#4ECDC4' },
+          { path: '/', icon: Home, label: t('nav.home'), color: '#8B5CF6' },
+          { path: '/profile', icon: User, label: t('nav.profile'), color: '#4ECDC4' },
         ];
     }
   };
