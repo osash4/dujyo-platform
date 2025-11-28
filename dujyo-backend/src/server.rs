@@ -499,7 +499,7 @@ async fn block_production_task(state: AppState) {
         let (transactions, previous_hash, current_height, should_create_block) = {
             let mut blockchain = state.blockchain.lock().unwrap();
             let current_height = blockchain.chain.len() as i64;
-            let latest_block = blockchain.get_latest_block();
+            let latest_block = blockchain.get_latest_block().clone(); // Clone to avoid borrow issues
             
             if !blockchain.pending_transactions.is_empty() {
                 // Always create block if there are pending transactions
