@@ -287,7 +287,7 @@ const VideoPage: React.FC = () => {
       completed: currentWatchTime >= milestone.time
     }));
     setWatchTimeMilestones(updated);
-  }, [currentWatchTime]);
+  }, [currentWatchTime, watchTimeMilestones]);
 
   // Trending data with earnings
   const trendingVideos = videoContent.slice(0, 4).map(v => ({
