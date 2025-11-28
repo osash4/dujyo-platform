@@ -361,30 +361,44 @@ const DEXDashboard: React.FC = () => {
 
         let blocksData = null;
         if (blocksResponse.ok) {
-          blocksData = await blocksResponse.json();
-          transactions = blocksData.blocks?.length || 0;
-          
-          // Calculate active users based on unique addresses in recent blocks
-          const recentBlocks = blocksData.blocks?.slice(-100) || [];
-          const uniqueAddresses = new Set();
-          recentBlocks.forEach((block: any) => {
-            if (block.transactions) {
-              block.transactions.forEach((tx: any) => {
-                if (tx.from) uniqueAddresses.add(tx.from);
-                if (tx.to) uniqueAddresses.add(tx.to);
+          // Check if response is JSON before parsing
+          const blocksContentType = blocksResponse.headers.get('content-type');
+          if (blocksContentType && blocksContentType.includes('application/json')) {
+            blocksData = await blocksResponse.json();
+            transactions = blocksData.blocks?.length || 0;
+            
+            // Calculate active users based on unique addresses in recent blocks
+            if (blocksData.blocks && Array.isArray(blocksData.blocks)) {
+              const recentBlocks = blocksData.blocks.slice(-100) || [];
+              const uniqueAddresses = new Set();
+              recentBlocks.forEach((block: any) => {
+                if (block.transactions) {
+                  block.transactions.forEach((tx: any) => {
+                    if (tx.from) uniqueAddresses.add(tx.from);
+                    if (tx.to) uniqueAddresses.add(tx.to);
+                  });
+                }
               });
+              activeUsers = uniqueAddresses.size;
             }
-          });
-          activeUsers = uniqueAddresses.size;
+          } else {
+            console.warn('Blocks endpoint returned non-JSON response');
+          }
         }
 
         if (poolsResponse.ok) {
-          const poolsData = await poolsResponse.json();
-          // Calculate TVL from pool reserves
-          if (poolsData.pools) {
-            totalValueLocked = poolsData.pools.reduce((total: number, pool: any) => {
-              return total + (pool.reserve0 || 0) + (pool.reserve1 || 0);
-            }, 0);
+          // Check if response is JSON before parsing
+          const poolsContentType = poolsResponse.headers.get('content-type');
+          if (poolsContentType && poolsContentType.includes('application/json')) {
+            const poolsData = await poolsResponse.json();
+            // Calculate TVL from pool reserves
+            if (poolsData.pools && Array.isArray(poolsData.pools)) {
+              totalValueLocked = poolsData.pools.reduce((total: number, pool: any) => {
+                return total + (pool.reserve0 || 0) + (pool.reserve1 || 0);
+              }, 0);
+            }
+          } else {
+            console.warn('Pools endpoint returned non-JSON response');
           }
         }
 
