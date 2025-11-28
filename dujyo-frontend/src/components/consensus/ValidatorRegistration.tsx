@@ -10,6 +10,7 @@ import {
   Loader
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface RegistrationForm {
   type: 'economic' | 'creative' | 'community';
@@ -73,7 +74,8 @@ const ValidatorRegistration: React.FC = () => {
           break;
       }
 
-      const response = await fetch(`http://localhost:8083${endpoint}`, {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

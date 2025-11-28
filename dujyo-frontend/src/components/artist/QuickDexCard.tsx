@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, Repeat, Zap, ArrowDownRight } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { useUnifiedBalance } from '../../hooks/useUnifiedBalance';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface QuickDexCardProps {
   currentBalance: number;
@@ -70,7 +71,8 @@ const QuickDexCard: React.FC<QuickDexCardProps> = ({
         user: user.uid
       };
 
-      const response = await fetch('http://localhost:8083/swap', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/swap`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

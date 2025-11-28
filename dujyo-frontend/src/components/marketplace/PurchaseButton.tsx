@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Loader2 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { useBlockchain } from '../../contexts/BlockchainContext';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface PurchaseButtonProps {
   content: {
@@ -47,7 +48,8 @@ export const PurchaseButton: React.FC<PurchaseButtonProps> = ({ content, onPurch
       console.log('Executing purchase transaction:', transactionRequest);
 
       // Execute transaction on blockchain
-      const response = await fetch('http://localhost:8083/transaction', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

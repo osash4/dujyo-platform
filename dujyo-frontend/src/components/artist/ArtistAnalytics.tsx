@@ -20,6 +20,7 @@ import {
   Tablet
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface AnalyticsData {
   totalStreams: number;
@@ -75,7 +76,8 @@ const ArtistAnalytics: React.FC = () => {
       }
 
       // Call real backend API
-      const response = await fetch(`http://localhost:8083/api/v1/analytics/artist/${user.uid}`, {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/v1/analytics/artist/${user.uid}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

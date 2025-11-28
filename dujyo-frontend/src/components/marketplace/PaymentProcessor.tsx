@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useBlockchain } from '../../contexts/BlockchainContext';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 export function PaymentProcessor({ method, amount, onComplete }) {
   const { account } = useBlockchain();
@@ -19,7 +20,8 @@ export function PaymentProcessor({ method, amount, onComplete }) {
       };
 
       // ✅ Process payment through Dujyo blockchain (native)
-      const response = await fetch('http://localhost:8083/api/blockchain/transaction', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/blockchain/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

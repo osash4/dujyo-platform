@@ -11,6 +11,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface ConsensusStats {
   economic_validators: number;
@@ -102,7 +103,8 @@ const CPVDashboard: React.FC = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch('http://localhost:8083/consensus/stats', {
+        const apiBaseUrl = getApiBaseUrl();
+        const response = await fetch(`${apiBaseUrl}/consensus/stats`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
