@@ -19,7 +19,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
-import { useTranslation } from '../utils/i18n';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
 
@@ -37,7 +37,7 @@ interface PrivacySettings {
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
-  const { language, setLanguage, t } = useTranslation();
+  const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
