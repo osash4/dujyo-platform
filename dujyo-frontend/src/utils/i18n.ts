@@ -1147,10 +1147,6 @@ const translations: Translations = {
     en: 'Weekly Earnings',
     es: 'Ganancias Semanales',
   },
-  'gaming.totalEarned': {
-    en: 'Total Earned',
-    es: 'Total Ganado',
-  },
   'gaming.complete': {
     en: 'Complete',
     es: 'Completar',
