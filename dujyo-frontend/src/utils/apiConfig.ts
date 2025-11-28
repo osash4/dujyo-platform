@@ -28,13 +28,18 @@ export function getApiBaseUrl(): string {
 
   // ✅ PRIORITY 2: Production domain (dujyo.com)
   if (currentHost === 'dujyo.com' || currentHost === 'www.dujyo.com') {
-    // In production, MUST use env var - throw error if not set
-    console.error('❌ ERROR: VITE_API_BASE_URL not set in production!');
-    console.error('   Please configure VITE_API_BASE_URL in Vercel environment variables');
-    console.error('   Expected format: https://tu-backend-render.onrender.com');
-    // Fallback: try to construct from common Render pattern (not recommended)
-    console.warn('⚠️ Falling back to default Render URL pattern');
-    return 'https://dujyo-platform.onrender.com';
+    // In production, MUST use env var - show warning if not set
+    if (!envUrl) {
+      console.error('❌ ERROR: VITE_API_BASE_URL not set in production!');
+      console.error('   Please configure VITE_API_BASE_URL in Vercel environment variables');
+      console.error('   Expected format: https://dujyo-platform.onrender.com');
+      console.error('   Current host:', currentHost);
+      console.error('   Falling back to default Render URL');
+    }
+    // Fallback: use default Render URL
+    const fallbackUrl = 'https://dujyo-platform.onrender.com';
+    console.error('🌐 Using backend URL:', envUrl || fallbackUrl);
+    return envUrl || fallbackUrl;
   }
 
   // ✅ PRIORITY 3: Development (localhost)

@@ -1146,7 +1146,28 @@ pub fn create_router(state: AppState) -> Router {
         .merge(protected_routes_with_rate_limit)
         // TODO: Enable input validation middleware after fixing dependencies (regex, etc.)
         // .layer(axum::middleware::from_fn(input_validation_middleware)) // ✅ Input validation middleware applied to all routes
-        .layer(CorsLayer::permissive())
+        .layer(
+            CorsLayer::new()
+                .allow_origin(
+                    "https://dujyo.com".parse::<axum::http::HeaderValue>().unwrap_or_else(|_| "*".parse().unwrap())
+                )
+                .allow_origin(
+                    "https://www.dujyo.com".parse::<axum::http::HeaderValue>().unwrap_or_else(|_| "*".parse().unwrap())
+                )
+                .allow_origin(
+                    "http://localhost:5173".parse::<axum::http::HeaderValue>().unwrap_or_else(|_| "*".parse().unwrap())
+                )
+                .allow_origin(
+                    "http://localhost:3000".parse::<axum::http::HeaderValue>().unwrap_or_else(|_| "*".parse().unwrap())
+                )
+                .allow_methods([axum::http::Method::GET, axum::http::Method::POST, axum::http::Method::PUT, axum::http::Method::DELETE, axum::http::Method::OPTIONS])
+                .allow_headers([
+                    axum::http::header::CONTENT_TYPE,
+                    axum::http::header::AUTHORIZATION,
+                    axum::http::header::ACCEPT,
+                ])
+                .allow_credentials(true)
+        )
         .with_state(state)
 }
 
