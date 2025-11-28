@@ -1142,7 +1142,9 @@ pub async fn start_server() -> Result<(), Box<dyn std::error::Error>> {
     println!("🗄️  Connecting to database: {}", database_url);
     
     // Initialize database storage
+    eprintln!("🔧 Creating database connection...");
     let storage: Arc<BlockchainStorage> = Arc::new(BlockchainStorage::new(&database_url).await?);
+    eprintln!("🔧 Database connection established, initializing tables...");
     storage.init_tables().await?;
     println!("✅ Database tables initialized");
     
