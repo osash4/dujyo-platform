@@ -114,28 +114,28 @@ export function ContentMarketplace(): JSX.Element {
     setLicenseTiers([
       {
         id: 'personal',
-        name: 'Personal Use',
+        name: t('marketplace.personalUse'),
         price: 0,
         royaltyShare: 0,
-        features: ['Basic streaming rights', 'No commercial use', 'Personal listening/viewing'],
+        features: [t('marketplace.basicStreamingRights'), t('marketplace.noCommercialUse'), t('marketplace.personalListening')],
         earningPotential: 0,
         color: '#6B7280'
       },
       {
         id: 'commercial',
-        name: 'Commercial License',
+        name: t('marketplace.commercialLicense'),
         price: 50,
         royaltyShare: 5,
-        features: ['Commercial streaming rights', '5% royalty share', 'Content monetization', 'Analytics access'],
+        features: [t('marketplace.commercialStreamingRights'), `5% ${t('marketplace.royaltySharePercent')}`, t('marketplace.contentMonetization'), t('marketplace.analyticsAccess')],
         earningPotential: 0.05,
         color: '#F59E0B'
       },
       {
         id: 'premium',
-        name: 'Premium License',
+        name: t('marketplace.premiumLicense'),
         price: 150,
         royaltyShare: 10,
-        features: ['Full commercial rights', '10% royalty share', 'Priority support', 'Advanced analytics', 'Content promotion', 'NFT minting rights'],
+        features: [t('marketplace.fullCommercialRights'), `10% ${t('marketplace.royaltySharePercent')}`, t('marketplace.prioritySupport'), t('marketplace.advancedAnalytics'), t('marketplace.contentPromotion'), t('marketplace.nftMintingRights')],
         earningPotential: 0.10,
         color: '#EA580C'
       }
@@ -519,7 +519,7 @@ export function ContentMarketplace(): JSX.Element {
                           {creator.verified && (
                             <div className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full text-xs font-semibold flex items-center gap-1">
                               <Award className="w-3 h-3" />
-                              Verified High Earner
+                              {t('marketplace.verifiedHighEarner')}
                             </div>
                           )}
                         </div>
