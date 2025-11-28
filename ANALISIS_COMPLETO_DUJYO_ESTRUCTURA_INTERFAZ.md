@@ -1033,5 +1033,209 @@ interface LogoProps {
 - **Error Handling:** ErrorBoundary global
 - **WebSocket:** Conexión en tiempo real con fallback graceful
 
-**Última actualización:** Noviembre 2025 - Basado en análisis del código fuente actual
+---
+
+## 8. CAMBIOS RECIENTES Y OPTIMIZACIONES (Noviembre 2025)
+
+### 8.1. Optimización del Repositorio
+
+#### **8.1.1. Reducción Masiva de Tamaño**
+- **Antes:** 5.7GB (1.23GB pack + 4.21GB garbage)
+- **Después:** 36MB (35.60MB pack, 0 garbage)
+- **Reducción:** 99.4% del tamaño original
+- **Impacto:** Pushes de horas a segundos
+
+#### **8.1.2. Archivos Removidos del Historial**
+- ✅ `target/` (archivos de compilación Rust)
+- ✅ `node_modules/` (dependencias Node.js)
+- ✅ `*.log` (archivos de logs)
+- ✅ `*.wav`, `*.mp3`, `*.mp4` (archivos de música/video grandes)
+- ✅ `.env*` (archivos de entorno con secretos)
+- ✅ `archive/` (archivos duplicados)
+
+#### **8.1.3. .gitignore Mejorado**
+- ✅ Exclusión completa de `target/` y `node_modules/`
+- ✅ Exclusión de logs y archivos temporales
+- ✅ Exclusión de archivos de música/video grandes
+- ✅ Exclusión de archivos de entorno y secretos
+- ✅ Exclusión de archivos de build y distribución
+
+### 8.2. Fixes de Deployment
+
+#### **8.2.1. Variables de Entorno para Host/Port**
+**Archivos Modificados:**
+- ✅ `src/server.rs` - Usa `HOST` y `PORT` env vars
+- ✅ `src/main_optimized.rs` - Usa `HOST` y `PORT` env vars
+- ✅ `src/bin/test_mvp_flow.rs` - Usa variables de entorno
+- ✅ `src/legacy_rpc_proxy.rs` - Usa variables de entorno
+- ✅ `src/services/blockchainService.rs` - Usa variables de entorno
+- ✅ `src/rpc_server.rs` - Usa variables de entorno
+
+**Implementación:**
+```rust
+// Antes (hardcoded):
+let listener = tokio::net::TcpListener::bind("127.0.0.1:8083").await?;
+
+// Después (variables de entorno):
+let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
+let port = std::env::var("PORT").unwrap_or_else(|_| "8083".to_string()).parse().unwrap_or(8083);
+let bind_addr = format!("{}:{}", host, port);
+let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
+```
+
+**Valores por Defecto:**
+- `HOST`: `0.0.0.0` (para producción en Render/cloud)
+- `PORT`: `8083` (pero lee de `$PORT` para compatibilidad con Render)
+
+#### **8.2.2. Beneficios para Deployment**
+- ✅ Render puede detectar el puerto automáticamente
+- ✅ El servidor se bindea a `0.0.0.0` para aceptar conexiones externas
+- ✅ Compatible con variables de entorno de plataformas cloud
+- ✅ Mantiene compatibilidad con desarrollo local
+
+### 8.3. Estado del Backend
+
+#### **8.3.1. Estructura Actual**
+```
+dujyo-backend/
+├── src/
+│   ├── main.rs                    # Punto de entrada
+│   ├── server.rs                  # Servidor Axum (con HOST/PORT fix)
+│   ├── main_optimized.rs          # Versión optimizada (con HOST/PORT fix)
+│   ├── lib.rs                     # Módulos exportados
+│   ├── blockchain/                # Módulos blockchain
+│   │   ├── gas_fees.rs           # Sistema de gas fees
+│   │   ├── native_token.rs       # Token nativo DYO
+│   │   ├── real_blockchain.rs    # Blockchain principal
+│   │   └── ...
+│   ├── gas/                       # Sistema avanzado de gas
+│   │   ├── creative_gas_engine.rs
+│   │   ├── auto_swap_handler.rs
+│   │   └── ...
+│   ├── utils/                     # Utilidades
+│   │   ├── access_control.rs     # RBAC (con bootstrap system user)
+│   │   ├── safe_math.rs          # Matemáticas seguras
+│   │   ├── vrf.rs                # Verifiable Random Function
+│   │   └── ...
+│   ├── middleware/                # Middleware
+│   │   └── rate_limiting.rs      # Rate limiting con Redis
+│   ├── security/                  # Seguridad
+│   │   ├── rate_limiting_redis.rs
+│   │   └── rate_limiter_memory.rs
+│   └── routes/                    # Rutas API
+│       └── metrics.rs            # Métricas del sistema
+├── tests/                         # Tests
+│   ├── gas_fees_test.rs          # Tests de gas fees (17 tests)
+│   ├── rate_limiting_test.rs     # Tests de rate limiting
+│   └── e2e_test.rs               # Tests end-to-end
+└── Cargo.toml                    # Dependencias
+```
+
+#### **8.3.2. Tests**
+- ✅ **60 tests pasando** (0 fallidos)
+- ✅ Tests de gas fees validados (17 tests)
+- ✅ Tests de rate limiting refactorizados
+- ✅ Tests de access control con bootstrap
+- ✅ Tests de VRF corregidos
+- ✅ Tests de safe math mejorados
+
+#### **8.3.3. Compilación**
+- ✅ Build release exitoso
+- ✅ Sin errores de compilación
+- ✅ Warnings menores (no críticos)
+- ✅ Binario funcional y estable
+
+### 8.4. Estado del Frontend
+
+#### **8.4.1. Push a GitHub**
+- ✅ Frontend completo subido a GitHub
+- ✅ Estructura React + TypeScript completa
+- ✅ Componentes y rutas documentados
+- ⚠️ Archivos de música grandes (>50MB) - GitHub recomienda Git LFS
+
+#### **8.4.2. Estructura Actual**
+```
+dujyo-frontend/
+├── src/
+│   ├── App.tsx                    # Componente principal
+│   ├── main.tsx                   # Punto de entrada
+│   ├── components/                # Componentes React
+│   │   ├── Layout/               # Layouts (SimpleAppLayout, ArtistLayout)
+│   │   ├── DEX/                  # DEX components
+│   │   ├── Player/               # Music player
+│   │   ├── artist/               # Artist dashboard components
+│   │   └── ...
+│   ├── pages/                     # Páginas principales
+│   ├── contexts/                  # Context API
+│   │   ├── AuthContext.tsx
+│   │   ├── BlockchainContext.tsx
+│   │   └── ...
+│   ├── services/                  # Servicios API
+│   └── hooks/                     # Custom hooks
+├── public/                        # Archivos estáticos
+│   ├── assets/brand/              # Branding assets
+│   └── music/                     # Archivos de música (grandes)
+└── package.json                   # Dependencias Node.js
+```
+
+### 8.5. Configuración de Deployment
+
+#### **8.5.1. Variables de Entorno Requeridas**
+```bash
+# Backend
+HOST=0.0.0.0                    # Host para binding (default: 0.0.0.0)
+PORT=8083                       # Puerto del servidor (default: 8083)
+DATABASE_URL=...                # URL de PostgreSQL
+REDIS_URL=...                   # URL de Redis
+JWT_SECRET=...                  # Secret para JWT
+LEGACY_PROXY_URL=...            # URL del proxy legacy
+HTTP_API_URL=...                # URL de la API HTTP
+RPC_HOST=...                    # Host del RPC server
+RPC_PORT=...                    # Puerto del RPC server
+
+# Frontend
+VITE_API_URL=...                # URL del backend API
+VITE_WS_URL=...                 # URL del WebSocket
+```
+
+#### **8.5.2. Render Deployment**
+- ✅ Backend listo para deployment (usa `$PORT` automáticamente)
+- ✅ Frontend puede deployarse como static site
+- ✅ Variables de entorno configuradas
+- ✅ Servidor se bindea a `0.0.0.0` para aceptar conexiones
+
+### 8.6. Mejoras de Performance
+
+#### **8.6.1. Repositorio Optimizado**
+- ✅ Pushes rápidos (segundos en lugar de horas)
+- ✅ Clones más rápidos
+- ✅ Menor uso de ancho de banda
+- ✅ Mejor experiencia de desarrollo
+
+#### **8.6.2. Código Optimizado**
+- ✅ Sin hardcoded values
+- ✅ Configuración flexible vía env vars
+- ✅ Mejor separación de concerns
+- ✅ Tests completos y pasando
+
+### 8.7. Próximos Pasos Recomendados
+
+1. **Deployment en Render:**
+   - Configurar variables de entorno
+   - Deploy backend como Web Service
+   - Deploy frontend como Static Site
+   - Configurar PostgreSQL y Redis
+
+2. **Optimización de Archivos Grandes:**
+   - Considerar Git LFS para archivos de música
+   - O mover archivos de música a CDN/storage externo
+
+3. **Monitoreo:**
+   - Configurar métricas en producción
+   - Monitorear rate limiting
+   - Tracking de performance
+
+---
+
+**Última actualización:** 27 de Noviembre 2025 - Incluye optimizaciones de repositorio y fixes de deployment
 

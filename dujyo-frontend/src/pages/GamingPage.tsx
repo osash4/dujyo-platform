@@ -7,6 +7,7 @@ import GamingCard from '../components/Gaming/GamingCard';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import { useAuth } from '../auth/AuthContext';
 import { useWallet } from '../hooks/useWallet';
+import { useLanguage } from '../contexts/LanguageContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
 import Logo from '../components/common/Logo';
 import Breadcrumbs from '../components/common/Breadcrumbs';
@@ -480,14 +481,13 @@ const GamingPage: React.FC = () => {
               </motion.div>
 
               <h1 className="text-4xl md:text-6xl font-bold neon-text-gaming mb-4">
-                Gaming Matrix
+                {t('gaming.title')}
               </h1>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-2">
-                Enter the digital realm where reality meets imagination. 
-                Compete, explore, and conquer in our immersive gaming ecosystem.
+                {t('gaming.subtitle')}
               </p>
               <p className="text-sm text-emerald-400/80 font-semibold mb-6">
-                Powered by DUJYO • Play-to-Earn
+                {t('gaming.poweredBy')}
               </p>
 
               {/* Play-to-Earn Hero Metrics */}
@@ -503,7 +503,7 @@ const GamingPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Coins className="w-5 h-5 text-emerald-400" />
-                    <span className="text-xs text-gray-400">Avg Earn per Game</span>
+                    <span className="text-xs text-gray-400">{t('gaming.avgEarnPerGame')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-emerald-400"
@@ -513,7 +513,7 @@ const GamingPage: React.FC = () => {
                   >
                     {metrics.avgEarnPerGame.toFixed(2)} $DYO
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">Play and earn</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('gaming.playAndEarn')}</p>
                 </motion.div>
 
                 <motion.div
@@ -522,7 +522,7 @@ const GamingPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Users className="w-5 h-5 text-emerald-400" />
-                    <span className="text-xs text-gray-400">Active Earners</span>
+                    <span className="text-xs text-gray-400">{t('gaming.activeEarners')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-emerald-400"

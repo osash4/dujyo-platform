@@ -5,6 +5,7 @@ import { Mail, Lock, ArrowLeft, Facebook, Chrome, Wallet, HelpCircle, Coins, Fin
 import { useAuth } from '../auth/AuthContext';
 import { useWallet } from '../hooks/useWallet';
 import { getApiBaseUrl } from '../utils/apiConfig';
+import { useLanguage } from '../contexts/LanguageContext';
 import Logo from '../components/common/Logo';
 
 interface LoginAttempt {
@@ -34,6 +35,7 @@ const Login: React.FC = () => {
   
   const { signIn, isSignedIn } = useAuth();
   const { connect, account, isConnecting } = useWallet();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Detect mobile
@@ -307,10 +309,10 @@ const Login: React.FC = () => {
               </div>
             </motion.div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-600 bg-clip-text text-transparent">
-              Continue Your Journey
+              {t('auth.continueJourney')}
             </h1>
-            <p className="text-gray-400 mt-2">Access your Stream-to-Earn Dashboard</p>
-            <p className="text-sm text-amber-300/80 mt-1">Start earning $DYO tokens from your content</p>
+            <p className="text-gray-400 mt-2">{t('auth.accessDashboard')}</p>
+            <p className="text-sm text-amber-300/80 mt-1">{t('auth.startEarning')}</p>
           </div>
 
           {/* New User Tooltip */}
@@ -323,10 +325,9 @@ const Login: React.FC = () => {
               <div className="flex items-start gap-3">
                 <Info className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-amber-300 mb-1">New to DUJYO?</h3>
+                  <h3 className="text-sm font-semibold text-amber-300 mb-1">{t('auth.newToDujyo')}</h3>
                   <p className="text-xs text-gray-300">
-                    Join the first multistream platform where music, video, and gaming merge with blockchain. 
-                    Create, stream, and earn $DYO tokens for every engagement.
+                    {t('auth.joinDescription')}
                   </p>
                 </div>
                 <button
@@ -360,7 +361,7 @@ const Login: React.FC = () => {
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                Connect wallet to access $DYO tokens and earnings
+                {t('auth.continueWithWallet')}
               </motion.div>
             )}
           </div>
@@ -384,7 +385,7 @@ const Login: React.FC = () => {
                   transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 >
                   <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-6" />
-                  <h3 className="text-xl font-bold text-white mb-4">Choose Login Method</h3>
+                  <h3 className="text-xl font-bold text-white mb-4">{t('auth.login')}</h3>
                   
                   <div className="space-y-3">
                     <motion.button
@@ -394,7 +395,7 @@ const Login: React.FC = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Wallet className="w-5 h-5" />
-                      <span>Connect Wallet</span>
+                      <span>{t('auth.continueWithWallet')}</span>
                     </motion.button>
                     
                     {biometricAvailable && (
@@ -404,7 +405,7 @@ const Login: React.FC = () => {
                         whileTap={{ scale: 0.98 }}
                       >
                         <Fingerprint className="w-5 h-5" />
-                        <span>Use Biometric</span>
+                        <span>{t('common.useBiometric')}</span>
                       </motion.button>
                     )}
                   </div>
@@ -413,7 +414,7 @@ const Login: React.FC = () => {
                     onClick={() => setShowMobileSheet(false)}
                     className="w-full mt-4 py-3 text-gray-400 hover:text-white"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                 </motion.div>
               </>
@@ -426,7 +427,7 @@ const Login: React.FC = () => {
               <div className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-800 text-gray-400">Or continue with email</span>
+              <span className="px-2 bg-gray-800 text-gray-400">{t('auth.continueWithEmail')}</span>
             </div>
           </div>
 
@@ -434,7 +435,7 @@ const Login: React.FC = () => {
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
+                {t('auth.email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -453,7 +454,7 @@ const Login: React.FC = () => {
             {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
+                {t('auth.password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -463,7 +464,7 @@ const Login: React.FC = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200 min-h-[44px]"
-                  placeholder="Enter your password"
+                  placeholder={t('auth.password')}
                   required
                 />
               </div>
@@ -477,7 +478,7 @@ const Login: React.FC = () => {
                     className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500"
                   />
                   <label htmlFor="rememberMe" className="text-xs text-gray-400 cursor-pointer">
-                    Remember me
+                    {t('auth.rememberMe')}
                   </label>
                 </div>
                 <button
@@ -486,7 +487,7 @@ const Login: React.FC = () => {
                   className="text-xs text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1 min-h-[44px]"
                 >
                   <HelpCircle className="w-3 h-3" />
-                  Forgot Password?
+                  {t('auth.forgotPassword')}
                 </button>
               </div>
             </div>
@@ -501,7 +502,7 @@ const Login: React.FC = () => {
                 animate={{ opacity: 1 }}
               >
                 <Fingerprint className="w-5 h-5" />
-                <span>Use Face ID / Touch ID</span>
+                <span>{t('common.useBiometric')}</span>
               </motion.button>
             )}
 
@@ -515,7 +516,7 @@ const Login: React.FC = () => {
                 exit={{ opacity: 0, height: 0 }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-white font-semibold">Reset Password</h3>
+                  <h3 className="text-white font-semibold">{t('auth.forgotPassword')}</h3>
                   <button
                     type="button"
                     onClick={() => {
@@ -532,7 +533,7 @@ const Login: React.FC = () => {
                 {!forgotPasswordSent ? (
                   <>
                     <p className="text-sm text-gray-300">
-                      Enter your email address and we'll send you a link to reset your password.
+                      {t('auth.resetPasswordDescription')}
                     </p>
                     <input
                       type="email"
@@ -651,7 +652,7 @@ const Login: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? t('auth.signingIn') : t('auth.signIn')}
             </motion.button>
           </form>
 

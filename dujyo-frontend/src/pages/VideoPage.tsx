@@ -5,6 +5,7 @@ import AnimatedCarousel from '../components/common/AnimatedCarousel';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import { useAuth } from '../auth/AuthContext';
 import { useWallet } from '../hooks/useWallet';
+import { useLanguage } from '../contexts/LanguageContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
 import Logo from '../components/common/Logo';
 import Breadcrumbs from '../components/common/Breadcrumbs';

@@ -52,7 +52,7 @@ pub async fn create_test_redis_pool(
         .await
         .map_err(|e| format!("Redis PING failed: {}", e))?;
     
-    info!("✅ Test Redis pool created successfully");
+    info!("Test Redis pool created successfully");
     Ok(pool)
 }
 

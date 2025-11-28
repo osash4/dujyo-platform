@@ -300,6 +300,311 @@ const translations: Translations = {
     es: 'Eliminar',
   },
   
+  // Common UI Elements
+  'common.welcome': {
+    en: 'Welcome',
+    es: 'Bienvenido',
+  },
+  'common.continue': {
+    en: 'Continue',
+    es: 'Continuar',
+  },
+  'common.back': {
+    en: 'Back',
+    es: 'Volver',
+  },
+  'common.next': {
+    en: 'Next',
+    es: 'Siguiente',
+  },
+  'common.previous': {
+    en: 'Previous',
+    es: 'Anterior',
+  },
+  'common.submit': {
+    en: 'Submit',
+    es: 'Enviar',
+  },
+  'common.cancel': {
+    en: 'Cancel',
+    es: 'Cancelar',
+  },
+  'common.confirm': {
+    en: 'Confirm',
+    es: 'Confirmar',
+  },
+    en: 'Confirm',
+    es: 'Confirmar',
+  },
+  'common.delete': {
+    en: 'Delete',
+    es: 'Eliminar',
+  },
+  'common.edit': {
+    en: 'Edit',
+    es: 'Editar',
+  },
+  'common.search': {
+    en: 'Search',
+    es: 'Buscar',
+  },
+  'common.filter': {
+    en: 'Filter',
+    es: 'Filtrar',
+  },
+  'common.sort': {
+    en: 'Sort',
+    es: 'Ordenar',
+  },
+  'common.play': {
+    en: 'Play',
+    es: 'Reproducir',
+  },
+  'common.pause': {
+    en: 'Pause',
+    es: 'Pausar',
+  },
+  'common.stop': {
+    en: 'Stop',
+    es: 'Detener',
+  },
+  'common.shuffle': {
+    en: 'Shuffle',
+    es: 'Aleatorio',
+  },
+  'common.repeat': {
+    en: 'Repeat',
+    es: 'Repetir',
+  },
+  'common.like': {
+    en: 'Like',
+    es: 'Me gusta',
+  },
+  'common.share': {
+    en: 'Share',
+    es: 'Compartir',
+  },
+  'common.follow': {
+    en: 'Follow',
+    es: 'Seguir',
+  },
+  'common.unfollow': {
+    en: 'Unfollow',
+    es: 'Dejar de seguir',
+  },
+  'common.upload': {
+    en: 'Upload',
+    es: 'Subir',
+  },
+  'common.download': {
+    en: 'Download',
+    es: 'Descargar',
+  },
+  'common.view': {
+    en: 'View',
+    es: 'Ver',
+  },
+  'common.more': {
+    en: 'More',
+    es: 'Más',
+  },
+  'common.less': {
+    en: 'Less',
+    es: 'Menos',
+  },
+  'common.showMore': {
+    en: 'Show More',
+    es: 'Mostrar más',
+  },
+  'common.showLess': {
+    en: 'Show Less',
+    es: 'Mostrar menos',
+  },
+  'common.seeAll': {
+    en: 'See All',
+    es: 'Ver todo',
+  },
+  'common.noResults': {
+    en: 'No results found',
+    es: 'No se encontraron resultados',
+  },
+  'common.tryAgain': {
+    en: 'Try Again',
+    es: 'Intentar de nuevo',
+  },
+  'common.refresh': {
+    en: 'Refresh',
+    es: 'Actualizar',
+  },
+  'common.retry': {
+    en: 'Retry',
+    es: 'Reintentar',
+  },
+  'common.success': {
+    en: 'Success',
+    es: 'Éxito',
+  },
+  'common.failed': {
+    en: 'Failed',
+    es: 'Fallido',
+  },
+  'common.connecting': {
+    en: 'Connecting...',
+    es: 'Conectando...',
+  },
+  'common.connected': {
+    en: 'Connected',
+    es: 'Conectado',
+  },
+  'common.disconnected': {
+    en: 'Disconnected',
+    es: 'Desconectado',
+  },
+  
+  // Authentication
+  'auth.login': {
+    en: 'Login',
+    es: 'Iniciar Sesión',
+  },
+  'auth.signIn': {
+    en: 'Sign In',
+    es: 'Iniciar Sesión',
+  },
+  'auth.signUp': {
+    en: 'Sign Up',
+    es: 'Registrarse',
+  },
+  'auth.register': {
+    en: 'Register',
+    es: 'Registrarse',
+  },
+  'auth.logout': {
+    en: 'Logout',
+    es: 'Cerrar Sesión',
+  },
+  'auth.email': {
+    en: 'Email',
+    es: 'Correo Electrónico',
+  },
+  'auth.password': {
+    en: 'Password',
+    es: 'Contraseña',
+  },
+  'auth.confirmPassword': {
+    en: 'Confirm Password',
+    es: 'Confirmar Contraseña',
+  },
+  'auth.username': {
+    en: 'Username',
+    es: 'Nombre de Usuario',
+  },
+  'auth.displayName': {
+    en: 'Display Name',
+    es: 'Nombre para Mostrar',
+  },
+  'auth.forgotPassword': {
+    en: 'Forgot Password?',
+    es: '¿Olvidaste tu Contraseña?',
+  },
+  'auth.rememberMe': {
+    en: 'Remember Me',
+    es: 'Recordarme',
+  },
+  'auth.createAccount': {
+    en: 'Create Account',
+    es: 'Crear Cuenta',
+  },
+  'auth.alreadyHaveAccount': {
+    en: 'Already have an account?',
+    es: '¿Ya tienes una cuenta?',
+  },
+  'auth.dontHaveAccount': {
+    en: "Don't have an account?",
+    es: '¿No tienes una cuenta?',
+  },
+  'auth.continueWithWallet': {
+    en: 'Continue with Wallet',
+    es: 'Continuar con Billetera',
+  },
+  'auth.continueWithEmail': {
+    en: 'Continue with Email',
+    es: 'Continuar con Email',
+  },
+  'auth.newToDujyo': {
+    en: 'New to DUJYO?',
+    es: '¿Nuevo en DUJYO?',
+  },
+  'auth.joinDescription': {
+    en: 'Join the first multistream platform where music, video, and gaming merge with blockchain. Create, stream, and earn $DYO tokens for every engagement.',
+    es: 'Únete a la primera plataforma de multidifusión donde música, video y gaming se fusionan con blockchain. Crea, transmite y gana tokens $DYO por cada interacción.',
+  },
+  'auth.continueJourney': {
+    en: 'Continue Your Journey',
+    es: 'Continúa tu Viaje',
+  },
+  'auth.accessDashboard': {
+    en: 'Access your Stream-to-Earn Dashboard',
+    es: 'Accede a tu Panel de Stream-to-Earn',
+  },
+  'auth.startEarning': {
+    en: 'Start earning $DYO tokens from your content',
+    es: 'Comienza a ganar tokens $DYO con tu contenido',
+  },
+  'auth.invalidCredentials': {
+    en: 'Invalid email or password',
+    es: 'Correo o contraseña inválidos',
+  },
+  'auth.loginFailed': {
+    en: 'Login failed. Please try again.',
+    es: 'Error al iniciar sesión. Por favor intenta de nuevo.',
+  },
+  'auth.registrationFailed': {
+    en: 'Registration failed. Please try again.',
+    es: 'Error al registrarse. Por favor intenta de nuevo.',
+  },
+  'auth.emailRequired': {
+    en: 'Email is required',
+    es: 'El correo electrónico es requerido',
+  },
+  'auth.passwordRequired': {
+    en: 'Password is required',
+    es: 'La contraseña es requerida',
+  },
+  'auth.passwordsDoNotMatch': {
+    en: 'Passwords do not match',
+    es: 'Las contraseñas no coinciden',
+  },
+  'auth.passwordTooShort': {
+    en: 'Password must be at least 8 characters',
+    es: 'La contraseña debe tener al menos 8 caracteres',
+  },
+  'auth.usernameRequired': {
+    en: 'Username is required',
+    es: 'El nombre de usuario es requerido',
+  },
+  'auth.signingIn': {
+    en: 'Signing In...',
+    es: 'Iniciando Sesión...',
+  },
+  'auth.resetPasswordDescription': {
+    en: 'Enter your email address and we\'ll send you a link to reset your password.',
+    es: 'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
+  },
+  'auth.checkEmail': {
+    en: 'Check your email for instructions to reset your password.',
+    es: 'Revisa tu correo electrónico para las instrucciones de restablecimiento de contraseña.',
+  },
+  
+  // Common UI - Additional
+  'common.useBiometric': {
+    en: 'Use Biometric',
+    es: 'Usar Biométrico',
+  },
+  'common.chooseLoginMethod': {
+    en: 'Choose Login Method',
+    es: 'Elegir Método de Inicio de Sesión',
+  },
+  
   // Navigation
   'nav.discover': {
     en: 'Discover',
@@ -404,6 +709,366 @@ const translations: Translations = {
   'nav.systemAnalytics': {
     en: 'System Analytics',
     es: 'Analíticas del Sistema',
+  },
+  
+  // Pages - Common
+  'page.explore': {
+    en: 'Explore',
+    es: 'Explorar',
+  },
+  'page.search': {
+    en: 'Search',
+    es: 'Buscar',
+  },
+  'page.searchPlaceholder': {
+    en: 'What are you in the mood for?',
+    es: '¿Qué te apetece?',
+  },
+  'page.trending': {
+    en: 'Trending',
+    es: 'Tendencias',
+  },
+  'page.new': {
+    en: 'New',
+    es: 'Nuevo',
+  },
+  'page.popular': {
+    en: 'Popular',
+    es: 'Popular',
+  },
+  'page.recommended': {
+    en: 'Recommended',
+    es: 'Recomendado',
+  },
+  'page.recent': {
+    en: 'Recent',
+    es: 'Reciente',
+  },
+  'page.favorites': {
+    en: 'Favorites',
+    es: 'Favoritos',
+  },
+  'page.playlists': {
+    en: 'Playlists',
+    es: 'Listas de Reproducción',
+  },
+  'page.artists': {
+    en: 'Artists',
+    es: 'Artistas',
+  },
+  'page.albums': {
+    en: 'Albums',
+    es: 'Álbumes',
+  },
+  'page.songs': {
+    en: 'Songs',
+    es: 'Canciones',
+  },
+  
+  // Music Page
+  'music.title': {
+    en: 'Music',
+    es: 'Música',
+  },
+  'music.subtitle': {
+    en: 'Discover and stream your favorite tracks',
+    es: 'Descubre y transmite tus canciones favoritas',
+  },
+  'music.nowPlaying': {
+    en: 'Now Playing',
+    es: 'Reproduciendo',
+  },
+  'music.queue': {
+    en: 'Queue',
+    es: 'Cola',
+  },
+  'music.genres': {
+    en: 'Genres',
+    es: 'Géneros',
+  },
+  'music.moods': {
+    en: 'Moods',
+    es: 'Estados de Ánimo',
+  },
+  
+  // Video Page
+  'video.title': {
+    en: 'Videos',
+    es: 'Videos',
+  },
+  'video.subtitle': {
+    en: 'Watch and discover amazing video content',
+    es: 'Mira y descubre increíble contenido de video',
+  },
+  'video.trending': {
+    en: 'Trending Videos',
+    es: 'Videos en Tendencia',
+  },
+  'video.watch': {
+    en: 'Watch',
+    es: 'Ver',
+  },
+  'video.views': {
+    en: 'views',
+    es: 'visualizaciones',
+  },
+  'video.likes': {
+    en: 'likes',
+    es: 'me gusta',
+  },
+  'video.earnings': {
+    en: 'Earnings',
+    es: 'Ganancias',
+  },
+  
+  // Gaming Page
+  'gaming.title': {
+    en: 'Gaming Matrix',
+    es: 'Matriz de Gaming',
+  },
+  'gaming.subtitle': {
+    en: 'Enter the digital realm where reality meets imagination. Compete, explore, and conquer in our immersive gaming ecosystem.',
+    es: 'Entra al reino digital donde la realidad se encuentra con la imaginación. Compite, explora y conquista en nuestro ecosistema de gaming inmersivo.',
+  },
+  'gaming.poweredBy': {
+    en: 'Powered by DUJYO • Play-to-Earn',
+    es: 'Impulsado por DUJYO • Juega para Ganar',
+  },
+  'gaming.avgEarnPerGame': {
+    en: 'Avg Earn per Game',
+    es: 'Ganancia Promedio por Juego',
+  },
+  'gaming.activeEarners': {
+    en: 'Active Earners',
+    es: 'Ganadores Activos',
+  },
+  'gaming.totalEarned': {
+    en: 'Total Earned',
+    es: 'Total Ganado',
+  },
+  'gaming.playAndEarn': {
+    en: 'Play and earn',
+    es: 'Juega y gana',
+  },
+  'gaming.leaderboard': {
+    en: 'Leaderboard',
+    es: 'Clasificación',
+  },
+  'gaming.achievements': {
+    en: 'Achievements',
+    es: 'Logros',
+  },
+  'gaming.play': {
+    en: 'Play',
+    es: 'Jugar',
+  },
+  
+  // Upload Page
+  'upload.title': {
+    en: 'Upload Content',
+    es: 'Subir Contenido',
+  },
+  'upload.subtitle': {
+    en: 'Share your creativity with the world. Upload music, videos, or gaming content and earn rewards.',
+    es: 'Comparte tu creatividad con el mundo. Sube música, videos o contenido de gaming y gana recompensas.',
+  },
+  'upload.selectType': {
+    en: 'Select Content Type',
+    es: 'Selecciona el Tipo de Contenido',
+  },
+  'upload.music': {
+    en: 'Music',
+    es: 'Música',
+  },
+  'upload.video': {
+    en: 'Video',
+    es: 'Video',
+  },
+  'upload.gaming': {
+    en: 'Gaming',
+    es: 'Gaming',
+  },
+  'upload.selectFile': {
+    en: 'Select File',
+    es: 'Seleccionar Archivo',
+  },
+  'upload.dragAndDrop': {
+    en: 'Drag and drop your file here, or click to browse',
+    es: 'Arrastra y suelta tu archivo aquí, o haz clic para explorar',
+  },
+  'upload.uploading': {
+    en: 'Uploading...',
+    es: 'Subiendo...',
+  },
+  'upload.success': {
+    en: 'Upload successful!',
+    es: '¡Subida exitosa!',
+  },
+  'upload.failed': {
+    en: 'Upload failed. Please try again.',
+    es: 'Error al subir. Por favor intenta de nuevo.',
+  },
+  
+  // Wallet
+  'wallet.title': {
+    en: 'Wallet',
+    es: 'Billetera',
+  },
+  'wallet.balance': {
+    en: 'Balance',
+    es: 'Balance',
+  },
+  'wallet.totalBalance': {
+    en: 'Total Balance',
+    es: 'Balance Total',
+  },
+  'wallet.available': {
+    en: 'Available',
+    es: 'Disponible',
+  },
+  'wallet.staked': {
+    en: 'Staked',
+    es: 'Apostado',
+  },
+  'wallet.send': {
+    en: 'Send',
+    es: 'Enviar',
+  },
+  'wallet.receive': {
+    en: 'Receive',
+    es: 'Recibir',
+  },
+  'wallet.transactions': {
+    en: 'Transactions',
+    es: 'Transacciones',
+  },
+  'wallet.history': {
+    en: 'Transaction History',
+    es: 'Historial de Transacciones',
+  },
+  'wallet.noTransactions': {
+    en: 'No transactions yet',
+    es: 'Aún no hay transacciones',
+  },
+  
+  // DEX
+  'dex.title': {
+    en: 'Decentralized Exchange',
+    es: 'Intercambio Descentralizado',
+  },
+  'dex.swap': {
+    en: 'Swap',
+    es: 'Intercambiar',
+  },
+  'dex.liquidity': {
+    en: 'Liquidity',
+    es: 'Liquidez',
+  },
+  'dex.pools': {
+    en: 'Pools',
+    es: 'Pools',
+  },
+  'dex.addLiquidity': {
+    en: 'Add Liquidity',
+    es: 'Agregar Liquidez',
+  },
+  'dex.removeLiquidity': {
+    en: 'Remove Liquidity',
+    es: 'Remover Liquidez',
+  },
+  'dex.from': {
+    en: 'From',
+    es: 'Desde',
+  },
+  'dex.to': {
+    en: 'To',
+    es: 'Hasta',
+  },
+  'dex.amount': {
+    en: 'Amount',
+    es: 'Cantidad',
+  },
+  'dex.price': {
+    en: 'Price',
+    es: 'Precio',
+  },
+  'dex.youReceive': {
+    en: 'You Receive',
+    es: 'Recibirás',
+  },
+  'dex.swapNow': {
+    en: 'Swap Now',
+    es: 'Intercambiar Ahora',
+  },
+  
+  // Profile
+  'profile.title': {
+    en: 'Profile',
+    es: 'Perfil',
+  },
+  'profile.edit': {
+    en: 'Edit Profile',
+    es: 'Editar Perfil',
+  },
+  'profile.followers': {
+    en: 'Followers',
+    es: 'Seguidores',
+  },
+  'profile.following': {
+    en: 'Following',
+    es: 'Siguiendo',
+  },
+  'profile.tracks': {
+    en: 'Tracks',
+    es: 'Canciones',
+  },
+  'profile.albums': {
+    en: 'Albums',
+    es: 'Álbumes',
+  },
+  'profile.playlists': {
+    en: 'Playlists',
+    es: 'Listas',
+  },
+  
+  // Errors
+  'error.generic': {
+    en: 'Something went wrong',
+    es: 'Algo salió mal',
+  },
+  'error.network': {
+    en: 'Network error. Please check your connection.',
+    es: 'Error de red. Por favor verifica tu conexión.',
+  },
+  'error.notFound': {
+    en: 'Page not found',
+    es: 'Página no encontrada',
+  },
+  'error.unauthorized': {
+    en: 'Unauthorized access',
+    es: 'Acceso no autorizado',
+  },
+  'error.serverError': {
+    en: 'Server error. Please try again later.',
+    es: 'Error del servidor. Por favor intenta más tarde.',
+  },
+  
+  // Success Messages
+  'success.saved': {
+    en: 'Saved successfully',
+    es: 'Guardado exitosamente',
+  },
+  'success.uploaded': {
+    en: 'Uploaded successfully',
+    es: 'Subido exitosamente',
+  },
+  'success.deleted': {
+    en: 'Deleted successfully',
+    es: 'Eliminado exitosamente',
+  },
+  'success.updated': {
+    en: 'Updated successfully',
+    es: 'Actualizado exitosamente',
   },
 };
 

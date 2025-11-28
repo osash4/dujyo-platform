@@ -46,7 +46,7 @@ const BecomeArtist: React.FC = () => {
 
       // Call backend endpoint to become artist
       const apiBaseUrl = getApiBaseUrl();
-      console.log('📡 Calling:', `${apiBaseUrl}/api/v1/user/become-artist`);
+      console.log('Calling:', `${apiBaseUrl}/api/v1/user/become-artist`);
       
       const response = await fetch(`${apiBaseUrl}/api/v1/user/become-artist`, {
         method: 'POST',
@@ -59,8 +59,8 @@ const BecomeArtist: React.FC = () => {
         })
       });
 
-      console.log('📥 Response status:', response.status);
-      console.log('📥 Response ok:', response.ok);
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
 
       if (!response.ok) {
         // Try to get error message from JSON, fallback to status text
@@ -75,7 +75,7 @@ const BecomeArtist: React.FC = () => {
             errorMessage = response.statusText || errorMessage;
           }
         }
-        console.error('❌ Error response:', response.status, errorMessage);
+        console.error('Error response:', response.status, errorMessage);
         throw new Error(errorMessage);
       }
 

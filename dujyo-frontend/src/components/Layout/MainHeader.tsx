@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { Search, Bell, User, Menu } from 'lucide-react';
 import Logo from '../common/Logo';
 import { motion } from 'framer-motion';
@@ -19,6 +20,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -78,7 +80,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                   : 'text-gray-300 hover:text-white hover:bg-gray-800'
               }`}
             >
-              Explore
+              {t('nav.discover')}
             </button>
             <button
               onClick={() => navigate('/music')}
@@ -88,7 +90,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                   : 'text-gray-300 hover:text-white hover:bg-gray-800'
               }`}
             >
-              Music
+              {t('nav.music')}
             </button>
             <button
               onClick={() => navigate('/video')}
@@ -98,7 +100,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                   : 'text-gray-300 hover:text-white hover:bg-gray-800'
               }`}
             >
-              Video
+              {t('nav.videos')}
             </button>
             <button
               onClick={() => navigate('/gaming')}
@@ -108,7 +110,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                   : 'text-gray-300 hover:text-white hover:bg-gray-800'
               }`}
             >
-              Gaming
+              {t('nav.gaming')}
             </button>
           </nav>
         </div>
@@ -123,7 +125,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search music, videos, games..."
+                  placeholder={t('page.searchPlaceholder')}
                   className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                 />
               </div>
@@ -170,7 +172,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
               onClick={() => navigate('/login')}
               className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors text-sm font-medium"
             >
-              Sign In
+              {t('auth.signIn')}
             </button>
           )}
         </div>

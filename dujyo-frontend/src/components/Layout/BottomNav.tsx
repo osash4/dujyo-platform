@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { Search, Home, Compass, User } from 'lucide-react';
 import Logo from '../common/Logo';
 
@@ -8,6 +9,7 @@ const SpotifyBottomNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -73,7 +75,7 @@ const SpotifyBottomNav: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="What are you in the mood for?"
+                placeholder={t('page.searchPlaceholder')}
                 className="w-full pl-20 pr-20 py-2 bg-gray-800 border border-gray-600 rounded-full text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-200"
               />
               <button

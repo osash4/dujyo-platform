@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Backend Connection</title>
+</head>
+<body>
+    <h1>Test Backend Connection</h1>
+    <button onclick="testConnection()">Test Backend</button>
+    <button onclick="testRegister()">Test Register</button>
+    <pre id="output"></pre>
+
+    <script>
+        const API_URL = 'https://dujyo-platform.onrender.com';
+        
+        async function testConnection() {
+            const output = document.getElementById('output');
+            output.textContent = 'Testing connection...\n';
+            
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                output.textContent += `✅ Health check: ${JSON.stringify(data, null, 2)}\n`;
+            } catch (error) {
+                output.textContent += `❌ Error: ${error.message}\n`;
+            }
+        }
+        
+        async function testRegister() {
+            const output = document.getElementById('output');
+            output.textContent = 'Testing register...\n';
+            
+            const testData = {
+                email: `test${Date.now()}@test.com`,
+                password: 'test123456',
+                username: `testuser${Date.now()}`
+            };
+            
+            output.textContent += `Sending: ${JSON.stringify(testData, null, 2)}\n\n`;
+            
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                output.textContent += `Status: ${response.status}\n`;
+                output.textContent += `Status Text: ${response.statusText}\n`;
+                output.textContent += `Headers: ${JSON.stringify(Object.fromEntries(response.headers), null, 2)}\n\n`;
+                
+                const text = await response.text();
+                output.textContent += `Response Text: ${text}\n\n`;
+                
+                try {
+                    const json = JSON.parse(text);
+                    output.textContent += `Response JSON: ${JSON.stringify(json, null, 2)}\n`;
+                } catch {
+                    output.textContent += `(Response is not JSON)\n`;
+                }
+            } catch (error) {
+                output.textContent += `❌ Fetch Error: ${error.message}\n`;
+                output.textContent += `Error Stack: ${error.stack}\n`;
+            }
+        }
+    </script>
+</body>
+</html>
+

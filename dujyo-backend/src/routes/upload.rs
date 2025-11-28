@@ -649,7 +649,7 @@ pub async fn list_videos_handler(
 
     let total = content_rows.len();
 
-    println!("✅ Retrieved {} videos", total);
+    println!("Retrieved {} videos", total);
 
     Ok(Json(ListContentResponse {
         success: true,
