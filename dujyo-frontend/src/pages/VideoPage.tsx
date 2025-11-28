@@ -263,6 +263,22 @@ const VideoPage: React.FC = () => {
     }
   }, [account, user]);
 
+  // Test backend connection on mount for debugging
+  useEffect(() => {
+    console.error('🎬 VideoPage: Testing backend connection...');
+    import('../utils/testBackend').then(({ testBackendConnection }) => {
+      testBackendConnection().then(result => {
+        if (result.success) {
+          console.error('✅ VideoPage: Backend is accessible');
+        } else {
+          console.error('❌ VideoPage: Backend connection failed:', result.error);
+        }
+      });
+    }).catch(err => {
+      console.error('❌ VideoPage: Failed to load test utility:', err);
+    });
+  }, []);
+
   const fetchCreatorEarnings = async () => {
     if (!account) return;
     
