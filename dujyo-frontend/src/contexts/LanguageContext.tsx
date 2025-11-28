@@ -1,6 +1,6 @@
 // src/contexts/LanguageContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Language, getLanguage, setLanguage as setLanguageUtil } from '../utils/i18n';
+import { Language, getLanguage, setLanguage as setLanguageUtil, t as translate } from '../utils/i18n';
 
 interface LanguageContextType {
   language: Language;
@@ -32,9 +32,8 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
   };
 
-  // Import t function dynamically to avoid circular dependencies
+  // Use imported translate function
   const t = (key: string) => {
-    const { t: translate } = require('../utils/i18n');
     return translate(key, language);
   };
 
