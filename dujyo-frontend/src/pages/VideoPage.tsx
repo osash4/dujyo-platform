@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
 import AnimatedCarousel from '../components/common/AnimatedCarousel';
@@ -293,18 +293,27 @@ const VideoPage: React.FC = () => {
     })));
   }, [currentWatchTime]);
 
-  // Trending data with earnings
-  const trendingVideos = videoContent.slice(0, 4).map(v => ({
-    id: v.id,
-    title: v.title,
-    subtitle: v.category,
-    image: v.image,
-    type: 'video' as const,
-    views: formatNumber(v.views),
-    likes: formatNumber(v.likes),
-    trend: v.rating >= 4.8 ? 'up' as const : 'new' as const,
-    earnings: v.earnings
-  }));
+  // Format number helper (moved before useMemo to avoid initialization issues)
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  };
+
+  // Trending data with earnings - use useMemo to avoid initialization issues
+  const trendingVideos = useMemo(() => {
+    return videoContent.slice(0, 4).map(v => ({
+      id: v.id,
+      title: v.title,
+      subtitle: v.category,
+      image: v.image,
+      type: 'video' as const,
+      views: formatNumber(v.views),
+      likes: formatNumber(v.likes),
+      trend: v.rating >= 4.8 ? 'up' as const : 'new' as const,
+      earnings: v.earnings
+    }));
+  }, []);
   
   // Filter options
   const filterOptions: FilterOption[] = [
