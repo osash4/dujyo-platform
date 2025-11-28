@@ -108,8 +108,8 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, onReset }) => {
             We're sorry, but something unexpected happened. Don't worry, your data is safe.
           </p>
 
-          {/* Error Details (only in development) */}
-          {process.env.NODE_ENV === 'development' && error && (
+          {/* Error Details (show in production too for debugging) */}
+          {error && (
             <motion.div
               className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6 text-left"
               initial={{ opacity: 0, y: 10 }}
