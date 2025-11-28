@@ -374,24 +374,24 @@ export function ContentMarketplace(): JSX.Element {
   const tabs = [
     {
       id: 'content',
-      label: 'Content',
+      label: t('marketplace.content'),
       icon: ShoppingBag,
       color: '#00F5FF',
-      description: 'Digital Content'
+      description: t('marketplace.digitalContent')
     },
     {
       id: 'nft',
-      label: 'NFT Market',
+      label: t('marketplace.nft'),
       icon: Package,
       color: '#EA580C',
-      description: 'NFTs & Collectibles'
+      description: t('marketplace.nftsCollectibles')
     },
     {
       id: 'licenses',
-      label: 'Licenses',
+      label: t('marketplace.licenses'),
       icon: FileText,
       color: '#F59E0B',
-      description: 'Content Licenses'
+      description: t('marketplace.contentLicenses')
     }
   ];
 
@@ -432,7 +432,7 @@ export function ContentMarketplace(): JSX.Element {
                 transition={{ duration: 1, delay: 0.2 }}
               >
                 <span className="bg-gradient-to-r from-amber-400 via-blue-500 to-orange-600 bg-clip-text text-transparent">
-                  Content
+                  {t('marketplace.content')}
                 </span>
                 <motion.span
                   className="ml-4 text-4xl md:text-6xl"
@@ -445,7 +445,7 @@ export function ContentMarketplace(): JSX.Element {
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  Marketplace
+                  {t('marketplace.title')}
                 </motion.span>
               </motion.h1>
 
@@ -455,7 +455,7 @@ export function ContentMarketplace(): JSX.Element {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                Discover, trade, and monetize digital content in the DUJYO ecosystem. Stream-to-Earn with every purchase.
+                {t('marketplace.subtitle')}
               </motion.p>
 
               {/* Search Bar */}
@@ -469,7 +469,7 @@ export function ContentMarketplace(): JSX.Element {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Search content, NFTs, licenses..."
+                    placeholder={t('marketplace.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/20"
@@ -492,11 +492,11 @@ export function ContentMarketplace(): JSX.Element {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <Crown className="w-6 h-6 text-amber-400" />
-                  Top Earning Creators
+                  {t('marketplace.topCreators')}
                 </h2>
                 <div className="flex items-center gap-2 text-sm text-amber-400">
                   <Sparkles className="w-4 h-4" />
-                  <span>Stream-to-Earn Active</span>
+                  <span>{t('marketplace.streamToEarnActive')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -523,12 +523,12 @@ export function ContentMarketplace(): JSX.Element {
                             </div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-400">{creator.contentCount} items</p>
+                        <p className="text-sm text-gray-400">{creator.contentCount} {t('marketplace.items')}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-gray-400">Total Earnings</p>
+                        <p className="text-xs text-gray-400">{t('marketplace.totalEarnings')}</p>
                         <p className="text-xl font-bold text-amber-400">{creator.totalEarnings.toFixed(2)} $DYO</p>
                       </div>
                       <div className="flex items-center gap-1 text-xs text-gray-400">
@@ -617,7 +617,7 @@ export function ContentMarketplace(): JSX.Element {
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                       <Calculator className="w-6 h-6 text-amber-400" />
-                      Earning Projection Calculator
+                      {t('marketplace.earningCalculator')}
                     </h3>
                     <button
                       onClick={() => setShowEarningCalculator(false)}
@@ -638,24 +638,24 @@ export function ContentMarketplace(): JSX.Element {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <h4 className="font-bold text-white mb-4">Projection Results</h4>
+                      <h4 className="font-bold text-white mb-4">{t('marketplace.projectionResults')}</h4>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-400">Projected Earnings</p>
+                          <p className="text-sm text-gray-400">{t('marketplace.projectedEarnings')}</p>
                           <p className="text-2xl font-bold text-amber-400">{earningProjection.projectedEarnings.toFixed(2)} $DYO</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">ROI</p>
+                          <p className="text-sm text-gray-400">{t('marketplace.roi')}</p>
                           <p className={`text-2xl font-bold ${earningProjection.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {earningProjection.roi > 0 ? '+' : ''}{earningProjection.roi.toFixed(1)}%
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">Break-Even Streams</p>
+                          <p className="text-sm text-gray-400">{t('marketplace.breakEvenStreams')}</p>
                           <p className="text-xl font-semibold text-white">{earningProjection.breakEvenStreams}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">Expected Streams</p>
+                          <p className="text-sm text-gray-400">{t('marketplace.expectedStreams')}</p>
                           <p className="text-xl font-semibold text-white">{earningProjection.expectedStreams}</p>
                         </div>
                       </div>
@@ -683,7 +683,7 @@ export function ContentMarketplace(): JSX.Element {
                 >
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <FileText className="w-6 h-6 text-amber-400" />
-                    Streaming License Tiers
+                    {t('marketplace.streamingLicenseTiers')}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {licenseTiers.map((tier) => (
@@ -698,14 +698,14 @@ export function ContentMarketplace(): JSX.Element {
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="text-lg font-bold text-white">{tier.name}</h3>
                           <div className="px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: `${tier.color}20`, color: tier.color }}>
-                            {tier.royaltyShare}% Royalty
+                            {tier.royaltyShare}% {t('marketplace.royalty')}
                           </div>
                         </div>
                         <div className="mb-4">
                           <p className="text-3xl font-bold text-amber-400 mb-1">
                             {tier.price === 0 ? 'Free' : `${tier.price} $DYO`}
                           </p>
-                          <p className="text-sm text-gray-400">Earning Potential: {tier.earningPotential > 0 ? `${(tier.earningPotential * 100).toFixed(0)}%` : 'None'}</p>
+                          <p className="text-sm text-gray-400">{t('marketplace.earningPotential')}: {tier.earningPotential > 0 ? `${(tier.earningPotential * 100).toFixed(0)}%` : t('marketplace.none')}</p>
                         </div>
                         <ul className="space-y-2 mb-4">
                           {tier.features.map((feature, idx) => (
@@ -717,7 +717,7 @@ export function ContentMarketplace(): JSX.Element {
                         </ul>
                         {tier.price > 0 && (
                           <button className="w-full py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-400 hover:to-orange-500 transition-all">
-                            Select License
+                            {t('marketplace.selectLicense')}
                           </button>
                         )}
                       </motion.div>
