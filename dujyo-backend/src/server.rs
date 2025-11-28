@@ -1099,7 +1099,6 @@ pub fn create_router(state: AppState) -> Router {
         .nest("/api/v1/royalties", royalties::royalties_routes()) // ✅ Royalties routes
         .nest("/api/v1/content", upload::content_routes()) // ✅ Content routes (from upload module)
         .nest("/api/v1/upload", upload::upload_routes()) // ✅ Upload routes
-        .route("/api/videos", get(upload::list_videos_handler)) // ✅ Public videos endpoint (alias for /api/v1/content/videos)
         .nest("/api/v1/playlists", playlists::playlist_routes()) // ✅ Playlists routes
         .nest("/api/v1/search", search::search_routes()) // ✅ Search routes
         .nest("/api/v1/recommendations", recommendations::recommendations_routes()) // ✅ Recommendations routes
