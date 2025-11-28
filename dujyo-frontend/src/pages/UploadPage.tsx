@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Upload, Music, Video, Gamepad2, FileText, Image, DollarSign, Calendar } from 'lucide-react';
 import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
 import { useAuth } from '../auth/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
 
 interface UploadFormData {
@@ -220,11 +221,11 @@ const UploadPage: React.FC = () => {
             >
               <h1 className="text-4xl md:text-6xl font-bold mb-4">
                 <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600 bg-clip-text text-transparent">
-                  Upload Content
+                  {t('upload.title')}
                 </span>
               </h1>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                Share your creativity with the world. Upload music, videos, or gaming content and earn rewards.
+                {t('upload.subtitle')}
               </p>
             </motion.div>
 

@@ -1063,6 +1063,566 @@ const translations: Translations = {
     en: 'Updated successfully',
     es: 'Actualizado exitosamente',
   },
+  
+  // Video Page - Additional
+  'video.galaxy': {
+    en: 'Video Galaxy',
+    es: 'Galaxia de Videos',
+  },
+  'video.subtitleFull': {
+    en: 'Immerse yourself in visual storytelling. Watch documentaries, tutorials, and experiences from the digital frontier.',
+    es: 'Sumérgete en la narrativa visual. Mira documentales, tutoriales y experiencias de la frontera digital.',
+  },
+  'video.poweredBy': {
+    en: 'Powered by DUJYO • Stream-to-Earn',
+    es: 'Impulsado por DUJYO • Transmite para Ganar',
+  },
+  'video.dyoPerView': {
+    en: '$DYO per View',
+    es: '$DYO por Visualización',
+  },
+  'video.earnWhileWatch': {
+    en: 'Earn while you watch',
+    es: 'Gana mientras miras',
+  },
+  'video.totalViews': {
+    en: 'Total Views',
+    es: 'Visualizaciones Totales',
+  },
+  'video.avgWatchCompletion': {
+    en: 'Avg Watch Completion',
+    es: 'Finalización Promedio',
+  },
+  'video.viewCreatorEarnings': {
+    en: 'View Creator Earnings',
+    es: 'Ver Ganancias del Creador',
+  },
+  'video.creatorEarnings': {
+    en: 'Creator Earnings',
+    es: 'Ganancias del Creador',
+  },
+  'video.creatorMonetizationTiers': {
+    en: 'Creator Monetization Tiers',
+    es: 'Niveles de Monetización del Creador',
+  },
+  'video.watchTimeMilestones': {
+    en: 'Watch Time Milestones',
+    es: 'Hitos de Tiempo de Visualización',
+  },
+  'video.playersEarningNow': {
+    en: 'Players earning now',
+    es: 'Jugadores ganando ahora',
+  },
+  'video.earnedToday': {
+    en: 'Earned Today',
+    es: 'Ganado Hoy',
+  },
+  
+  // Gaming Page - Additional
+  'gaming.earnedToday': {
+    en: 'Earned Today',
+    es: 'Ganado Hoy',
+  },
+  'gaming.dailyQuests': {
+    en: 'Daily Quests',
+    es: 'Misiones Diarias',
+  },
+  'gaming.achievements': {
+    en: 'Achievements',
+    es: 'Logros',
+  },
+  'gaming.playNow': {
+    en: 'Play Now',
+    es: 'Jugar Ahora',
+  },
+  'gaming.topEarners': {
+    en: 'Top Earners',
+    es: 'Top Ganadores',
+  },
+  'gaming.all': {
+    en: 'All',
+    es: 'Todos',
+  },
+  'gaming.earnings': {
+    en: 'Earnings',
+    es: 'Ganancias',
+  },
+  'gaming.weeklyEarnings': {
+    en: 'Weekly Earnings',
+    es: 'Ganancias Semanales',
+  },
+  'gaming.totalEarned': {
+    en: 'Total Earned',
+    es: 'Total Ganado',
+  },
+  'gaming.complete': {
+    en: 'Complete',
+    es: 'Completar',
+  },
+  'gaming.completed': {
+    en: 'Completed',
+    es: 'Completado',
+  },
+  'gaming.progress': {
+    en: 'Progress',
+    es: 'Progreso',
+  },
+  'gaming.reward': {
+    en: 'Reward',
+    es: 'Recompensa',
+  },
+  'gaming.points': {
+    en: 'Points',
+    es: 'Puntos',
+  },
+  
+  // Profile Page
+  'profile.editProfile': {
+    en: 'Edit Profile',
+    es: 'Editar Perfil',
+  },
+  'profile.follow': {
+    en: 'Follow',
+    es: 'Seguir',
+  },
+  'profile.unfollow': {
+    en: 'Unfollow',
+    es: 'Dejar de Seguir',
+  },
+  'profile.message': {
+    en: 'Message',
+    es: 'Mensaje',
+  },
+  'profile.share': {
+    en: 'Share',
+    es: 'Compartir',
+  },
+  'profile.about': {
+    en: 'About',
+    es: 'Acerca de',
+  },
+  'profile.recentActivity': {
+    en: 'Recent Activity',
+    es: 'Actividad Reciente',
+  },
+  'profile.content': {
+    en: 'Content',
+    es: 'Contenido',
+  },
+  'profile.liked': {
+    en: 'Liked',
+    es: 'Me Gusta',
+  },
+  'profile.commented': {
+    en: 'Commented',
+    es: 'Comentó',
+  },
+  'profile.shared': {
+    en: 'Shared',
+    es: 'Compartió',
+  },
+  'profile.uploaded': {
+    en: 'Uploaded',
+    es: 'Subió',
+  },
+  'profile.noActivity': {
+    en: 'No recent activity',
+    es: 'Sin actividad reciente',
+  },
+  'profile.bio': {
+    en: 'Bio',
+    es: 'Biografía',
+  },
+  'profile.location': {
+    en: 'Location',
+    es: 'Ubicación',
+  },
+  'profile.joined': {
+    en: 'Joined',
+    es: 'Se unió',
+  },
+  'profile.verified': {
+    en: 'Verified',
+    es: 'Verificado',
+  },
+  
+  // Music Page
+  'music.galaxy': {
+    en: 'Music Galaxy',
+    es: 'Galaxia Musical',
+  },
+  'music.subtitleFull': {
+    en: 'Discover and stream your favorite tracks. Listen to the latest releases and explore new artists.',
+    es: 'Descubre y transmite tus canciones favoritas. Escucha los últimos lanzamientos y explora nuevos artistas.',
+  },
+  'music.poweredBy': {
+    en: 'Powered by DUJYO • Stream-to-Earn',
+    es: 'Impulsado por DUJYO • Transmite para Ganar',
+  },
+  'music.dyoPerStream': {
+    en: '$DYO per Stream',
+    es: '$DYO por Transmisión',
+  },
+  'music.earnWhileListen': {
+    en: 'Earn while you listen',
+    es: 'Gana mientras escuchas',
+  },
+  'music.totalStreams': {
+    en: 'Total Streams',
+    es: 'Transmisiones Totales',
+  },
+  'music.avgListenTime': {
+    en: 'Avg Listen Time',
+    es: 'Tiempo Promedio de Escucha',
+  },
+  'music.play': {
+    en: 'Play',
+    es: 'Reproducir',
+  },
+  'music.addToQueue': {
+    en: 'Add to Queue',
+    es: 'Agregar a Cola',
+  },
+  'music.addToPlaylist': {
+    en: 'Add to Playlist',
+    es: 'Agregar a Lista',
+  },
+  'music.share': {
+    en: 'Share',
+    es: 'Compartir',
+  },
+  'music.download': {
+    en: 'Download',
+    es: 'Descargar',
+  },
+  'music.artist': {
+    en: 'Artist',
+    es: 'Artista',
+  },
+  'music.album': {
+    en: 'Album',
+    es: 'Álbum',
+  },
+  'music.duration': {
+    en: 'Duration',
+    es: 'Duración',
+  },
+  'music.released': {
+    en: 'Released',
+    es: 'Lanzado',
+  },
+  
+  // DEX - Additional
+  'dex.dashboard': {
+    en: 'DEX Dashboard',
+    es: 'Panel DEX',
+  },
+  'dex.totalLiquidity': {
+    en: 'Total Liquidity',
+    es: 'Liquidez Total',
+  },
+  'dex.volume24h': {
+    en: '24h Volume',
+    es: 'Volumen 24h',
+  },
+  'dex.price': {
+    en: 'Price',
+    es: 'Precio',
+  },
+  'dex.change24h': {
+    en: '24h Change',
+    es: 'Cambio 24h',
+  },
+  'dex.last24Hours': {
+    en: 'Last 24 Hours',
+    es: 'Últimas 24 Horas',
+  },
+  'dex.priceChart': {
+    en: 'Price Chart',
+    es: 'Gráfico de Precio',
+  },
+  'dex.liquidityPools': {
+    en: 'Liquidity Pools',
+    es: 'Pools de Liquidez',
+  },
+  'dex.yourLiquidity': {
+    en: 'Your Liquidity',
+    es: 'Tu Liquidez',
+  },
+  'dex.add': {
+    en: 'Add',
+    es: 'Agregar',
+  },
+  'dex.remove': {
+    en: 'Remove',
+    es: 'Remover',
+  },
+  'dex.max': {
+    en: 'Max',
+    es: 'Máx',
+  },
+  'dex.slippage': {
+    en: 'Slippage',
+    es: 'Deslizamiento',
+  },
+  'dex.minimumReceived': {
+    en: 'Minimum Received',
+    es: 'Mínimo Recibido',
+  },
+  'dex.priceImpact': {
+    en: 'Price Impact',
+    es: 'Impacto en Precio',
+  },
+  'dex.route': {
+    en: 'Route',
+    es: 'Ruta',
+  },
+  'dex.approve': {
+    en: 'Approve',
+    es: 'Aprobar',
+  },
+  'dex.approving': {
+    en: 'Approving...',
+    es: 'Aprobando...',
+  },
+  'dex.swapping': {
+    en: 'Swapping...',
+    es: 'Intercambiando...',
+  },
+  'dex.transactionPending': {
+    en: 'Transaction Pending',
+    es: 'Transacción Pendiente',
+  },
+  'dex.transactionSuccess': {
+    en: 'Transaction Success',
+    es: 'Transacción Exitosa',
+  },
+  'dex.transactionFailed': {
+    en: 'Transaction Failed',
+    es: 'Transacción Fallida',
+  },
+  
+  // Wallet - Additional
+  'wallet.dashboard': {
+    en: 'Wallet Dashboard',
+    es: 'Panel de Billetera',
+  },
+  'wallet.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'wallet.platformEarnings': {
+    en: 'Platform Earnings',
+    es: 'Ganancias por Plataforma',
+  },
+  'wallet.music': {
+    en: 'Music',
+    es: 'Música',
+  },
+  'wallet.video': {
+    en: 'Video',
+    es: 'Video',
+  },
+  'wallet.gaming': {
+    en: 'Gaming',
+    es: 'Gaming',
+  },
+  'wallet.streams': {
+    en: 'Streams',
+    es: 'Transmisiones',
+  },
+  'wallet.plays': {
+    en: 'Plays',
+    es: 'Reproducciones',
+  },
+  'wallet.earningPrediction': {
+    en: 'Earning Prediction',
+    es: 'Predicción de Ganancias',
+  },
+  'wallet.weekly': {
+    en: 'Weekly',
+    es: 'Semanal',
+  },
+  'wallet.monthly': {
+    en: 'Monthly',
+    es: 'Mensual',
+  },
+  'wallet.predicted': {
+    en: 'Predicted',
+    es: 'Predicho',
+  },
+  'wallet.confidence': {
+    en: 'Confidence',
+    es: 'Confianza',
+  },
+  'wallet.basedOn': {
+    en: 'Based on',
+    es: 'Basado en',
+  },
+  'wallet.quickActions': {
+    en: 'Quick Actions',
+    es: 'Acciones Rápidas',
+  },
+  'wallet.uploadContent': {
+    en: 'Upload Content',
+    es: 'Subir Contenido',
+  },
+  'wallet.goToDEX': {
+    en: 'Go to DEX',
+    es: 'Ir a DEX',
+  },
+  'wallet.viewAnalytics': {
+    en: 'View Analytics',
+    es: 'Ver Analíticas',
+  },
+  'wallet.potentialEarnings': {
+    en: 'Potential Earnings',
+    es: 'Ganancias Potenciales',
+  },
+  'wallet.achievements': {
+    en: 'Achievements',
+    es: 'Logros',
+  },
+  'wallet.earnMore': {
+    en: 'Earn More',
+    es: 'Gana Más',
+  },
+  'wallet.recentTransactions': {
+    en: 'Recent Transactions',
+    es: 'Transacciones Recientes',
+  },
+  'wallet.all': {
+    en: 'All',
+    es: 'Todas',
+  },
+  'wallet.sent': {
+    en: 'Sent',
+    es: 'Enviado',
+  },
+  'wallet.received': {
+    en: 'Received',
+    es: 'Recibido',
+  },
+  'wallet.swapped': {
+    en: 'Swapped',
+    es: 'Intercambiado',
+  },
+  'wallet.staked': {
+    en: 'Staked',
+    es: 'Apostado',
+  },
+  'wallet.unstaked': {
+    en: 'Unstaked',
+    es: 'Desapostado',
+  },
+  'wallet.noTransactionsFound': {
+    en: 'No transactions found',
+    es: 'No se encontraron transacciones',
+  },
+  'wallet.filterBy': {
+    en: 'Filter by',
+    es: 'Filtrar por',
+  },
+  'wallet.dateRange': {
+    en: 'Date Range',
+    es: 'Rango de Fechas',
+  },
+  'wallet.thisWeek': {
+    en: 'This Week',
+    es: 'Esta Semana',
+  },
+  'wallet.thisMonth': {
+    en: 'This Month',
+    es: 'Este Mes',
+  },
+  'wallet.allTime': {
+    en: 'All Time',
+    es: 'Todo el Tiempo',
+  },
+  
+  // Upload Page - Additional
+  'upload.selectContentType': {
+    en: 'Select Content Type',
+    es: 'Selecciona el Tipo de Contenido',
+  },
+  'upload.title': {
+    en: 'Title',
+    es: 'Título',
+  },
+  'upload.description': {
+    en: 'Description',
+    es: 'Descripción',
+  },
+  'upload.genre': {
+    en: 'Genre',
+    es: 'Género',
+  },
+  'upload.tags': {
+    en: 'Tags',
+    es: 'Etiquetas',
+  },
+  'upload.price': {
+    en: 'Price (Optional)',
+    es: 'Precio (Opcional)',
+  },
+  'upload.thumbnail': {
+    en: 'Thumbnail',
+    es: 'Miniatura',
+  },
+  'upload.browse': {
+    en: 'Browse',
+    es: 'Explorar',
+  },
+  'upload.maxFileSize': {
+    en: 'Max file size:',
+    es: 'Tamaño máximo:',
+  },
+  'upload.supportedFormats': {
+    en: 'Supported formats:',
+    es: 'Formatos soportados:',
+  },
+  'upload.publish': {
+    en: 'Publish',
+    es: 'Publicar',
+  },
+  'upload.publishing': {
+    en: 'Publishing...',
+    es: 'Publicando...',
+  },
+  'upload.saveDraft': {
+    en: 'Save Draft',
+    es: 'Guardar Borrador',
+  },
+  'upload.preview': {
+    en: 'Preview',
+    es: 'Vista Previa',
+  },
+  
+  // Common - Additional
+  'common.loading': {
+    en: 'Loading...',
+    es: 'Cargando...',
+  },
+  'common.error': {
+    en: 'Error',
+    es: 'Error',
+  },
+  'common.close': {
+    en: 'Close',
+    es: 'Cerrar',
+  },
+  'common.save': {
+    en: 'Save',
+    es: 'Guardar',
+  },
+  'common.settings': {
+    en: 'Settings',
+    es: 'Configuración',
+  },
+  'common.manageAccount': {
+    en: 'Manage your account and preferences',
+    es: 'Administra tu cuenta y preferencias',
+  },
 };
 
 /**

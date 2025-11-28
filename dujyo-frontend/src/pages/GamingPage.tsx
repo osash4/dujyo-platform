@@ -532,7 +532,7 @@ const GamingPage: React.FC = () => {
                   >
                     {formatNumber(metrics.activeEarners)}
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">Players earning now</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('video.playersEarningNow')}</p>
                 </motion.div>
 
                 <motion.div
@@ -541,7 +541,7 @@ const GamingPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-emerald-400" />
-                    <span className="text-xs text-gray-400">Earned Today</span>
+                    <span className="text-xs text-gray-400">{t('gaming.earnedToday')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-emerald-400"
@@ -745,7 +745,7 @@ const GamingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold text-white flex items-center gap-3">
                   <Award className="w-6 h-6 text-emerald-400" />
-                  Achievements
+                  {t('gaming.achievements')}
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -887,7 +887,7 @@ const GamingPage: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-white">Leaderboard</h3>
+                  <h3 className="text-xl font-bold text-white">{t('gaming.leaderboard')}</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setLeaderboardFilter('all')}
@@ -907,7 +907,7 @@ const GamingPage: React.FC = () => {
                           : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
                       }`}
                     >
-                      Top Earners
+                      {t('gaming.topEarners')}
                     </button>
                   </div>
                 </div>

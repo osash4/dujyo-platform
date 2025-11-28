@@ -457,14 +457,13 @@ const VideoPage: React.FC = () => {
               </motion.div>
 
               <h1 className="text-4xl md:text-6xl font-bold neon-text-video mb-4">
-                Video Galaxy
+                {t('video.galaxy')}
               </h1>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-2">
-                Immerse yourself in visual storytelling. 
-                Watch documentaries, tutorials, and experiences from the digital frontier.
+                {t('video.subtitleFull')}
               </p>
               <p className="text-sm text-cyan-400/80 font-semibold mb-6">
-                Powered by DUJYO • Stream-to-Earn
+                {t('video.poweredBy')}
               </p>
 
               {/* Video Stream-to-Earn Hero Metrics */}
@@ -480,7 +479,7 @@ const VideoPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Coins className="w-5 h-5 text-cyan-400" />
-                    <span className="text-xs text-gray-400">$DYO per View</span>
+                    <span className="text-xs text-gray-400">{t('video.dyoPerView')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-cyan-400"
@@ -490,7 +489,7 @@ const VideoPage: React.FC = () => {
                   >
                     {metrics.dyoPerView.toFixed(2)} $DYO
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">Earn while you watch</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('video.earnWhileWatch')}</p>
                 </motion.div>
 
                 <motion.div
@@ -499,7 +498,7 @@ const VideoPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Eye className="w-5 h-5 text-cyan-400" />
-                    <span className="text-xs text-gray-400">Total Views</span>
+                    <span className="text-xs text-gray-400">{t('video.totalViews')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-cyan-400"
@@ -541,7 +540,7 @@ const VideoPage: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Wallet className="w-5 h-5" />
-                  <span>View Creator Earnings: {creatorEarnings.toFixed(2)} $DYO</span>
+                  <span>{t('video.viewCreatorEarnings')}: {creatorEarnings.toFixed(2)} $DYO</span>
                 </motion.button>
               )}
 
@@ -679,7 +678,7 @@ const VideoPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-3xl font-bold text-white flex items-center gap-3">
                     <Award className="w-6 h-6 text-cyan-400" />
-                    Creator Monetization Tiers
+                    {t('video.creatorMonetizationTiers')}
                   </h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -984,7 +983,7 @@ const VideoPage: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                 <Wallet className="w-6 h-6 text-cyan-400" />
-                Creator Earnings
+                {t('video.creatorEarnings')}
               </h3>
               <button
                 onClick={() => setShowEarningsModal(false)}
