@@ -994,7 +994,7 @@ const translations: Translations = {
     es: 'Intercambiar Ahora',
   },
   
-  // Profile
+  // Profile Page
   'profile.title': {
     en: 'Profile',
     es: 'Perfil',
@@ -1588,32 +1588,6 @@ const translations: Translations = {
   'upload.preview': {
     en: 'Preview',
     es: 'Vista Previa',
-  },
-  
-  // Common - Additional
-  'common.loading': {
-    en: 'Loading...',
-    es: 'Cargando...',
-  },
-  'common.error': {
-    en: 'Error',
-    es: 'Error',
-  },
-  'common.close': {
-    en: 'Close',
-    es: 'Cerrar',
-  },
-  'common.save': {
-    en: 'Save',
-    es: 'Guardar',
-  },
-  'common.settings': {
-    en: 'Settings',
-    es: 'Configuración',
-  },
-  'common.manageAccount': {
-    en: 'Manage your account and preferences',
-    es: 'Administra tu cuenta y preferencias',
   },
 };
 
