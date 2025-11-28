@@ -200,7 +200,11 @@ interface WatchTimeMilestone {
 }
 
 const VideoPage: React.FC = () => {
-  const { playTrack, setPlayerPosition } = usePlayerContext();
+  // Safely get player context with fallbacks
+  const playerContext = usePlayerContext();
+  const playTrack = playerContext?.playTrack || (() => {});
+  const setPlayerPosition = playerContext?.setPlayerPosition || (() => {});
+  
   const { user } = useAuth();
   const { connect, account, isConnecting } = useWallet();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -241,21 +245,31 @@ const VideoPage: React.FC = () => {
   }, [account, user]);
 
   const fetchCreatorEarnings = async () => {
+    if (!account) return;
+    
     try {
       const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('jwt_token');
+      
       const response = await fetch(`${apiBaseUrl}/api/earnings/creator/${account}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json'
         }
       });
+      
       if (response.ok) {
         const data = await response.json();
         setCreatorEarnings(data.totalEarnings || 0);
         setUserTier(data.tier || 'Bronze');
         setEngagementPoints(data.engagementPoints || 0);
+      } else {
+        // Endpoint might not exist yet, that's okay
+        console.warn('Creator earnings endpoint not available:', response.status);
       }
     } catch (error) {
-      console.error('Error fetching creator earnings:', error);
+      // Silently fail - this endpoint might not be implemented yet
+      console.warn('Error fetching creator earnings (non-critical):', error);
     }
   };
 
@@ -341,7 +355,13 @@ const VideoPage: React.FC = () => {
 
   // Set player position to top when component mounts
   useEffect(() => {
-    setPlayerPosition('top');
+    if (setPlayerPosition) {
+      try {
+        setPlayerPosition('top');
+      } catch (error) {
+        console.warn('Error setting player position:', error);
+      }
+    }
   }, [setPlayerPosition]);
 
   const handlePlayVideo = (item: any) => {
