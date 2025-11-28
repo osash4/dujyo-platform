@@ -5,6 +5,7 @@ import { ContentManager } from '../content/ContentManager';
 import { RoyaltyContract } from '../contracts/RoyaltyContract';
 import { LicenseContract } from '../contracts/LicenseContract';
 import { NFTContract } from '../contracts/NFTContract';
+import { getApiBaseUrl } from '../utils/apiConfig';
 import { 
   initializeBlockchainConnection, 
   getAccountBalance, 

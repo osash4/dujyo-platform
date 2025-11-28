@@ -16,7 +16,7 @@ import {
   Coins, ArrowUpRight, ArrowDownLeft, RefreshCw,
   AlertCircle, CheckCircle, Zap, Music, Video, Gamepad2,
   Upload, Users, Target, Award, Sparkles, Info, Clock,
-  BarChart3, ExternalLink, Flame, Star
+  BarChart3, ExternalLink, Flame, Star, Trophy
 } from 'lucide-react';
 
 type BalancesPallet = {
