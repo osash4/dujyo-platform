@@ -163,6 +163,29 @@ impl BlockchainStorage {
             }
         }
 
+        // Add new columns to users table if they don't exist (migration)
+        let alter_queries = vec![
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(255)",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(1000)",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS public_profile BOOLEAN DEFAULT true",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS show_listening_activity BOOLEAN DEFAULT false",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS data_collection BOOLEAN DEFAULT true",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS theme VARCHAR(20) DEFAULT 'dark'",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'en'",
+        ];
+        
+        for query in alter_queries {
+            if let Err(e) = sqlx::query(query)
+                .execute(&self.pool)
+                .await
+            {
+                // Column may already exist, which is fine
+                eprintln!("⚠️ Warning: Could not add column (may already exist): {}", e);
+            }
+        }
+        eprintln!("✅ User profile columns checked/added");
+
         // Create token_balances table (for DYO/DYS balances)
         sqlx::query(
             r#"
