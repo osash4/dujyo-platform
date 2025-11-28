@@ -67,6 +67,8 @@ impl BlockchainStorage {
 
     // Initialize database tables
     pub async fn init_tables(&self) -> Result<(), sqlx::Error> {
+        eprintln!("🔧 Starting database table initialization...");
+        
         // Create blocks table
         sqlx::query(
             r#"
@@ -181,6 +183,22 @@ impl BlockchainStorage {
             .execute(&self.pool)
             .await?;
 
+        // Verify users table exists
+        let users_exists: bool = sqlx::query_scalar(
+            "SELECT EXISTS (
+                SELECT 1 FROM information_schema.tables 
+                WHERE table_name = 'users'
+            )"
+        )
+        .fetch_one(&self.pool)
+        .await?;
+        
+        if !users_exists {
+            eprintln!("❌ CRITICAL: Users table was not created successfully!");
+            return Err(sqlx::Error::RowNotFound);
+        }
+        
+        eprintln!("✅ All database tables initialized successfully");
         Ok(())
     }
 
