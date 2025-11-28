@@ -8,6 +8,7 @@ import { WebSocketProvider, useWebSocket } from './contexts/WebSocketContext';
 import { PlayerProvider, usePlayerContext } from './contexts/PlayerContext';
 import { EventBusProvider } from './contexts/EventBusContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 import { WalletDashboard } from './components/wallet/WalletDashboard';
 import { ArtistPortal } from './components/artist/ArtistPortal';
