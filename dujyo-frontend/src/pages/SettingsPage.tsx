@@ -12,7 +12,6 @@ import {
   Trash2,
   Save,
   Upload,
-  Image as ImageIcon,
   CheckCircle,
   X,
   Moon,
@@ -637,7 +636,7 @@ const SettingsPage: React.FC = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors disabled:opacity-50 mt-4"
                     >
                       <Save size={18} />
-                      {loading ? 'Saving...' : 'Save Changes'}
+                      {loading ? t('settings.saving') : t('settings.saveChanges')}
                     </button>
                   </div>
                 </div>
