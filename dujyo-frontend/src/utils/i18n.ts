@@ -333,9 +333,6 @@ const translations: Translations = {
     en: 'Confirm',
     es: 'Confirmar',
   },
-    en: 'Confirm',
-    es: 'Confirmar',
-  },
   'common.delete': {
     en: 'Delete',
     es: 'Eliminar',
