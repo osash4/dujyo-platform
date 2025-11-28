@@ -32,7 +32,24 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // Always log to console, even in production
+    console.error('🚨 ErrorBoundary caught an error:', error);
+    console.error('🚨 Error name:', error.name);
+    console.error('🚨 Error message:', error.message);
+    console.error('🚨 Error stack:', error.stack);
+    console.error('🚨 Component stack:', errorInfo.componentStack);
+    console.error('🚨 Full error info:', errorInfo);
+    
+    // Also log to window for debugging
+    if (typeof window !== 'undefined') {
+      (window as any).__LAST_ERROR__ = {
+        error: error.toString(),
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        timestamp: new Date().toISOString()
+      };
+    }
+    
     this.setState({
       error,
       errorInfo,
@@ -108,30 +125,47 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, onReset }) => {
             We're sorry, but something unexpected happened. Don't worry, your data is safe.
           </p>
 
-          {/* Error Details (show in production too for debugging) */}
-          {error && (
-            <motion.div
-              className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6 text-left"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <p className="text-red-400 font-semibold mb-2">Error Details:</p>
-              <p className="text-sm text-gray-300 font-mono break-all">
-                {error.toString()}
+          {/* Error Details (always show for debugging) */}
+          <motion.div
+            className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6 text-left max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <p className="text-red-400 font-semibold mb-2">Error Details:</p>
+            {error ? (
+              <>
+                <p className="text-sm text-gray-300 font-mono break-all mb-2">
+                  <strong>Error:</strong> {error.toString()}
+                </p>
+                <p className="text-sm text-gray-400 mb-2">
+                  <strong>Name:</strong> {error.name}
+                </p>
+                {error.message && (
+                  <p className="text-sm text-gray-400 mb-2">
+                    <strong>Message:</strong> {error.message}
+                  </p>
+                )}
+                {error.stack && (
+                  <details className="mt-2">
+                    <summary className="text-sm text-gray-400 cursor-pointer hover:text-gray-300 mb-2">
+                      Stack Trace (Click to expand)
+                    </summary>
+                    <pre className="mt-2 text-xs text-gray-400 overflow-auto max-h-60 bg-black/30 p-2 rounded">
+                      {error.stack}
+                    </pre>
+                  </details>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-gray-300">
+                Error object is null. Check browser console (F12) for details.
               </p>
-              {error.stack && (
-                <details className="mt-2">
-                  <summary className="text-sm text-gray-400 cursor-pointer hover:text-gray-300">
-                    Stack Trace
-                  </summary>
-                  <pre className="mt-2 text-xs text-gray-400 overflow-auto max-h-40">
-                    {error.stack}
-                  </pre>
-                </details>
-              )}
-            </motion.div>
-          )}
+            )}
+            <p className="text-xs text-gray-500 mt-4">
+              💡 Tip: Open browser console (F12) to see more details. Error is also saved to window.__LAST_ERROR__
+            </p>
+          </motion.div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

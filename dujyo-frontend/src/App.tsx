@@ -164,7 +164,11 @@ const AppRoutes: React.FC = () => {
         <Route path="/explore/gaming" element={<ExploreGaming />} />
         <Route path="/explore/education" element={<ExploreEducation />} />
         <Route path="/music" element={<MusicPage />} />
-        <Route path="/video" element={<VideoPage />} />
+        <Route path="/video" element={
+          <ErrorBoundary>
+            <VideoPage />
+          </ErrorBoundary>
+        } />
         <Route path="/gaming" element={<GamingPage />} />
         <Route path="/search" element={<SearchPage />} />
 
