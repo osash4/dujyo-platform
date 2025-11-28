@@ -268,9 +268,11 @@ impl BlockchainStorage {
             "validator": block.validator
         });
 
+        // Use ON CONFLICT DO NOTHING to handle duplicate blocks gracefully
         sqlx::query(
             "INSERT INTO blocks (height, hash, prev_hash, timestamp, tx_count, data) 
-             VALUES ($1, $2, $3, $4, $5, $6)"
+             VALUES ($1, $2, $3, $4, $5, $6)
+             ON CONFLICT (hash) DO NOTHING"
         )
         .bind(height)
         .bind(&block.hash)

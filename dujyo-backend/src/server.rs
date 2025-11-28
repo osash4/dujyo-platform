@@ -496,24 +496,40 @@ async fn block_production_task(state: AppState) {
         interval.tick().await;
         
         // Get blockchain data and release lock before async operations
-        let (transactions, previous_hash, current_height) = {
+        let (transactions, previous_hash, current_height, should_create_block) = {
             let mut blockchain = state.blockchain.lock().unwrap();
             let current_height = blockchain.chain.len() as i64;
+            let latest_block = blockchain.get_latest_block();
             
             if !blockchain.pending_transactions.is_empty() {
+                // Always create block if there are pending transactions
                 let transactions = blockchain.pending_transactions.clone();
                 blockchain.pending_transactions.clear();
-                let previous_hash = blockchain.get_latest_block().hash.clone();
-                (Some(transactions), previous_hash, current_height)
+                let previous_hash = latest_block.hash.clone();
+                (Some(transactions), previous_hash, current_height, true)
             } else {
-                let previous_hash = blockchain.get_latest_block().hash.clone();
-                (None, previous_hash, current_height)
+                // Only create empty block if it's been more than 30 seconds since last block
+                let last_block_timestamp = latest_block.timestamp;
+                let current_timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+                
+                if current_timestamp - last_block_timestamp < 30 {
+                    // Skip creating empty block
+                    (None, String::new(), current_height, false)
+                } else {
+                    let previous_hash = latest_block.hash.clone();
+                    (None, previous_hash, current_height, true)
+                }
             }
         };
         
+        // Only create and save block if needed
+        if !should_create_block {
+            continue; // Skip this iteration
+        }
+        
         let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
         
-        // Create new block
+        // Create new block with unique hash (include timestamp in hash calculation)
         let mut new_block = Block {
             timestamp,
             transactions: transactions.clone().unwrap_or_default(),
@@ -522,11 +538,15 @@ async fn block_production_task(state: AppState) {
             validator: Some("system".to_string()),
         };
         
+        // Calculate hash - this will be unique because timestamp is included
         new_block.hash = new_block.calculate_hash();
         
-        // Save block to database
+        // Save block to database (will silently ignore duplicates)
         if let Err(e) = state.storage.save_block(&new_block, current_height).await {
-            println!("Error saving block to database: {}", e);
+            // Only log if it's not a duplicate key error
+            if !e.to_string().contains("duplicate key") {
+                eprintln!("Error saving block to database: {}", e);
+            }
         }
         
         // Update balances in database if there are transactions
