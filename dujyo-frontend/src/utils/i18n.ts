@@ -1117,6 +1117,142 @@ const translations: Translations = {
     en: 'Earned Today',
     es: 'Ganado Hoy',
   },
+  'video.watchTimeRewards': {
+    en: 'Watch-Time Rewards',
+    es: 'Recompensas por Tiempo de Visualización',
+  },
+  'video.currentSession': {
+    en: 'Current session',
+    es: 'Sesión actual',
+  },
+  'video.topEarningVideos': {
+    en: 'Top Earning Videos',
+    es: 'Videos con Más Ganancias',
+  },
+  'video.topVideosRanked': {
+    en: 'Top videos ranked by total $DYO earnings. Rankings update based on views, watch time, and engagement.',
+    es: 'Videos principales clasificados por ganancias totales en $DYO. Las clasificaciones se actualizan según visualizaciones, tiempo de visualización y compromiso.',
+  },
+  'video.views': {
+    en: 'views',
+    es: 'visualizaciones',
+  },
+  'video.payout': {
+    en: 'Payout',
+    es: 'Pago',
+  },
+  'video.trendingNow': {
+    en: 'Trending Now',
+    es: 'Tendencias Ahora',
+  },
+  'video.featuredVideos': {
+    en: 'Featured Videos',
+    es: 'Videos Destacados',
+  },
+  'video.engagementRewardsSystem': {
+    en: 'Engagement Rewards System',
+    es: 'Sistema de Recompensas por Compromiso',
+  },
+  'video.likes': {
+    en: 'Likes',
+    es: 'Me Gusta',
+  },
+  'video.likesDescription': {
+    en: 'Earn bonus $DYO for every like you give. Support creators and earn rewards!',
+    es: '¡Gana $DYO extra por cada me gusta que des. Apoya a los creadores y gana recompensas!',
+  },
+  'video.comments': {
+    en: 'Comments',
+    es: 'Comentarios',
+  },
+  'video.commentsDescription': {
+    en: 'Engage with creators through comments and earn additional $DYO tokens.',
+    es: 'Interactúa con los creadores a través de comentarios y gana tokens $DYO adicionales.',
+  },
+  'video.shares': {
+    en: 'Shares',
+    es: 'Compartidos',
+  },
+  'video.sharesDescription': {
+    en: 'Share videos with your network and unlock community engagement multipliers.',
+    es: 'Comparte videos con tu red y desbloquea multiplicadores de compromiso comunitario.',
+  },
+  'video.communityEngagementMultiplier': {
+    en: 'Community Engagement Multiplier:',
+    es: 'Multiplicador de Compromiso Comunitario:',
+  },
+  'video.communityEngagementDescription': {
+    en: 'The more you engage, the higher your earnings multiplier. Active community members can earn up to 2x more $DYO tokens!',
+    es: 'Cuanto más te comprometas, mayor será tu multiplicador de ganancias. ¡Los miembros activos de la comunidad pueden ganar hasta 2x más tokens $DYO!',
+  },
+  'video.minViews': {
+    en: 'Min Views',
+    es: 'Mín. Visualizaciones',
+  },
+  'video.progressToNextTier': {
+    en: 'Progress to next tier',
+    es: 'Progreso al siguiente nivel',
+  },
+  'video.xEarnings': {
+    en: 'x earnings',
+    es: 'x ganancias',
+  },
+  'video.currentTier': {
+    en: 'Current Tier',
+    es: 'Nivel Actual',
+  },
+  'video.engagementPoints': {
+    en: 'Engagement Points',
+    es: 'Puntos de Compromiso',
+  },
+  'video.earningsHistory': {
+    en: 'Earnings History',
+    es: 'Historial de Ganancias',
+  },
+  'video.andGrowing': {
+    en: 'And growing...',
+    es: 'Y creciendo...',
+  },
+  'video.watchRate': {
+    en: 'Watch rate',
+    es: 'Tasa de visualización',
+  },
+  'video.avgCompletion': {
+    en: 'Avg Completion',
+    es: 'Finalización Promedio',
+  },
+  'video.creator': {
+    en: 'Creator',
+    es: 'Creador',
+  },
+  'video.completion': {
+    en: 'completion',
+    es: 'finalización',
+  },
+  'video.payoutHistory': {
+    en: 'Payout History',
+    es: 'Historial de Pagos',
+  },
+  'video.lastPayout': {
+    en: 'Last payout',
+    es: 'Último pago',
+  },
+  'video.nextPayout': {
+    en: 'Next payout',
+    es: 'Próximo pago',
+  },
+  'video.daysAgo': {
+    en: 'days ago',
+    es: 'días atrás',
+  },
+  'video.estimatedIn': {
+    en: 'Estimated in',
+    es: 'Estimado en',
+  },
+  'video.days': {
+    en: 'days',
+    es: 'días',
+  },
   
   // Gaming Page - Additional
   'gaming.earnedToday': {

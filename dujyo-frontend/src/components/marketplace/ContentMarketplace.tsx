@@ -776,6 +776,7 @@ interface EarningCalculatorProps {
 }
 
 function EarningCalculator({ content, onCalculate }: EarningCalculatorProps) {
+  const { t } = useLanguage();
   const [expectedStreams, setExpectedStreams] = useState(1000);
   const [audienceSize, setAudienceSize] = useState(5000);
 
@@ -806,7 +807,7 @@ function EarningCalculator({ content, onCalculate }: EarningCalculatorProps) {
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm text-gray-300 mb-2">Expected Streams</label>
+        <label className="block text-sm text-gray-300 mb-2">{t('marketplace.expectedStreams')}</label>
         <input
           type="number"
           value={expectedStreams}
@@ -816,7 +817,7 @@ function EarningCalculator({ content, onCalculate }: EarningCalculatorProps) {
         />
       </div>
       <div>
-        <label className="block text-sm text-gray-300 mb-2">Audience Size</label>
+        <label className="block text-sm text-gray-300 mb-2">{t('marketplace.audienceSize')}</label>
         <input
           type="number"
           value={audienceSize}
@@ -826,14 +827,14 @@ function EarningCalculator({ content, onCalculate }: EarningCalculatorProps) {
         />
       </div>
       <div className="p-4 bg-gray-700/30 rounded-lg">
-        <p className="text-sm text-gray-400 mb-2">Content Info</p>
+        <p className="text-sm text-gray-400 mb-2">{t('marketplace.contentInfo')}</p>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-gray-500">Earning per Stream</p>
+            <p className="text-xs text-gray-500">{t('marketplace.earningsPerStream')}</p>
             <p className="text-lg font-semibold text-amber-400">{(content.earningsPerStream || 0.01).toFixed(3)} $DYO</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">Engagement Score</p>
+            <p className="text-xs text-gray-500">{t('marketplace.engagementScore')}</p>
             <p className="text-lg font-semibold text-white">{content.engagementScore?.toFixed(1) || 'N/A'}</p>
           </div>
         </div>

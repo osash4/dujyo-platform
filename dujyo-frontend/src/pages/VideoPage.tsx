@@ -509,7 +509,7 @@ const VideoPage: React.FC = () => {
                   >
                     {formatNumber(metrics.totalViews)}
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">And growing...</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('video.andGrowing')}</p>
                 </motion.div>
 
                 <motion.div
@@ -518,7 +518,7 @@ const VideoPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-cyan-400" />
-                    <span className="text-xs text-gray-400">Avg Completion</span>
+                    <span className="text-xs text-gray-400">{t('video.avgCompletion')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-cyan-400"
@@ -528,7 +528,7 @@ const VideoPage: React.FC = () => {
                   >
                     {metrics.avgWatchCompletion.toFixed(0)}%
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">Watch rate</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('video.watchRate')}</p>
                 </motion.div>
               </motion.div>
 
@@ -556,8 +556,8 @@ const VideoPage: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Clock className="w-5 h-5 text-cyan-400" />
                     <div>
-                      <p className="text-sm font-semibold text-cyan-300">Watch-Time Rewards</p>
-                      <p className="text-xs text-gray-400">Current session: {formatTime(currentWatchTime)}</p>
+                      <p className="text-sm font-semibold text-cyan-300">{t('video.watchTimeRewards')}</p>
+                      <p className="text-xs text-gray-400">{t('video.currentSession')}: {formatTime(currentWatchTime)}</p>
                     </div>
                   </div>
                 </div>
@@ -608,7 +608,7 @@ const VideoPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <Trophy className="w-6 h-6 text-cyan-400" />
-                  <h2 className="text-3xl font-bold text-white">Top Earning Videos</h2>
+                  <h2 className="text-3xl font-bold text-white">{t('video.topEarningVideos')}</h2>
                 </div>
                 <div className="relative">
                   <button
@@ -620,7 +620,7 @@ const VideoPage: React.FC = () => {
                   </button>
                   {showTooltip === 'videos' && (
                     <div className="absolute right-0 top-8 w-64 p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-xs text-gray-300 z-10">
-                      Top videos ranked by total $DYO earnings. Rankings update based on views, watch time, and engagement.
+                      {t('video.topVideosRanked')}
                     </div>
                   )}
                 </div>
@@ -654,10 +654,10 @@ const VideoPage: React.FC = () => {
                         <span>{video.earnings.toFixed(2)} $DYO</span>
                       </div>
                       <div className="text-gray-400">
-                        {formatNumber(video.views)} views
+                        {formatNumber(video.views)} {t('video.views')}
                       </div>
                       <div className="text-gray-500">
-                        Payout: {video.payout.toFixed(2)} $DYO
+                        {t('video.payout')}: {video.payout.toFixed(2)} $DYO
                       </div>
                     </div>
                   </motion.div>
@@ -703,18 +703,18 @@ const VideoPage: React.FC = () => {
                           </div>
                           <div>
                             <h3 className="text-xl font-bold text-white">{tier.tier}</h3>
-                            <p className="text-xs text-gray-400">{tier.earningsMultiplier}x earnings</p>
+                            <p className="text-xs text-gray-400">{tier.earningsMultiplier}{t('video.xEarnings')}</p>
                           </div>
                         </div>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Min Views:</span>
+                            <span className="text-gray-400">{t('video.minViews')}:</span>
                             <span className="text-white">{formatNumber(tier.minViews)}</span>
                           </div>
                           {isCurrentTier && (
                             <div className="mt-3">
                               <div className="flex justify-between text-xs text-gray-400 mb-1">
-                                <span>Progress to next tier</span>
+                                <span>{t('video.progressToNextTier')}</span>
                                 <span>{getTierProgress().toFixed(0)}%</span>
                               </div>
                               <div className="w-full bg-gray-700 rounded-full h-2">
@@ -802,7 +802,7 @@ const VideoPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold neon-text-video">
-                  Featured Videos
+                  {t('video.featuredVideos')}
                 </h2>
                 <AdvancedFilters
                   filters={filterOptions}
@@ -863,8 +863,8 @@ const VideoPage: React.FC = () => {
                       
                       <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
                         <div className="flex items-center space-x-3">
-                          <span>{formatNumber(video.views)} views</span>
-                          <span>{formatNumber(video.likes)} likes</span>
+                        <span>{formatNumber(video.views)} {t('video.views')}</span>
+                        <span>{formatNumber(video.likes)} {t('video.likes')}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <span className="text-yellow-400">⭐</span>
@@ -877,11 +877,11 @@ const VideoPage: React.FC = () => {
                         <div className="flex items-center justify-between text-xs mb-2">
                           <div className="flex items-center gap-1 text-cyan-400">
                             <TrendingUp className="w-3 h-3" />
-                            <span>Creator: {video.earnings.toFixed(2)} $DYO</span>
+                            <span>{t('video.creator')}: {video.earnings.toFixed(2)} $DYO</span>
                           </div>
                           <div className="flex items-center gap-1 text-gray-400">
                             <Clock className="w-3 h-3" />
-                            <span>{video.watchCompletion}% completion</span>
+                            <span>{video.watchCompletion}% {t('video.completion')}</span>
                           </div>
                         </div>
                         
@@ -935,28 +935,28 @@ const VideoPage: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <ThumbsUp className="w-4 h-4 text-cyan-400" />
-                        <h4 className="font-semibold text-cyan-300">Likes</h4>
+                        <h4 className="font-semibold text-cyan-300">{t('video.likes')}</h4>
                       </div>
-                      <p className="text-xs">Earn bonus $DYO for every like you give. Support creators and earn rewards!</p>
+                      <p className="text-xs">{t('video.likesDescription')}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <MessageCircle className="w-4 h-4 text-cyan-400" />
-                        <h4 className="font-semibold text-cyan-300">Comments</h4>
+                        <h4 className="font-semibold text-cyan-300">{t('video.comments')}</h4>
                       </div>
-                      <p className="text-xs">Engage with creators through comments and earn additional $DYO tokens.</p>
+                      <p className="text-xs">{t('video.commentsDescription')}</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Share2 className="w-4 h-4 text-cyan-400" />
-                        <h4 className="font-semibold text-cyan-300">Shares</h4>
+                        <h4 className="font-semibold text-cyan-300">{t('video.shares')}</h4>
                       </div>
-                      <p className="text-xs">Share videos with your network and unlock community engagement multipliers.</p>
+                      <p className="text-xs">{t('video.sharesDescription')}</p>
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-cyan-400/20">
                     <p className="text-xs text-gray-400">
-                      <strong className="text-cyan-300">Community Engagement Multiplier:</strong> The more you engage, 
+                      <strong className="text-cyan-300">{t('video.communityEngagementMultiplier')}</strong> {t('video.communityEngagementDescription')} 
                       the higher your earnings multiplier. Active community members can earn up to 2x more $DYO tokens!
                     </p>
                   </div>
@@ -1000,24 +1000,24 @@ const VideoPage: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Current Tier</div>
+                  <div className="text-xs text-gray-400 mb-1">{t('video.currentTier')}</div>
                   <div className="text-lg font-semibold text-white">{userTier}</div>
                 </div>
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Engagement Points</div>
+                  <div className="text-xs text-gray-400 mb-1">{t('video.engagementPoints')}</div>
                   <div className="text-lg font-semibold text-white">{engagementPoints}</div>
                 </div>
               </div>
               <div className="bg-gray-700/50 rounded-lg p-3">
-                <div className="text-xs text-gray-400 mb-2">Payout History</div>
-                <div className="text-sm text-gray-300">Last payout: 1,250 $DYO (7 days ago)</div>
-                <div className="text-sm text-gray-300">Next payout: Estimated in 3 days</div>
+                <div className="text-xs text-gray-400 mb-2">{t('video.payoutHistory')}</div>
+                <div className="text-sm text-gray-300">{t('video.lastPayout')}: 1,250 $DYO (7 {t('video.daysAgo')})</div>
+                <div className="text-sm text-gray-300">{t('video.nextPayout')}: {t('video.estimatedIn')} 3 {t('video.days')}</div>
               </div>
               <button
                 onClick={() => setShowEarningsModal(false)}
                 className="w-full py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors"
               >
-                Close
+                {t('common.close')}
               </button>
             </div>
           </motion.div>
