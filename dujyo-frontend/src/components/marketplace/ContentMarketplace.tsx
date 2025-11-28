@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBlockchain } from '../../contexts/BlockchainContext';
 import { useAuth } from '../../auth/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { ContentGrid } from './ContentGrid';
 import { NFTMarket } from './NFTMarket';
 import { LicenseStore } from './LicenseStore';
@@ -87,6 +88,7 @@ interface EarningProjection {
 export function ContentMarketplace(): JSX.Element {
   const { contentManager, nftPallet, account } = useBlockchain();
   const { user, getUserRole } = useAuth();
+  const { t } = useLanguage();
   const [contents, setContents] = useState<Content[]>([]);
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [activeTab, setActiveTab] = useState<'content' | 'nft' | 'licenses'>('content');

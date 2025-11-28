@@ -1577,6 +1577,466 @@ const translations: Translations = {
     en: 'Preview',
     es: 'Vista Previa',
   },
+  
+  // Profile Page - Additional
+  'profile.userProfile': {
+    en: 'User Profile',
+    es: 'Perfil de Usuario',
+  },
+  'profile.blockchainEnthusiast': {
+    en: 'Blockchain Enthusiast',
+    es: 'Entusiasta de Blockchain',
+  },
+  'profile.becomeArtist': {
+    en: 'Become an Artist',
+    es: 'Conviértete en Artista',
+  },
+  'profile.overview': {
+    en: 'Overview',
+    es: 'Resumen',
+  },
+  'profile.wallet': {
+    en: 'Wallet',
+    es: 'Billetera',
+  },
+  'profile.staking': {
+    en: 'Staking',
+    es: 'Bloquear',
+  },
+  'profile.achievements': {
+    en: 'Achievements',
+    es: 'Logros',
+  },
+  'profile.artistDashboard': {
+    en: 'Artist Dashboard',
+    es: 'Panel de Artista',
+  },
+  'profile.dyoBalance': {
+    en: 'DYO Balance',
+    es: 'Balance DYO',
+  },
+  'profile.dysBalance': {
+    en: 'DYS Balance',
+    es: 'Balance DYS',
+  },
+  'profile.staked': {
+    en: 'Staked',
+    es: 'Apostado',
+  },
+  'profile.nativeAddress': {
+    en: 'Native Address',
+    es: 'Dirección Nativa',
+  },
+  'profile.notConnected': {
+    en: 'Not Connected',
+    es: 'No Conectado',
+  },
+  'profile.walletDashboard': {
+    en: 'Wallet Dashboard',
+    es: 'Panel de Billetera',
+  },
+  'profile.yourLibrary': {
+    en: 'Your Library',
+    es: 'Tu Biblioteca',
+  },
+  'profile.likedContent': {
+    en: 'Liked Content',
+    es: 'Contenido que te Gusta',
+  },
+  'profile.recommendations': {
+    en: 'Recommendations',
+    es: 'Recomendaciones',
+  },
+  'profile.recentlyPlayed': {
+    en: 'Recently Played',
+    es: 'Reproducido Recientemente',
+  },
+  'profile.yourWalletAddress': {
+    en: 'Your Wallet Address',
+    es: 'Tu Dirección de Billetera',
+  },
+  'profile.walletAddressDesc': {
+    en: 'Use this address to receive DYO tokens. Share it with others to receive payments.',
+    es: 'Usa esta dirección para recibir tokens DYO. Compártela con otros para recibir pagos.',
+  },
+  'profile.walletManagement': {
+    en: 'Wallet Management',
+    es: 'Gestión de Billetera',
+  },
+  'profile.nativeBlockchainConnected': {
+    en: 'Native Blockchain Connected',
+    es: 'Blockchain Nativa Conectada',
+  },
+  'profile.nativeNetwork': {
+    en: 'DUJYO Native Network • Real-time sync active',
+    es: 'Red Nativa DUJYO • Sincronización en tiempo real activa',
+  },
+  'profile.live': {
+    en: 'Live',
+    es: 'En Vivo',
+  },
+  'profile.totalStaked': {
+    en: 'Total Staked',
+    es: 'Total Apostado',
+  },
+  'profile.availableRewards': {
+    en: 'Available Rewards',
+    es: 'Recompensas Disponibles',
+  },
+  'profile.nativeApy': {
+    en: 'Native APY',
+    es: 'APY Nativo',
+  },
+  'profile.stakeDyoTokens': {
+    en: 'Stake DYO Tokens',
+    es: 'Apostar Tokens DYO',
+  },
+  'profile.amountToStake': {
+    en: 'Amount to Stake',
+    es: 'Cantidad a Apostar',
+  },
+  'profile.stakingPeriod': {
+    en: 'Staking Period',
+    es: 'Período de Apuesta',
+  },
+  'profile.available': {
+    en: 'Available',
+    es: 'Disponible',
+  },
+  'profile.staking': {
+    en: 'Staking...',
+    es: 'Apostando...',
+  },
+  'profile.stakeDyo': {
+    en: 'Stake DYO',
+    es: 'Apostar DYO',
+  },
+  'profile.activePositions': {
+    en: 'Active Positions',
+    es: 'Posiciones Activas',
+  },
+  'profile.lock': {
+    en: 'Lock',
+    es: 'Bloqueado',
+  },
+  'profile.rewards': {
+    en: 'Rewards',
+    es: 'Recompensas',
+  },
+  'profile.ends': {
+    en: 'Ends',
+    es: 'Termina',
+  },
+  'profile.unstaking': {
+    en: 'Unstaking...',
+    es: 'Desapostando...',
+  },
+  'profile.locked': {
+    en: 'Locked',
+    es: 'Bloqueado',
+  },
+  'profile.unstake': {
+    en: 'Unstake',
+    es: 'Desapostar',
+  },
+  'profile.claimRewards': {
+    en: 'Claim Rewards',
+    es: 'Reclamar Recompensas',
+  },
+  'profile.claiming': {
+    en: 'Claiming...',
+    es: 'Reclamando...',
+  },
+  'profile.stakingHistory': {
+    en: 'Staking History',
+    es: 'Historial de Apuestas',
+  },
+  'profile.refresh': {
+    en: 'Refresh',
+    es: 'Actualizar',
+  },
+  'profile.noStakingHistory': {
+    en: 'No staking history yet',
+    es: 'Aún no hay historial de apuestas',
+  },
+  'profile.stakingHistoryDesc': {
+    en: 'Your staking transactions will appear here',
+    es: 'Tus transacciones de apuesta aparecerán aquí',
+  },
+  'profile.unlocked': {
+    en: 'Unlocked',
+    es: 'Desbloqueado',
+  },
+  'profile.progress': {
+    en: 'Progress',
+    es: 'Progreso',
+  },
+  'profile.copy': {
+    en: 'Copy',
+    es: 'Copiar',
+  },
+  'profile.copied': {
+    en: 'Copied!',
+    es: '¡Copiado!',
+  },
+  'profile.fullWalletAddress': {
+    en: 'Full Wallet Address',
+    es: 'Dirección Completa de Billetera',
+  },
+  'profile.walletNotConnected': {
+    en: 'Wallet not connected',
+    es: 'Billetera no conectada',
+  },
+  'profile.pleaseConnectWallet': {
+    en: 'Please connect your native blockchain wallet',
+    es: 'Por favor conecta tu billetera de blockchain nativa',
+  },
+  'profile.enterValidAmount': {
+    en: 'Please enter a valid amount',
+    es: 'Por favor ingresa una cantidad válida',
+  },
+  'profile.insufficientBalance': {
+    en: 'Insufficient DYO balance',
+    es: 'Balance DYO insuficiente',
+  },
+  'profile.selectStakingPosition': {
+    en: 'Please select a staking position to unstake',
+    es: 'Por favor selecciona una posición de apuesta para desapostar',
+  },
+  'profile.noRewardsAvailable': {
+    en: 'No rewards available to claim',
+    es: 'No hay recompensas disponibles para reclamar',
+  },
+  'profile.successfullyStaked': {
+    en: 'Successfully staked',
+    es: 'Apostado exitosamente',
+  },
+  'profile.successfullyUnstaked': {
+    en: 'Successfully unstaked position!',
+    es: '¡Posición desapostada exitosamente!',
+  },
+  'profile.received': {
+    en: 'Received',
+    es: 'Recibido',
+  },
+  'profile.successfullyClaimed': {
+    en: 'Successfully claimed',
+    es: 'Reclamado exitosamente',
+  },
+  'profile.dyoRewards': {
+    en: 'DYO Rewards',
+    es: 'Recompensas DYO',
+  },
+  
+  // Marketplace
+  'marketplace.title': {
+    en: 'Marketplace',
+    es: 'Mercado',
+  },
+  'marketplace.subtitle': {
+    en: 'Discover and purchase exclusive content, NFTs, and licenses',
+    es: 'Descubre y compra contenido exclusivo, NFTs y licencias',
+  },
+  'marketplace.content': {
+    en: 'Content',
+    es: 'Contenido',
+  },
+  'marketplace.nft': {
+    en: 'NFT',
+    es: 'NFT',
+  },
+  'marketplace.licenses': {
+    en: 'Licenses',
+    es: 'Licencias',
+  },
+  'marketplace.searchPlaceholder': {
+    en: 'Search content, creators, NFTs...',
+    es: 'Buscar contenido, creadores, NFTs...',
+  },
+  'marketplace.filter': {
+    en: 'Filter',
+    es: 'Filtrar',
+  },
+  'marketplace.category': {
+    en: 'Category',
+    es: 'Categoría',
+  },
+  'marketplace.priceRange': {
+    en: 'Price Range',
+    es: 'Rango de Precio',
+  },
+  'marketplace.contentType': {
+    en: 'Content Type',
+    es: 'Tipo de Contenido',
+  },
+  'marketplace.rating': {
+    en: 'Rating',
+    es: 'Calificación',
+  },
+  'marketplace.earningPotential': {
+    en: 'Earning Potential',
+    es: 'Potencial de Ganancia',
+  },
+  'marketplace.all': {
+    en: 'All',
+    es: 'Todos',
+  },
+  'marketplace.topCreators': {
+    en: 'Top Creators',
+    es: 'Top Creadores',
+  },
+  'marketplace.verified': {
+    en: 'Verified',
+    es: 'Verificado',
+  },
+  'marketplace.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'marketplace.contentCount': {
+    en: 'Content',
+    es: 'Contenido',
+  },
+  'marketplace.viewDetails': {
+    en: 'View Details & Calculator',
+    es: 'Ver Detalles y Calculadora',
+  },
+  'marketplace.purchase': {
+    en: 'Purchase',
+    es: 'Comprar',
+  },
+  'marketplace.buyNow': {
+    en: 'Buy Now',
+    es: 'Comprar Ahora',
+  },
+  'marketplace.purchasing': {
+    en: 'Purchasing...',
+    es: 'Comprando...',
+  },
+  'marketplace.purchaseSuccess': {
+    en: 'Purchase successful!',
+    es: '¡Compra exitosa!',
+  },
+  'marketplace.purchaseFailed': {
+    en: 'Purchase failed. Please try again.',
+    es: 'Error en la compra. Por favor intenta de nuevo.',
+  },
+  'marketplace.earningsPerStream': {
+    en: 'Earnings per Stream',
+    es: 'Ganancias por Transmisión',
+  },
+  'marketplace.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'marketplace.streamCount': {
+    en: 'Stream Count',
+    es: 'Conteo de Transmisiones',
+  },
+  'marketplace.royaltyShare': {
+    en: 'Royalty Share',
+    es: 'Participación de Regalías',
+  },
+  'marketplace.engagementScore': {
+    en: 'Engagement Score',
+    es: 'Puntuación de Compromiso',
+  },
+  'marketplace.personalUse': {
+    en: 'Personal Use',
+    es: 'Uso Personal',
+  },
+  'marketplace.commercialLicense': {
+    en: 'Commercial License',
+    es: 'Licencia Comercial',
+  },
+  'marketplace.premiumLicense': {
+    en: 'Premium License',
+    es: 'Licencia Premium',
+  },
+  'marketplace.selectLicense': {
+    en: 'Select License',
+    es: 'Seleccionar Licencia',
+  },
+  'marketplace.basicStreamingRights': {
+    en: 'Basic streaming rights',
+    es: 'Derechos básicos de transmisión',
+  },
+  'marketplace.noCommercialUse': {
+    en: 'No commercial use',
+    es: 'Sin uso comercial',
+  },
+  'marketplace.personalListening': {
+    en: 'Personal listening/viewing',
+    es: 'Escucha/visualización personal',
+  },
+  'marketplace.commercialStreamingRights': {
+    en: 'Commercial streaming rights',
+    es: 'Derechos de transmisión comercial',
+  },
+  'marketplace.royaltySharePercent': {
+    en: 'royalty share',
+    es: 'participación de regalías',
+  },
+  'marketplace.contentMonetization': {
+    en: 'Content monetization',
+    es: 'Monetización de contenido',
+  },
+  'marketplace.analyticsAccess': {
+    en: 'Analytics access',
+    es: 'Acceso a analíticas',
+  },
+  'marketplace.fullCommercialRights': {
+    en: 'Full commercial rights',
+    es: 'Derechos comerciales completos',
+  },
+  'marketplace.prioritySupport': {
+    en: 'Priority support',
+    es: 'Soporte prioritario',
+  },
+  'marketplace.advancedAnalytics': {
+    en: 'Advanced analytics',
+    es: 'Analíticas avanzadas',
+  },
+  'marketplace.contentPromotion': {
+    en: 'Content promotion',
+    es: 'Promoción de contenido',
+  },
+  'marketplace.nftMintingRights': {
+    en: 'NFT minting rights',
+    es: 'Derechos de acuñación NFT',
+  },
+  'marketplace.earningCalculator': {
+    en: 'Earning Calculator',
+    es: 'Calculadora de Ganancias',
+  },
+  'marketplace.expectedStreams': {
+    en: 'Expected Streams',
+    es: 'Transmisiones Esperadas',
+  },
+  'marketplace.audienceSize': {
+    en: 'Audience Size',
+    es: 'Tamaño de Audiencia',
+  },
+  'marketplace.projectedEarnings': {
+    en: 'Projected Earnings',
+    es: 'Ganancias Proyectadas',
+  },
+  'marketplace.roi': {
+    en: 'ROI',
+    es: 'ROI',
+  },
+  'marketplace.breakEvenStreams': {
+    en: 'Break Even Streams',
+    es: 'Transmisiones de Punto de Equilibrio',
+  },
+  'marketplace.calculate': {
+    en: 'Calculate',
+    es: 'Calcular',
+  },
+  'marketplace.close': {
+    en: 'Close',
+    es: 'Cerrar',
+  },
 };
 
 /**

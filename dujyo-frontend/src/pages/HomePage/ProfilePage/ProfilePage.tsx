@@ -11,6 +11,7 @@ import { WalletDashboard } from '../../../components/wallet/WalletDashboard';
 import ArtistDashboard from '../../../components/artist/ArtistDashboard';
 import { useBlockchain } from '../../../contexts/BlockchainContext';
 import { useAuth } from '../../../auth/AuthContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import { getApiBaseUrl } from '../../../utils/apiConfig';
 import Logo from '../../../components/common/Logo';
 
@@ -71,7 +72,7 @@ const WalletAddressDisplay: React.FC<{ walletAddress: string }> = ({ walletAddre
   if (!walletAddress || walletAddress === 'Not connected') {
     return (
       <div className="bg-gray-700/50 rounded-lg p-4 text-gray-400">
-        Wallet not connected
+        {t('profile.walletNotConnected')}
       </div>
     );
   }
@@ -80,7 +81,7 @@ const WalletAddressDisplay: React.FC<{ walletAddress: string }> = ({ walletAddre
     <div className="bg-gray-900/50 rounded-lg p-4 border border-amber-500/30">
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1">
-          <p className="text-xs text-gray-400 mb-1">Full Wallet Address</p>
+          <p className="text-xs text-gray-400 mb-1">{t('profile.fullWalletAddress')}</p>
           <p className="text-amber-400 font-mono text-sm break-all">{walletAddress}</p>
         </div>
         <motion.button
@@ -109,6 +110,7 @@ const WalletAddressDisplay: React.FC<{ walletAddress: string }> = ({ walletAddre
 const ProfilePage: React.FC = () => {
   const { account, isAuthenticated, balancesPallet } = useBlockchain();
   const { user, getUserRole, hasRole } = useAuth();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'overview' | 'wallet' | 'staking' | 'achievements' | 'artist-dashboard'>(
     hasRole('artist') ? 'artist-dashboard' : 'overview'
   );
@@ -466,26 +468,26 @@ const ProfilePage: React.FC = () => {
   // ✅ STATS NATIVOS DE NUESTRA BLOCKCHAIN
   const nativeStats = [
     { 
-      label: "DYO Balance", 
+      label: t('profile.dyoBalance'), 
       value: isLoading ? "..." : `${nativeBalance.dyo.toFixed(2)} DYO`, 
       icon: Wallet, 
       color: "#4ECDC4" 
     },
     { 
-      label: "DYS Balance", 
+      label: t('profile.dysBalance'), 
       value: isLoading ? "..." : `${nativeBalance.dys.toFixed(2)} DYS`, 
       icon: Coins, 
       color: "#EA580C" 
     },
     { 
-      label: "Staked", 
+      label: t('profile.staked'), 
       value: isLoading ? "..." : `${nativeBalance.staked.toFixed(2)} DYO`, 
       icon: Lock, 
       color: "#FFD700" 
     },
     { 
-      label: "Native Address", 
-      value: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Not Connected", 
+      label: t('profile.nativeAddress'), 
+      value: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : t('profile.notConnected'), 
       icon: User, 
       color: "#FF6B6B" 
     }
@@ -557,7 +559,7 @@ const ProfilePage: React.FC = () => {
               transition={{ duration: 1, delay: 0.4 }}
             >
               <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-orange-400 bg-clip-text text-transparent">
-                {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : 'User Profile'}
+                {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : t('profile.userProfile')}
               </span>
             </motion.h1>
 
@@ -567,7 +569,7 @@ const ProfilePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              {user?.displayName || 'DUJYO User'} • {getUserRole().toUpperCase()} • Blockchain Enthusiast
+              {user?.displayName || 'DUJYO User'} • {getUserRole().toUpperCase()} • {t('profile.blockchainEnthusiast')}
             </motion.p>
             
             {/* Role Badge */}
@@ -600,7 +602,7 @@ const ProfilePage: React.FC = () => {
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <Music size={20} />
-                  Become an Artist
+                  {t('profile.becomeArtist')}
                   <ArrowUpRight size={20} />
                 </button>
               </motion.div>
@@ -616,11 +618,11 @@ const ProfilePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex justify-center space-x-2 py-4">
             {[
-              ...(hasRole('artist') ? [] : [{ id: 'overview', label: 'Overview', icon: BarChart3, color: '#8B5CF6' }]),
-              { id: 'wallet', label: 'Wallet', icon: Wallet, color: '#00F5FF' },
-              { id: 'staking', label: 'Staking', icon: Coins, color: '#F59E0B' },
-              { id: 'achievements', label: 'Achievements', icon: Trophy, color: '#EA580C' },
-              ...(hasRole('artist') ? [{ id: 'artist-dashboard', label: 'Artist Dashboard', icon: Music, color: '#FF6B6B' }] : [])
+              ...(hasRole('artist') ? [] : [{ id: 'overview', label: t('profile.overview'), icon: BarChart3, color: '#8B5CF6' }]),
+              { id: 'wallet', label: t('profile.wallet'), icon: Wallet, color: '#00F5FF' },
+              { id: 'staking', label: t('profile.staking'), icon: Coins, color: '#F59E0B' },
+              { id: 'achievements', label: t('profile.achievements'), icon: Trophy, color: '#EA580C' },
+              ...(hasRole('artist') ? [{ id: 'artist-dashboard', label: t('profile.artistDashboard'), icon: Music, color: '#FF6B6B' }] : [])
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -753,7 +755,7 @@ const ProfilePage: React.FC = () => {
               >
                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                   <Wallet size={24} className="text-amber-400" />
-                  Wallet Dashboard
+                  {t('profile.walletDashboard')}
                 </h3>
                 <WalletDashboard />
               </motion.div>
@@ -789,10 +791,10 @@ const ProfilePage: React.FC = () => {
               >
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <Wallet size={24} className="text-amber-400" />
-                  Your Wallet Address
+                  {t('profile.yourWalletAddress')}
                 </h3>
                 <p className="text-gray-400 text-sm mb-4">
-                  Use this address to receive DYO tokens. Share it with others to receive payments.
+                  {t('profile.walletAddressDesc')}
                 </p>
                 <WalletAddressDisplay walletAddress={user?.uid || account || 'Not connected'} />
               </motion.div>
@@ -805,7 +807,7 @@ const ProfilePage: React.FC = () => {
               >
                 <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
                   <Wallet size={32} className="text-amber-400" />
-                  Wallet Management
+                  {t('profile.walletManagement')}
                 </h3>
                 <WalletDashboard />
               </motion.div>
@@ -833,7 +835,7 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-green-400 text-sm font-medium">Live</span>
+                    <span className="text-green-400 text-sm font-medium">{t('profile.live')}</span>
                   </div>
                 </div>
               </motion.div>
@@ -851,7 +853,7 @@ const ProfilePage: React.FC = () => {
                       <Coins className="w-6 h-6 text-yellow-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white">Total Staked</h3>
+                      <h3 className="text-lg font-semibold text-white">{t('profile.totalStaked')}</h3>
                       <p className="text-2xl font-bold text-yellow-400">{nativeStakingInfo.totalStaked.toFixed(2)} DYO</p>
                     </div>
                   </div>
@@ -868,7 +870,7 @@ const ProfilePage: React.FC = () => {
                       <Award className="w-6 h-6 text-green-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white">Available Rewards</h3>
+                      <h3 className="text-lg font-semibold text-white">{t('profile.availableRewards')}</h3>
                       <p className="text-2xl font-bold text-green-400">{nativeStakingInfo.availableRewards.toFixed(2)} DYO</p>
                     </div>
                   </div>
@@ -885,7 +887,7 @@ const ProfilePage: React.FC = () => {
                       <TrendingUp className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white">Native APY</h3>
+                      <h3 className="text-lg font-semibold text-white">{t('profile.nativeApy')}</h3>
                       <p className="text-2xl font-bold text-blue-400">{nativeStakingInfo.currentApy}%</p>
                     </div>
                   </div>
@@ -901,13 +903,13 @@ const ProfilePage: React.FC = () => {
               >
                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                   <Lock className="w-6 h-6 text-yellow-400" />
-                  Stake DYO Tokens
+                  {t('profile.stakeDyoTokens')}
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Amount to Stake
+                      {t('profile.amountToStake')}
                     </label>
                     <input
                       type="number"
@@ -917,13 +919,13 @@ const ProfilePage: React.FC = () => {
                       className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-transparent"
                     />
                     <p className="text-xs text-gray-400 mt-1">
-                      Available: {nativeBalance.dyo.toFixed(2)} DYO
+                      {t('profile.available')}: {nativeBalance.dyo.toFixed(2)} DYO
                     </p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Staking Period
+                      {t('profile.stakingPeriod')}
                     </label>
                     <select
                       value={stakingPeriod}
@@ -958,12 +960,12 @@ const ProfilePage: React.FC = () => {
                     {isStaking ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Staking...
+                        {t('profile.staking')}
                       </>
                     ) : (
                       <>
                         <Lock className="w-5 h-5" />
-                        Stake DYO
+                        {t('profile.stakeDyo')}
                       </>
                     )}
                   </button>
@@ -971,17 +973,17 @@ const ProfilePage: React.FC = () => {
                   {/* ✅ UNSTAKE SECTION */}
                   {nativeStakingInfo.activePositions.length > 0 && (
                     <div className="space-y-3">
-                      <h4 className="text-lg font-semibold text-white">Active Positions</h4>
+                      <h4 className="text-lg font-semibold text-white">{t('profile.activePositions')}</h4>
                       {nativeStakingInfo.activePositions.map((position) => (
                         <div key={position.id} className="bg-gray-700/30 rounded-lg p-4">
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-white font-medium">{(position.amount || 0).toFixed(2)} DYO</span>
-                            <span className="text-gray-400 text-sm">Lock: {position.lockPeriod || 0} days</span>
+                            <span className="text-gray-400 text-sm">{t('profile.lock')}: {position.lockPeriod || 0} days</span>
                           </div>
                           <div className="flex justify-between items-center mb-3">
-                            <span className="text-green-400 text-sm">Rewards: {(position.rewards || 0).toFixed(2)} DYO</span>
+                            <span className="text-green-400 text-sm">{t('profile.rewards')}: {(position.rewards || 0).toFixed(2)} DYO</span>
                             <span className="text-gray-400 text-sm">
-                              Ends: {new Date((position.endTime || 0) * 1000).toLocaleDateString()}
+                              {t('profile.ends')}: {new Date((position.endTime || 0) * 1000).toLocaleDateString()}
                             </span>
                           </div>
                           <button
@@ -995,12 +997,12 @@ const ProfilePage: React.FC = () => {
                             {isUnstaking ? (
                               <>
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                Unstaking...
+                                {t('profile.unstaking')}
                               </>
                             ) : (
                               <>
                                 <Zap className="w-4 h-4" />
-                                {new Date().getTime() < position.endTime * 1000 ? 'Locked' : 'Unstake'}
+                                {new Date().getTime() < position.endTime * 1000 ? t('profile.locked') : t('profile.unstake')}
                               </>
                             )}
                           </button>
@@ -1019,12 +1021,12 @@ const ProfilePage: React.FC = () => {
                       {isClaiming ? (
                         <>
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Claiming...
+                          {t('profile.claiming')}
                         </>
                       ) : (
                         <>
                           <Award className="w-5 h-5" />
-                          Claim {nativeStakingInfo.availableRewards.toFixed(2)} DYO Rewards
+                          {t('profile.claimRewards')} {nativeStakingInfo.availableRewards.toFixed(2)} {t('profile.dyoRewards')}
                         </>
                       )}
                     </button>
@@ -1042,14 +1044,14 @@ const ProfilePage: React.FC = () => {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                     <Clock className="w-6 h-6 text-blue-400" />
-                    Staking History
+                    {t('profile.stakingHistory')}
                   </h2>
                   <button
                     onClick={loadNativeBalances}
                     className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
                   >
                     <RefreshCw size={16} />
-                    Refresh
+                    {t('profile.refresh')}
                   </button>
                 </div>
 
@@ -1101,8 +1103,8 @@ const ProfilePage: React.FC = () => {
                 ) : (
                   <div className="text-center py-8">
                     <Clock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400 text-lg">No staking history yet</p>
-                    <p className="text-gray-500 text-sm">Your staking transactions will appear here</p>
+                    <p className="text-gray-400 text-lg">{t('profile.noStakingHistory')}</p>
+                    <p className="text-gray-500 text-sm">{t('profile.stakingHistoryDesc')}</p>
                   </div>
                 )}
               </motion.div>
@@ -1125,10 +1127,10 @@ const ProfilePage: React.FC = () => {
                     >
                       <Trophy size={32} className="text-yellow-400" />
                     </motion.div>
-                    Achievements
+                    {t('profile.achievements')}
                   </h3>
                   <div className="text-sm text-gray-400">
-                    {achievements.filter(a => a.unlocked).length} / {achievements.length} Unlocked
+                    {achievements.filter(a => a.unlocked).length} / {achievements.length} {t('profile.unlocked')}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1203,7 +1205,7 @@ const ProfilePage: React.FC = () => {
                           {/* Progress bar */}
                           <div className="mt-4">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs text-gray-400">Progress</span>
+                              <span className="text-xs text-gray-400">{t('profile.progress')}</span>
                               <span className={`text-xs font-bold ${achievement.unlocked ? colors.icon : 'text-gray-500'}`}>
                                 {achievement.progress}%
                               </span>
@@ -1240,7 +1242,7 @@ const ProfilePage: React.FC = () => {
               >
                 <h3 className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
                   <Music size={32} className="text-orange-400" />
-                  Artist Dashboard
+                  {t('profile.artistDashboard')}
                 </h3>
                 <ArtistDashboard />
               </motion.div>
