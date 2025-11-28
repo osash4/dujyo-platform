@@ -1,5 +1,6 @@
 // src/components/artist/RoyaltyDashboard.tsx
 import React, { useState, useEffect } from 'react';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 import { useAuth } from '../../auth/AuthContext';
 import { DollarSign, TrendingUp, Clock, CheckCircle, XCircle } from 'lucide-react';
 
@@ -58,7 +59,8 @@ const RoyaltyDashboard: React.FC<RoyaltyDashboardProps> = ({ stats }) => {
         throw new Error('No authentication token or user ID found');
       }
 
-      const response = await fetch(`http://localhost:8083/api/v1/royalties/artist/${user.uid}`, {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/v1/royalties/artist/${user.uid}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

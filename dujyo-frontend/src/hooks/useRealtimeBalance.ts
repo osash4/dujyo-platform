@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../auth/AuthContext';
+import { getApiBaseUrl } from '../utils/apiConfig';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import { useEventListener } from '../contexts/EventBusContext';
 
@@ -82,7 +83,8 @@ export const useRealtimeBalance = (options: RealtimeBalanceOptions = {}) => {
 
     try {
       // ✅ DEBUG CRÍTICO: VER QUÉ BALANCE RECIBE DEL BACKEND
-      const url = `http://localhost:8083/balance-detail/${walletAddress}`;
+      const apiBaseUrl = getApiBaseUrl();
+      const url = `${apiBaseUrl}/balance-detail/${walletAddress}`;
       console.log("🌐 [DEBUG] Fetching balance from:", url);
       
       const token = localStorage.getItem('jwt_token');

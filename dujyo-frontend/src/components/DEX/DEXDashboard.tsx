@@ -68,30 +68,36 @@ const FuturisticChart: React.FC = () => {
     const fetchBlockchainData = async () => {
       try {
         setIsLoading(true);
-        // Get real blockchain data from API
-        const response = await fetch('/api/blockchain/price-history');
-        if (response.ok) {
-          const priceData = await response.json();
-          setData(priceData.prices || []);
-        } else {
-          // Get real blockchain data from blocks endpoint
-          const apiBaseUrl = getApiBaseUrl();
-          const blocksResponse = await fetch(`${apiBaseUrl}/blocks`);
-          if (blocksResponse.ok) {
+        // Get real blockchain data from blocks endpoint
+        const apiBaseUrl = getApiBaseUrl();
+        const blocksResponse = await fetch(`${apiBaseUrl}/blocks`);
+        
+        if (blocksResponse.ok) {
+          // Check if response is JSON
+          const contentType = blocksResponse.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
             const blocksData = await blocksResponse.json();
             // Generate price data based on real blockchain activity
-            const realBlockchainData = blocksData.blocks.slice(-30).map((block: any, index: number) => {
-              // Use block hash and timestamp to generate deterministic price
-              const hashValue = parseInt(block.hash, 16) / 1000000;
-              const timeValue = (block.timestamp % 1000) / 1000;
-              const basePrice = 2.45; // Base DYO price
-              return basePrice + (hashValue * 0.1) + (timeValue * 0.05) + (index * 0.01);
-            });
-            setData(realBlockchainData);
+            if (blocksData.blocks && Array.isArray(blocksData.blocks)) {
+              const realBlockchainData = blocksData.blocks.slice(-30).map((block: any, index: number) => {
+                // Use block hash and timestamp to generate deterministic price
+                const hashValue = parseInt(block.hash, 16) / 1000000;
+                const timeValue = (block.timestamp % 1000) / 1000;
+                const basePrice = 2.45; // Base DYO price
+                return basePrice + (hashValue * 0.1) + (timeValue * 0.05) + (index * 0.01);
+              });
+              setData(realBlockchainData);
+            } else {
+              setData([]);
+            }
           } else {
-            // If no blockchain data available, show empty chart
+            // Response is not JSON, show empty chart
+            console.warn('Blockchain endpoint returned non-JSON response');
             setData([]);
           }
+        } else {
+          // If no blockchain data available, show empty chart
+          setData([]);
         }
       } catch (error) {
         console.error('Error fetching blockchain data:', error);

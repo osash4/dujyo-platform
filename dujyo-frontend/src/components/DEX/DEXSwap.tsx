@@ -5,6 +5,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { useBlockchain } from '../../contexts/BlockchainContext';
 import { useUnifiedBalance } from '../../hooks/useUnifiedBalance';
 import { BalanceUpdateNotification } from '../common/BalanceUpdateNotification';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 const TokenInput: React.FC<{ 
   label: string; 
@@ -172,7 +173,8 @@ const DEXSwap: React.FC = () => {
       }
 
       // Call real staking endpoint
-      const response = await fetch('http://localhost:8083/stake', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/stake`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -260,7 +262,8 @@ const DEXSwap: React.FC = () => {
       }
 
       // Call real unstaking endpoint
-      const response = await fetch('http://localhost:8083/unstake', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/unstake`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -354,7 +357,8 @@ const DEXSwap: React.FC = () => {
       }
 
       // Call the mint endpoint
-      const response = await fetch('http://localhost:8083/mint', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/mint`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -453,7 +457,8 @@ const DEXSwap: React.FC = () => {
       console.log('Executing swap:', swapRequest);
 
       // Execute swap on blockchain
-      const response = await fetch('http://localhost:8083/swap', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/swap`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

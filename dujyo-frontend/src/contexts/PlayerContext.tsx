@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { useBlockchain } from './BlockchainContext';
 import { useEventEmitter } from './EventBusContext';
 import { useAuth } from '../auth/AuthContext';
+import { getApiBaseUrl } from '../utils/apiConfig';
 
 export interface Track {
   id: string;
@@ -233,7 +234,8 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
         
         console.log('📤 Stream-earn request:', requestBody);
         
-        const response = await fetch('http://localhost:8083/api/stream-earn', {
+        const apiBaseUrl = getApiBaseUrl();
+        const response = await fetch(`${apiBaseUrl}/api/stream-earn`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
