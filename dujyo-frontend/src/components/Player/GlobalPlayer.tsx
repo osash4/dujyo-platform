@@ -33,8 +33,15 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
     isUpdating: isBalanceUpdating
   } = useUnifiedBalance();
   
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
+  // ✅ PERSIST: Load state from localStorage to maintain across page navigation
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem('dujyo_player_volume');
+    return saved ? parseFloat(saved) : 1;
+  });
+  const [isMuted, setIsMuted] = useState(() => {
+    const saved = localStorage.getItem('dujyo_player_muted');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -173,33 +180,47 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
     }
   }, [track.url, track.playerMode, track.title, isPlaying, previousTrackUrl, setPlaying]);
 
-  // Handle initial load with existing track - RESPECT isPlaying state
+  // ✅ PERSIST: Handle initial load with existing track - RESTORE playback state
   useEffect(() => {
-    if (audioRef.current && track.playerMode === 'music') {
-      // Get current time from localStorage to preserve playback position
-      const savedTime = localStorage.getItem(`dujyo_playback_time_${track.id}`);
-      const currentTime = savedTime ? parseFloat(savedTime) : 0;
-      audioRef.current.currentTime = currentTime;
-      
-      // ✅ Respetar el estado isPlaying del context (persistido en localStorage)
-      // Si estaba reproduciendo, lo dejamos reproducir (el useEffect anterior lo maneja)
-      // Si estaba pausado, lo dejamos pausado
-      console.log('🎵 Initial load - isPlaying:', isPlaying);
+    // Restore playback position for both audio and video
+    const savedTime = localStorage.getItem(`dujyo_playback_time_${track.id}`);
+    const restoredTime = savedTime ? parseFloat(savedTime) : 0;
+    
+    if (track.playerMode === 'music' && audioRef.current) {
+      audioRef.current.currentTime = restoredTime;
+      audioRef.current.volume = volume;
+      audioRef.current.muted = isMuted;
+      console.log('🎵 Audio restored - time:', restoredTime, 'isPlaying:', isPlaying);
+    } else if (track.playerMode === 'video' && videoRef.current) {
+      videoRef.current.currentTime = restoredTime;
+      videoRef.current.volume = volume;
+      videoRef.current.muted = isMuted;
+      console.log('🎬 Video restored - time:', restoredTime, 'isPlaying:', isPlaying);
     }
-  }, []); // Only run on mount
+  }, [track.id, track.playerMode, volume, isMuted, isPlaying]); // Restore when track changes
 
-  // Save playback position every 5 seconds
+  // ✅ PERSIST: Save playback position every 5 seconds for both audio and video
   useEffect(() => {
-    if (!audioRef.current || track.playerMode !== 'music') return;
+    const mediaRef = track.playerMode === 'video' ? videoRef.current : audioRef.current;
+    if (!mediaRef) return;
 
     const interval = setInterval(() => {
-      if (audioRef.current && !audioRef.current.paused) {
-        localStorage.setItem(`dujyo_playback_time_${track.id}`, audioRef.current.currentTime.toString());
+      if (mediaRef && !mediaRef.paused) {
+        localStorage.setItem(`dujyo_playback_time_${track.id}`, mediaRef.currentTime.toString());
       }
     }, 5000);
 
     return () => clearInterval(interval);
   }, [track.id, track.playerMode]);
+
+  // ✅ PERSIST: Save volume and muted state to localStorage
+  useEffect(() => {
+    localStorage.setItem('dujyo_player_volume', volume.toString());
+  }, [volume]);
+
+  useEffect(() => {
+    localStorage.setItem('dujyo_player_muted', JSON.stringify(isMuted));
+  }, [isMuted]);
 
   const getSectionStyles = () => {
     switch (track.playerMode) {
