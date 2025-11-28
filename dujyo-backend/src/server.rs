@@ -1082,7 +1082,7 @@ pub fn create_router(state: AppState) -> Router {
         .route("/api/wallet/session", get(get_wallet_session))
         .route("/api/wallet/disconnect", post(disconnect_wallet))
         .route("/api/v1/metrics", get(get_metrics_handler)) // ✅ MVP-CRITICAL: Métricas endpoint directo
-        .route("/api/videos", get(upload::list_videos_handler)); // ✅ Public videos endpoint
+        .route("/api/videos", get(upload::list_videos_handler)); // ✅ Public videos endpoint (no auth required)
     
     // Protected routes (require JWT authentication)
     // IMPORTANT: Apply middleware AFTER nesting routes so Axum can find them first
