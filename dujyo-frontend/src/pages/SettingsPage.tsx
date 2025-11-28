@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from '../utils/i18n';
+import { useTheme } from '../contexts/ThemeContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
 
 interface NotificationPreferences {
@@ -37,7 +38,8 @@ interface PrivacySettings {
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
-  const { language, setLanguage } = useTranslation();
+  const { language, setLanguage, t } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
@@ -50,10 +52,6 @@ const SettingsPage: React.FC = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   
   // Appearance state
-  const [theme, setTheme] = useState<'dark' | 'light' | 'auto'>(() => {
-    const saved = localStorage.getItem('dujyo_theme');
-    return (saved as 'dark' | 'light' | 'auto') || 'dark';
-  });
   const [accentColor, setAccentColor] = useState('#F59E0B');
   
   // Notifications state
@@ -335,43 +333,30 @@ const SettingsPage: React.FC = () => {
   const handleLanguageChange = (newLanguage: 'en' | 'es') => {
     setLanguage(newLanguage);
     // Language is automatically saved to localStorage by setLanguage
+    // Trigger a page refresh to apply translations everywhere
     setSaveStatus('success');
-    setTimeout(() => setSaveStatus('idle'), 2000);
+    setTimeout(() => {
+      setSaveStatus('idle');
+      // Force re-render of components that use translations
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: newLanguage } }));
+    }, 2000);
   };
 
   const handleThemeChange = (newTheme: 'dark' | 'light' | 'auto') => {
     setTheme(newTheme);
-    localStorage.setItem('dujyo_theme', newTheme);
-    applyTheme(newTheme);
+    // Theme is automatically applied by ThemeContext
     setSaveStatus('success');
     setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
-  const applyTheme = (themeMode: 'dark' | 'light' | 'auto') => {
-    const root = document.documentElement;
-    
-    if (themeMode === 'auto') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.classList.toggle('dark', prefersDark);
-      root.classList.toggle('light', !prefersDark);
-    } else {
-      root.classList.remove('dark', 'light');
-      root.classList.add(themeMode);
-    }
-  };
-
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
-
   const settingsTabs = [
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'privacy', label: 'Privacy', icon: Shield },
-    { id: 'appearance', label: 'Appearance', icon: Palette },
-    { id: 'audio', label: 'Audio', icon: Volume2 },
-    { id: 'language', label: 'Language', icon: Globe },
-    { id: 'data', label: 'Data', icon: Download },
+    { id: 'profile', label: t('settings.profile'), icon: User },
+    { id: 'notifications', label: t('settings.notifications'), icon: Bell },
+    { id: 'privacy', label: t('settings.privacy'), icon: Shield },
+    { id: 'appearance', label: t('settings.appearance'), icon: Palette },
+    { id: 'audio', label: t('settings.audio'), icon: Volume2 },
+    { id: 'language', label: t('settings.language'), icon: Globe },
+    { id: 'data', label: t('settings.data'), icon: Download },
   ];
 
   const accentColors = ['#F59E0B', '#EA580C', '#00F5FF', '#FBBF24', '#7C2D12', '#8B5CF6'];
@@ -406,7 +391,7 @@ const SettingsPage: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50">
-              <h3 className="text-lg font-semibold text-white mb-4">Settings</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">{t('settings.title')}</h3>
               <div className="space-y-2">
                 {settingsTabs.map((tab) => (
                   <button
@@ -449,16 +434,16 @@ const SettingsPage: React.FC = () => {
                   {saveStatus === 'error' && <X size={18} />}
                   {saveStatus === 'saving' && <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-400 border-t-transparent" />}
                   <span>
-                    {saveStatus === 'success' && 'Settings saved successfully!'}
-                    {saveStatus === 'error' && 'Failed to save settings. Please try again.'}
-                    {saveStatus === 'saving' && 'Saving...'}
+                    {saveStatus === 'success' && t('settings.saved')}
+                    {saveStatus === 'error' && t('settings.error')}
+                    {saveStatus === 'saving' && t('settings.saving')}
                   </span>
                 </motion.div>
               )}
 
               {activeTab === 'profile' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Profile Settings</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.profileSettings')}</h3>
                   <div className="space-y-6">
                     {/* Avatar Upload */}
                     <div>
@@ -487,7 +472,7 @@ const SettingsPage: React.FC = () => {
                         <div>
                           <label className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg cursor-pointer transition-colors">
                             <Upload size={18} />
-                            Upload Photo
+                            {t('settings.uploadPhoto')}
                             <input
                               type="file"
                               accept="image/*"
@@ -502,7 +487,7 @@ const SettingsPage: React.FC = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Display Name
+                        {t('settings.displayName')}
                       </label>
                       <input
                         type="text"
@@ -514,7 +499,7 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Bio
+                        {t('settings.bio')}
                       </label>
                       <textarea
                         value={bio}
@@ -530,7 +515,7 @@ const SettingsPage: React.FC = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors disabled:opacity-50"
                     >
                       <Save size={18} />
-                      {loading ? 'Saving...' : 'Save Changes'}
+                      {loading ? t('settings.saving') : t('settings.saveChanges')}
                     </button>
                   </div>
                 </div>
@@ -538,7 +523,7 @@ const SettingsPage: React.FC = () => {
 
               {activeTab === 'notifications' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Notification Settings</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.notificationSettings')}</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -557,8 +542,8 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-white font-medium">Email Notifications</h4>
-                        <p className="text-gray-400 text-sm">Receive updates via email</p>
+                        <h4 className="text-white font-medium">{t('settings.emailNotifications')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.emailNotificationsDesc')}</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
@@ -572,8 +557,8 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-white font-medium">New Music Alerts</h4>
-                        <p className="text-gray-400 text-sm">Get notified about new releases</p>
+                        <h4 className="text-white font-medium">{t('settings.newMusicAlerts')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.newMusicAlertsDesc')}</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
@@ -591,7 +576,7 @@ const SettingsPage: React.FC = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors disabled:opacity-50 mt-4"
                     >
                       <Save size={18} />
-                      {loading ? 'Saving...' : 'Save Changes'}
+                      {loading ? t('settings.saving') : t('settings.saveChanges')}
                     </button>
                   </div>
                 </div>
@@ -599,12 +584,12 @@ const SettingsPage: React.FC = () => {
 
               {activeTab === 'privacy' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Privacy Settings</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.privacySettings')}</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-white font-medium">Public Profile</h4>
-                        <p className="text-gray-400 text-sm">Make your profile visible to others</p>
+                        <h4 className="text-white font-medium">{t('settings.publicProfile')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.publicProfileDesc')}</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
@@ -618,8 +603,8 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-white font-medium">Show Listening Activity</h4>
-                        <p className="text-gray-400 text-sm">Let others see what you're listening to</p>
+                        <h4 className="text-white font-medium">{t('settings.showListeningActivity')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.showListeningActivityDesc')}</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
@@ -633,8 +618,8 @@ const SettingsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-white font-medium">Data Collection</h4>
-                        <p className="text-gray-400 text-sm">Allow data collection for improvements</p>
+                        <h4 className="text-white font-medium">{t('settings.dataCollection')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.dataCollectionDesc')}</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
@@ -660,11 +645,11 @@ const SettingsPage: React.FC = () => {
 
               {activeTab === 'appearance' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Appearance Settings</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.appearanceSettings')}</h3>
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Theme
+                        {t('settings.theme')}
                       </label>
                       <div className="grid grid-cols-3 gap-3">
                         <button
@@ -676,7 +661,7 @@ const SettingsPage: React.FC = () => {
                           }`}
                         >
                           <Moon size={20} />
-                          Dark
+                          {t('settings.dark')}
                         </button>
                         <button
                           onClick={() => handleThemeChange('light')}
@@ -687,7 +672,7 @@ const SettingsPage: React.FC = () => {
                           }`}
                         >
                           <Sun size={20} />
-                          Light
+                          {t('settings.light')}
                         </button>
                         <button
                           onClick={() => handleThemeChange('auto')}
@@ -698,13 +683,13 @@ const SettingsPage: React.FC = () => {
                           }`}
                         >
                           <Monitor size={20} />
-                          Auto
+                          {t('settings.auto')}
                         </button>
                       </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Accent Color
+                        {t('settings.accentColor')}
                       </label>
                       <div className="flex gap-2">
                         {accentColors.map((color) => (
@@ -719,7 +704,7 @@ const SettingsPage: React.FC = () => {
                           />
                         ))}
                       </div>
-                      <p className="text-xs text-gray-400 mt-2">Accent color changes will be applied after page refresh</p>
+                      <p className="text-xs text-gray-400 mt-2">{t('settings.accentColorDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -727,7 +712,7 @@ const SettingsPage: React.FC = () => {
 
               {activeTab === 'audio' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Audio Settings</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.audioSettings')}</h3>
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -763,7 +748,7 @@ const SettingsPage: React.FC = () => {
 
               {activeTab === 'language' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Language Settings</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.languageSettings')}</h3>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -777,7 +762,7 @@ const SettingsPage: React.FC = () => {
                         <option value="en">🇺🇸 English</option>
                         <option value="es">🇪🇸 Español</option>
                       </select>
-                      <p className="text-xs text-gray-400 mt-2">Language changes are saved automatically</p>
+                      <p className="text-xs text-gray-400 mt-2">{t('settings.languageDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -785,26 +770,26 @@ const SettingsPage: React.FC = () => {
 
               {activeTab === 'data' && (
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">Data Management</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-6">{t('settings.dataManagement')}</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg">
                       <div>
-                        <h4 className="text-white font-medium">Download Your Data</h4>
-                        <p className="text-gray-400 text-sm">Get a copy of your data</p>
+                        <h4 className="text-white font-medium">{t('settings.downloadData')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.downloadDataDesc')}</p>
                       </div>
                       <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
                         <Download size={18} />
-                        Download
+                        {t('settings.download')}
                       </button>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg">
                       <div>
-                        <h4 className="text-white font-medium">Delete Account</h4>
-                        <p className="text-gray-400 text-sm">Permanently delete your account</p>
+                        <h4 className="text-white font-medium">{t('settings.deleteAccount')}</h4>
+                        <p className="text-gray-400 text-sm">{t('settings.deleteAccountDesc')}</p>
                       </div>
                       <button className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
                         <Trash2 size={18} />
-                        Delete
+                        {t('settings.delete')}
                       </button>
                     </div>
                   </div>

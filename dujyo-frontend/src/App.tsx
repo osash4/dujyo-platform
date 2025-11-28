@@ -92,7 +92,9 @@ const App: React.FC = () => {
             <BlockchainProvider>
               <WebSocketProvider>
                 <PlayerProvider>
-                  <AppRoutes />
+                  <ThemeProvider>
+                    <AppRoutes />
+                  </ThemeProvider>
                 </PlayerProvider>
               </WebSocketProvider>
             </BlockchainProvider>
