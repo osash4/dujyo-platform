@@ -200,10 +200,17 @@ interface WatchTimeMilestone {
 }
 
 const VideoPage: React.FC = () => {
-  // Safely get player context with fallbacks
-  const playerContext = usePlayerContext();
-  const playTrack = playerContext?.playTrack || (() => {});
-  const setPlayerPosition = playerContext?.setPlayerPosition || (() => {});
+  // Safely get player context with error handling
+  let playTrack: (track: any) => void = () => {};
+  let setPlayerPosition: (position: 'top' | 'bottom') => void = () => {};
+  
+  try {
+    const playerContext = usePlayerContext();
+    playTrack = playerContext.playTrack;
+    setPlayerPosition = playerContext.setPlayerPosition;
+  } catch (error) {
+    console.warn('PlayerContext not available:', error);
+  }
   
   const { user } = useAuth();
   const { connect, account, isConnecting } = useWallet();
