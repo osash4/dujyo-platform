@@ -139,6 +139,14 @@ impl BlockchainStorage {
                 password_hash VARCHAR(255) NOT NULL,
                 username VARCHAR(255) UNIQUE,
                 user_type VARCHAR(50) DEFAULT 'listener',
+                display_name VARCHAR(255),
+                bio TEXT,
+                avatar_url VARCHAR(1000),
+                public_profile BOOLEAN DEFAULT true,
+                show_listening_activity BOOLEAN DEFAULT false,
+                data_collection BOOLEAN DEFAULT true,
+                theme VARCHAR(20) DEFAULT 'dark',
+                language VARCHAR(10) DEFAULT 'en',
                 created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                 updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )
@@ -206,10 +214,10 @@ impl BlockchainStorage {
         .execute(&self.pool)
         .await
         .map_err(|e| {
-            eprintln!("❌ Error creating content table: {}", e);
+            eprintln!("Error creating content table: {}", e);
             e
         })?;
-        eprintln!("✅ Content table created or already exists.");
+        eprintln!("Content table created or already exists.");
 
         // Create indexes for content table
         sqlx::query("CREATE INDEX IF NOT EXISTS idx_content_artist_id ON content(artist_id)")

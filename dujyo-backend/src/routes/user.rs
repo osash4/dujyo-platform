@@ -1,10 +1,13 @@
 use axum::{
-    extract::{State, Extension},
+    extract::{State, Extension, Multipart},
     http::StatusCode,
     response::Json,
+    routing::{get, put, post},
 };
-use axum::extract::Extension as AxumExtension;
 use serde::{Deserialize, Serialize};
+use tokio::fs;
+use std::path::Path;
+use uuid::Uuid;
 use crate::server::AppState;
 use crate::auth::Claims;
 use crate::services::email_service::EmailService;
@@ -308,11 +311,309 @@ pub async fn claim_tokens_handler(
 }
 */
 
+use axum::{
+    extract::{State, Extension, Multipart},
+    http::StatusCode,
+    response::Json,
+    routing::{get, put, post},
+};
+use tokio::fs;
+use std::path::Path;
+use uuid::Uuid;
+
+#[derive(Deserialize)]
+pub struct UpdateProfileRequest {
+    pub display_name: Option<String>,
+    pub bio: Option<String>,
+    pub avatar_url: Option<String>,
+}
+
+#[derive(Serialize)]
+pub struct ProfileResponse {
+    pub success: bool,
+    pub display_name: Option<String>,
+    pub bio: Option<String>,
+    pub avatar_url: Option<String>,
+    pub email: String,
+    pub username: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct UpdatePrivacyRequest {
+    pub public_profile: Option<bool>,
+    pub show_listening_activity: Option<bool>,
+    pub data_collection: Option<bool>,
+}
+
+#[derive(Serialize)]
+pub struct PrivacyResponse {
+    pub success: bool,
+    pub public_profile: bool,
+    pub show_listening_activity: bool,
+    pub data_collection: bool,
+}
+
+/// GET /api/v1/user/profile
+/// Get user profile
+pub async fn get_profile_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+) -> Result<Json<ProfileResponse>, StatusCode> {
+    let pool = &state.storage.pool;
+    let user_address = &claims.sub;
+
+    let row = sqlx::query(
+        r#"
+        SELECT email, username, 
+               COALESCE(display_name, username) as display_name,
+               bio, avatar_url
+        FROM users
+        WHERE wallet_address = $1
+        "#
+    )
+    .bind(user_address)
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Error fetching profile: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?
+    .ok_or(StatusCode::NOT_FOUND)?;
+
+    Ok(Json(ProfileResponse {
+        success: true,
+        display_name: row.get::<Option<String>, _>("display_name"),
+        bio: row.get::<Option<String>, _>("bio"),
+        avatar_url: row.get::<Option<String>, _>("avatar_url"),
+        email: row.get::<String, _>("email"),
+        username: row.get::<Option<String>, _>("username"),
+    }))
+}
+
+/// PUT /api/v1/user/profile
+/// Update user profile
+pub async fn update_profile_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+    Json(request): Json<UpdateProfileRequest>,
+) -> Result<Json<ProfileResponse>, StatusCode> {
+    let pool = &state.storage.pool;
+    let user_address = &claims.sub;
+
+    // Build update query dynamically
+    let mut updates = Vec::new();
+    if let Some(ref display_name) = request.display_name {
+        updates.push(format!("display_name = '{}'", display_name.replace("'", "''")));
+    }
+    if let Some(ref bio) = request.bio {
+        updates.push(format!("bio = '{}'", bio.replace("'", "''")));
+    }
+    if let Some(ref avatar_url) = request.avatar_url {
+        updates.push(format!("avatar_url = '{}'", avatar_url.replace("'", "''")));
+    }
+    updates.push("updated_at = NOW()".to_string());
+
+    if updates.is_empty() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    let query = format!(
+        "UPDATE users SET {} WHERE wallet_address = $1",
+        updates.join(", ")
+    );
+
+    sqlx::query(&query)
+        .bind(user_address)
+        .execute(pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Error updating profile: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    // Fetch updated profile
+    get_profile_handler(State(state), Extension(claims)).await
+}
+
+/// POST /api/v1/user/avatar
+/// Upload user avatar
+pub async fn upload_avatar_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+    mut multipart: Multipart,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let user_address = &claims.sub;
+    let mut file_data: Option<Vec<u8>> = None;
+    let mut file_name = String::new();
+
+    // Parse multipart form data
+    while let Some(field) = multipart.next_field().await.map_err(|_| StatusCode::BAD_REQUEST)? {
+        let field_name = field.name().unwrap_or("").to_string();
+        
+        if field_name == "avatar" {
+            let filename = field.file_name().map(|f| f.to_string());
+            let field_data = field.bytes().await.map_err(|_| StatusCode::BAD_REQUEST)?;
+            
+            if let Some(fname) = filename {
+                file_name = fname;
+                file_data = Some(field_data.to_vec());
+            }
+        }
+    }
+
+    if file_data.is_none() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    // Validate file type
+    let file_ext = Path::new(&file_name)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("");
+    
+    if !["jpg", "jpeg", "png", "gif", "webp"].contains(&file_ext.to_lowercase().as_str()) {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    // Validate file size (max 5MB)
+    if let Some(ref data) = file_data {
+        if data.len() > 5 * 1024 * 1024 {
+            return Err(StatusCode::PAYLOAD_TOO_LARGE);
+        }
+    }
+
+    // Save file
+    let uploads_dir = "uploads/avatars";
+    if !Path::new(uploads_dir).exists() {
+        fs::create_dir_all(uploads_dir)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    }
+
+    let avatar_id = Uuid::new_v4().to_string();
+    let safe_file_name = file_name
+        .chars()
+        .filter(|c| c.is_alphanumeric() || *c == '.' || *c == '-' || *c == '_')
+        .collect::<String>();
+    let file_path = format!("{}/{}_{}.{}", uploads_dir, avatar_id, safe_file_name, file_ext);
+    
+    if let Some(ref data) = file_data {
+        fs::write(&file_path, data)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    }
+
+    let avatar_url = format!("/uploads/avatars/{}_{}.{}", avatar_id, safe_file_name, file_ext);
+
+    // Update user avatar_url in database
+    sqlx::query("UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE wallet_address = $2")
+        .bind(&avatar_url)
+        .bind(user_address)
+        .execute(&state.storage.pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Error updating avatar_url: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "avatar_url": avatar_url
+    })))
+}
+
+/// GET /api/v1/user/privacy
+/// Get privacy settings
+pub async fn get_privacy_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+) -> Result<Json<PrivacyResponse>, StatusCode> {
+    let pool = &state.storage.pool;
+    let user_address = &claims.sub;
+
+    // Try to get privacy settings, default to true if not set
+    let row = sqlx::query(
+        r#"
+        SELECT 
+            COALESCE(public_profile, true) as public_profile,
+            COALESCE(show_listening_activity, false) as show_listening_activity,
+            COALESCE(data_collection, true) as data_collection
+        FROM users
+        WHERE wallet_address = $1
+        "#
+    )
+    .bind(user_address)
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Error fetching privacy settings: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?
+    .ok_or(StatusCode::NOT_FOUND)?;
+
+    Ok(Json(PrivacyResponse {
+        success: true,
+        public_profile: row.get::<bool, _>("public_profile"),
+        show_listening_activity: row.get::<bool, _>("show_listening_activity"),
+        data_collection: row.get::<bool, _>("data_collection"),
+    }))
+}
+
+/// PUT /api/v1/user/privacy
+/// Update privacy settings
+pub async fn update_privacy_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+    Json(request): Json<UpdatePrivacyRequest>,
+) -> Result<Json<PrivacyResponse>, StatusCode> {
+    let pool = &state.storage.pool;
+    let user_address = &claims.sub;
+
+    // Build update query dynamically
+    let mut updates = Vec::new();
+    if let Some(public_profile) = request.public_profile {
+        updates.push(format!("public_profile = {}", public_profile));
+    }
+    if let Some(show_listening_activity) = request.show_listening_activity {
+        updates.push(format!("show_listening_activity = {}", show_listening_activity));
+    }
+    if let Some(data_collection) = request.data_collection {
+        updates.push(format!("data_collection = {}", data_collection));
+    }
+    updates.push("updated_at = NOW()".to_string());
+
+    if updates.is_empty() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    let query = format!(
+        "UPDATE users SET {} WHERE wallet_address = $1",
+        updates.join(", ")
+    );
+
+    sqlx::query(&query)
+        .bind(user_address)
+        .execute(pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Error updating privacy settings: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    // Fetch updated privacy settings
+    get_privacy_handler(State(state), Extension(claims)).await
+}
+
 pub fn user_routes() -> axum::Router<AppState> {
     axum::Router::new()
-        .route("/become-artist", axum::routing::post(become_artist_handler))
-        .route("/type", axum::routing::get(get_user_type_handler))
-        .route("/wallet", axum::routing::get(get_wallet_by_email_handler))
+        .route("/become-artist", post(become_artist_handler))
+        .route("/type", get(get_user_type_handler))
+        .route("/wallet", get(get_wallet_by_email_handler))
+        .route("/profile", get(get_profile_handler))
+        .route("/profile", put(update_profile_handler))
+        .route("/avatar", post(upload_avatar_handler))
+        .route("/privacy", get(get_privacy_handler))
+        .route("/privacy", put(update_privacy_handler))
         // TODO: Fix claim_tokens_handler - problema con trait Handler
-        // .route("/claim-tokens", axum::routing::post(claim_tokens_handler))
+        // .route("/claim-tokens", post(claim_tokens_handler))
 }
