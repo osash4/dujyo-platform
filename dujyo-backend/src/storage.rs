@@ -128,7 +128,7 @@ impl BlockchainStorage {
             .await?;
 
         // Create users table (CRITICAL for registration)
-        sqlx::query(
+        match sqlx::query(
             r#"
             CREATE TABLE IF NOT EXISTS users (
                 user_id VARCHAR(255) PRIMARY KEY,
@@ -143,7 +143,15 @@ impl BlockchainStorage {
             "#
         )
         .execute(&self.pool)
-        .await?;
+        .await {
+            Ok(_) => {
+                eprintln!("✅ Users table created or already exists");
+            }
+            Err(e) => {
+                eprintln!("❌ CRITICAL: Failed to create users table: {}", e);
+                return Err(e);
+            }
+        }
 
         // Create token_balances table (for DYO/DYS balances)
         sqlx::query(
