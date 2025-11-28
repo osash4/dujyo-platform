@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
 import AnimatedCarousel from '../components/common/AnimatedCarousel';
@@ -11,7 +11,7 @@ import Breadcrumbs from '../components/common/Breadcrumbs';
 import AdvancedFilters, { FilterOption } from '../components/common/AdvancedFilters';
 import TrendingSection from '../components/common/TrendingSection';
 import KeyboardShortcuts from '../components/common/KeyboardShortcuts';
-import { Coins, TrendingUp, Users, Wallet, Info, Trophy, Sparkles, Play, Eye, Clock, ThumbsUp, MessageCircle, Share2, Upload, Award, Zap } from 'lucide-react';
+import { Coins, TrendingUp, Users, Wallet, Info, Trophy, Sparkles, Play, Eye, Clock, ThumbsUp, MessageCircle, Share2, Upload, Award, Zap, CheckCircle } from 'lucide-react';
 
 // Enhanced video content with earnings data
 const videoCarouselItems = [
@@ -256,12 +256,45 @@ const VideoPage: React.FC = () => {
     });
   }, []);
 
+  // Fetch creator earnings function - defined before useEffect to avoid dependency issues
+  const fetchCreatorEarnings = useCallback(async () => {
+    if (!account) return;
+    
+    try {
+      console.error('🎬 VideoPage: Fetching creator earnings...');
+      const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('jwt_token');
+      
+      console.error(`🎬 VideoPage: API URL: ${apiBaseUrl}/api/earnings/creator/${account}`);
+      const response = await fetch(`${apiBaseUrl}/api/earnings/creator/${account}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCreatorEarnings(data.totalEarnings || 0);
+        setUserTier(data.tier || 'Bronze');
+        setEngagementPoints(data.engagementPoints || 0);
+        console.error('✅ VideoPage: Creator earnings fetched:', data);
+      } else {
+        // Endpoint might not exist yet, that's okay
+        console.warn('⚠️ VideoPage: Creator earnings endpoint not available:', response.status);
+      }
+    } catch (error) {
+      // Silently fail - this endpoint might not be implemented yet
+      console.warn('⚠️ VideoPage: Error fetching creator earnings (non-critical):', error);
+    }
+  }, [account]);
+
   // Fetch creator earnings if wallet connected
   useEffect(() => {
     if (account && user) {
       fetchCreatorEarnings();
     }
-  }, [account, user]);
+  }, [account, user, fetchCreatorEarnings]);
 
   // Test backend connection on mount for debugging
   useEffect(() => {
@@ -278,35 +311,6 @@ const VideoPage: React.FC = () => {
       console.error('❌ VideoPage: Failed to load test utility:', err);
     });
   }, []);
-
-  const fetchCreatorEarnings = async () => {
-    if (!account) return;
-    
-    try {
-      const apiBaseUrl = getApiBaseUrl();
-      const token = localStorage.getItem('jwt_token');
-      
-      const response = await fetch(`${apiBaseUrl}/api/earnings/creator/${account}`, {
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setCreatorEarnings(data.totalEarnings || 0);
-        setUserTier(data.tier || 'Bronze');
-        setEngagementPoints(data.engagementPoints || 0);
-      } else {
-        // Endpoint might not exist yet, that's okay
-        console.warn('Creator earnings endpoint not available:', response.status);
-      }
-    } catch (error) {
-      // Silently fail - this endpoint might not be implemented yet
-      console.warn('Error fetching creator earnings (non-critical):', error);
-    }
-  };
 
   // Update watch time milestones
   useEffect(() => {
