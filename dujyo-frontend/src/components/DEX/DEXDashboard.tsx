@@ -75,7 +75,8 @@ const FuturisticChart: React.FC = () => {
           setData(priceData.prices || []);
         } else {
           // Get real blockchain data from blocks endpoint
-          const blocksResponse = await fetch('http://localhost:8083/blocks');
+          const apiBaseUrl = getApiBaseUrl();
+          const blocksResponse = await fetch(`${apiBaseUrl}/blocks`);
           if (blocksResponse.ok) {
             const blocksData = await blocksResponse.json();
             // Generate price data based on real blockchain activity
@@ -337,9 +338,10 @@ const DEXDashboard: React.FC = () => {
         setIsLoadingStats(true);
         
         // Get real blockchain data
+        const apiBaseUrl = getApiBaseUrl();
         const [blocksResponse, poolsResponse] = await Promise.all([
-          fetch('http://localhost:8083/blocks'),
-          fetch('http://localhost:8083/pools')
+          fetch(`${apiBaseUrl}/blocks`),
+          fetch(`${apiBaseUrl}/pools`)
         ]);
 
         let totalValueLocked = 0;
