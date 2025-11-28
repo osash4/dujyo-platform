@@ -7,6 +7,7 @@ import { BlockchainProvider } from './contexts/BlockchainContext';
 import { WebSocketProvider, useWebSocket } from './contexts/WebSocketContext';
 import { PlayerProvider, usePlayerContext } from './contexts/PlayerContext';
 import { EventBusProvider } from './contexts/EventBusContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 import { WalletDashboard } from './components/wallet/WalletDashboard';
 import { ArtistPortal } from './components/artist/ArtistPortal';
@@ -92,9 +93,11 @@ const App: React.FC = () => {
             <BlockchainProvider>
               <WebSocketProvider>
                 <PlayerProvider>
-                  <ThemeProvider>
-                    <AppRoutes />
-                  </ThemeProvider>
+                  <LanguageProvider>
+                    <ThemeProvider>
+                      <AppRoutes />
+                    </ThemeProvider>
+                  </LanguageProvider>
                 </PlayerProvider>
               </WebSocketProvider>
             </BlockchainProvider>

@@ -212,7 +212,7 @@ const translations: Translations = {
     es: 'Mostrar Actividad de Escucha',
   },
   'settings.showListeningActivityDesc': {
-    en: 'Let others see what you're listening to',
+    en: "Let others see what you're listening to",
     es: 'Permitir que otros vean lo que estás escuchando',
   },
   'settings.dataCollection': {
