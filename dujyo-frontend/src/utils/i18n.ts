@@ -325,10 +325,6 @@ const translations: Translations = {
     en: 'Submit',
     es: 'Enviar',
   },
-  'common.cancel': {
-    en: 'Cancel',
-    es: 'Cancelar',
-  },
   'common.confirm': {
     en: 'Confirm',
     es: 'Confirmar',
