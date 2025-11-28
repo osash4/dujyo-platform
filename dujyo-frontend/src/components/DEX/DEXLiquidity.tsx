@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, Droplets, Info, TrendingUp, BarChart3 } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 const LiquidityInput: React.FC<{ 
   label: string; 
@@ -141,7 +142,8 @@ const DEXLiquidity: React.FC = () => {
       try {
         setIsLoadingPositions(true);
         // Get real liquidity positions from blockchain
-        const response = await fetch('http://localhost:8083/pool/DUJYO_USDC');
+        const apiBaseUrl = getApiBaseUrl();
+        const response = await fetch(`${apiBaseUrl}/pool/DUJYO_USDC`);
         if (response.ok) {
           const poolData = await response.json();
           console.log('Pool data loaded:', poolData);
