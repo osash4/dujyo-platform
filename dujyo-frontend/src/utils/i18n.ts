@@ -1127,10 +1127,6 @@ const translations: Translations = {
     en: 'Daily Quests',
     es: 'Misiones Diarias',
   },
-  'gaming.achievements': {
-    en: 'Achievements',
-    es: 'Logros',
-  },
   'gaming.playNow': {
     en: 'Play Now',
     es: 'Jugar Ahora',
@@ -1509,11 +1505,11 @@ const translations: Translations = {
   },
   'wallet.staked': {
     en: 'Staked',
-    es: 'Apostado',
+    es: 'Bloquear',
   },
   'wallet.unstaked': {
     en: 'Unstaked',
-    es: 'Desapostado',
+    es: 'Desbloquear',
   },
   'wallet.noTransactionsFound': {
     en: 'No transactions found',

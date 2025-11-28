@@ -205,6 +205,7 @@ const VideoPage: React.FC = () => {
   const { playTrack, setPlayerPosition } = usePlayerContext();
   const { user } = useAuth();
   const { connect, account, isConnecting } = useWallet();
+  const { t } = useLanguage();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [filteredContent, setFilteredContent] = useState(videoContent);
   const [metrics, setMetrics] = useState<VideoMetrics>({
