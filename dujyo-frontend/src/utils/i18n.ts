@@ -1317,10 +1317,6 @@ const translations: Translations = {
     en: '24h Volume',
     es: 'Volumen 24h',
   },
-  'dex.price': {
-    en: 'Price',
-    es: 'Precio',
-  },
   'dex.change24h': {
     en: '24h Change',
     es: 'Cambio 24h',
