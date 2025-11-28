@@ -1495,10 +1495,6 @@ const translations: Translations = {
     en: 'Swapped',
     es: 'Intercambiado',
   },
-  'wallet.staked': {
-    en: 'Staked',
-    es: 'Bloquear',
-  },
   'wallet.unstaked': {
     en: 'Unstaked',
     es: 'Desbloquear',
