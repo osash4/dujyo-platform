@@ -282,12 +282,11 @@ const VideoPage: React.FC = () => {
 
   // Update watch time milestones
   useEffect(() => {
-    const updated = watchTimeMilestones.map(milestone => ({
+    setWatchTimeMilestones(prev => prev.map(milestone => ({
       ...milestone,
       completed: currentWatchTime >= milestone.time
-    }));
-    setWatchTimeMilestones(updated);
-  }, [currentWatchTime, watchTimeMilestones]);
+    })));
+  }, [currentWatchTime]);
 
   // Trending data with earnings
   const trendingVideos = videoContent.slice(0, 4).map(v => ({
