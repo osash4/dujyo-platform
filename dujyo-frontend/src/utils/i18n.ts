@@ -85,6 +85,10 @@ const translations: Translations = {
     en: 'Close',
     es: 'Cerrar',
   },
+  'common.viewMore': {
+    en: 'View {{count}} more...',
+    es: 'Ver {{count}} más...',
+  },
   'common.save': {
     en: 'Save',
     es: 'Guardar',
