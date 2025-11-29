@@ -379,6 +379,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     navigate('/explore');
   };
 
+  // ✅ Update user data in context and localStorage
+  const updateUser = (updates: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      console.log('✅ User updated in AuthContext:', updates);
+    }
+  };
+
+  // ✅ Refresh user data from backend
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (!token || !user) {
+        console.warn('⚠️ Cannot refresh user: no token or user');
+        return;
+      }
+
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/v1/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const updatedUser: User = {
+          ...user,
+          displayName: data.display_name || user.displayName,
+          photoURL: data.avatar_url || user.photoURL,
+        };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        console.log('✅ User refreshed from backend:', updatedUser);
+      } else {
+        console.error('❌ Failed to refresh user profile:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing user:', error);
+    }
+  };
+
   // Role-based functions
   const getUserRole = (): UserRole => {
     return user?.role || 'listener';
