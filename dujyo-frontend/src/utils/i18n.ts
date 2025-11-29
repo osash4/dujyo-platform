@@ -1695,6 +1695,134 @@ const translations: Translations = {
     en: 'Transfer your streaming earnings to your DEX wallet for trading, staking, or providing liquidity.',
     es: 'Transfiere tus ganancias de transmisión a tu billetera DEX para trading, staking o proporcionar liquidez.',
   },
+  'dex.stakeYourDyoTokens': {
+    en: 'Stake Your $DYO Tokens',
+    es: 'Aposta tus Tokens $DYO',
+  },
+  'dex.earnPassiveRewards': {
+    en: 'Earn passive rewards while supporting the network',
+    es: 'Gana recompensas pasivas mientras apoyas la red',
+  },
+  'dex.annualPercentageYield': {
+    en: 'Annual Percentage Yield',
+    es: 'Rendimiento Porcentual Anual',
+  },
+  'dex.startStaking': {
+    en: 'Start Staking',
+    es: 'Comenzar a Apostar',
+  },
+  'dex.dyoTokenEconomy': {
+    en: '$DYO Token Economy',
+    es: 'Economía del Token $DYO',
+  },
+  'dex.dyoTokenEconomyDescription': {
+    en: 'The $DYO token powers the DUJYO Stream-to-Earn ecosystem. Every stream, view, and play generates $DYO tokens, creating a sustainable economy where creators and listeners earn together.',
+    es: 'El token $DYO impulsa el ecosistema DUJYO Stream-to-Earn. Cada transmisión, visualización y reproducción genera tokens $DYO, creando una economía sostenible donde creadores y oyentes ganan juntos.',
+  },
+  'dex.totalSupply': {
+    en: 'Total Supply',
+    es: 'Suministro Total',
+  },
+  'dex.streamingRewards': {
+    en: 'Streaming Rewards',
+    es: 'Recompensas por Transmisión',
+  },
+  'dex.distributedToCreatorsListeners': {
+    en: 'Distributed to creators & listeners',
+    es: 'Distribuido a creadores y oyentes',
+  },
+  'dex.forDexTradingPairs': {
+    en: 'For DEX trading pairs',
+    es: 'Para pares de trading en DEX',
+  },
+  'dex.howStreamingRewardsFuel': {
+    en: 'How Streaming Rewards Fuel the Ecosystem:',
+    es: 'Cómo las Recompensas por Transmisión Alimentan el Ecosistema:',
+  },
+  'dex.howStreamingRewardsFuelDescription': {
+    en: 'When users stream content, they earn $DYO tokens. These tokens can be staked for passive income, traded on the DEX, or used to purchase NFTs. This creates a circular economy that rewards participation and engagement.',
+    es: 'Cuando los usuarios transmiten contenido, ganan tokens $DYO. Estos tokens pueden ser apostados para ingresos pasivos, intercambiados en el DEX o usados para comprar NFTs. Esto crea una economía circular que recompensa la participación y el compromiso.',
+  },
+  'dex.decentralizedExchangeForEcosystem': {
+    en: 'Decentralized Exchange for the DUJYO Ecosystem',
+    es: 'Intercambio Descentralizado para el Ecosistema DUJYO',
+  },
+  'dex.builtOnDyoBlockchain': {
+    en: 'Built on DYO Blockchain • Powered by Automated Market Making • Stream-to-Earn Integrated',
+    es: 'Construido en Blockchain DYO • Impulsado por Creación Automática de Mercado • Stream-to-Earn Integrado',
+  },
+  'dex.transferStreamingEarnings': {
+    en: 'Transfer Streaming Earnings',
+    es: 'Transferir Ganancias por Transmisión',
+  },
+  'dex.availableToTransfer': {
+    en: 'Available to Transfer',
+    es: 'Disponible para Transferir',
+  },
+  'dex.transferNow': {
+    en: 'Transfer Now',
+    es: 'Transferir Ahora',
+  },
+  'dex.last24Hours': {
+    en: 'Last 24 Hours',
+    es: 'Últimas 24 Horas',
+  },
+  'dex.dyoTradingActivity': {
+    en: 'DYO Trading Activity',
+    es: 'Actividad de Trading DYO',
+  },
+  'dex.blockchainConnected': {
+    en: 'Blockchain Connected',
+    es: 'Blockchain Conectada',
+  },
+  'dex.liveTrading': {
+    en: 'Live Trading',
+    es: 'Trading en Vivo',
+  },
+  'dex.active': {
+    en: 'Active',
+    es: 'Activo',
+  },
+  'dex.topTraders': {
+    en: 'Top Traders',
+    es: 'Top Traders',
+  },
+  'dex.noTradersDataAvailable': {
+    en: 'No traders data available',
+    es: 'No hay datos de traders disponibles',
+  },
+  'dex.dexOverview': {
+    en: 'DEX Overview',
+    es: 'Resumen DEX',
+  },
+  'dex.totalValueLocked': {
+    en: 'Total Value Locked',
+    es: 'Valor Total Bloqueado',
+  },
+  'dex.activeUsers': {
+    en: 'Active Users',
+    es: 'Usuarios Activos',
+  },
+  'dex.transactions': {
+    en: 'Transactions',
+    es: 'Transacciones',
+  },
+  'dex.recentActivity': {
+    en: 'Recent Activity',
+    es: 'Actividad Reciente',
+  },
+  'dex.swapped': {
+    en: 'Swapped',
+    es: 'Intercambiado',
+  },
+  'dex.added': {
+    en: 'Added',
+    es: 'Agregado',
+  },
+  'dex.removed': {
+    en: 'Removed',
+    es: 'Removido',
+  },
   
   // Profile Page
   'profile.title': {

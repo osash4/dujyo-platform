@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, DollarSign, Zap, Users, Trophy, Star, TrendingDown } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 
-const StatCard: React.FC<{ icon: React.ElementType; title: string; value: string; change: string; changeType: 'positive' | 'negative'; color: string }> = ({ icon: Icon, title, value, change, changeType, color }) => (
+const StatCard: React.FC<{ icon: React.ElementType; title: string; value: string; change: string; changeType: 'positive' | 'negative'; color: string }> = ({ icon: Icon, title, value, change, changeType, color }) => {
+  const { t } = useLanguage();
+  return (
   <motion.div
     className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-lg hover:shadow-2xl transition-all duration-300"
     initial={{ opacity: 0, y: 20 }}
@@ -54,9 +57,10 @@ const StatCard: React.FC<{ icon: React.ElementType; title: string; value: string
     >
       {value}
     </motion.p>
-    <p className="text-gray-400 text-sm">Last 24 Hours</p>
+    <p className="text-gray-400 text-sm">{t('dex.last24Hours')}</p>
   </motion.div>
-);
+  );
+};
 
 // Futuristic Chart Component
 const FuturisticChart: React.FC = () => {
@@ -129,7 +133,7 @@ const FuturisticChart: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-semibold text-amber-400 flex items-center gap-2">
           <TrendingUp size={24} />
-                      DYO Trading Activity
+                      {t('dex.dyoTradingActivity')}
         </h3>
         <div className="flex items-center gap-2 text-sm text-gray-400">
           <motion.div
@@ -137,7 +141,7 @@ const FuturisticChart: React.FC = () => {
             animate={{ opacity: [1, 0.3, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
-          <span>Blockchain Connected</span>
+          <span>{t('dex.blockchainConnected')}</span>
         </div>
       </div>
       
@@ -205,7 +209,7 @@ const FuturisticChart: React.FC = () => {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
               <div className="text-amber-400 font-bold text-sm sm:text-lg">
-                Live Trading
+                {t('dex.liveTrading')}
               </div>
               <div className="text-green-400 text-xs sm:text-sm flex items-center gap-1">
                 <motion.div
@@ -213,7 +217,7 @@ const FuturisticChart: React.FC = () => {
                   animate={{ opacity: [1, 0.3, 1] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
-                Active
+                {t('dex.active')}
               </div>
             </motion.div>
           </>
@@ -225,6 +229,7 @@ const FuturisticChart: React.FC = () => {
 
 // Top Traders Leaderboard
 const TopTradersLeaderboard: React.FC = () => {
+  const { t } = useLanguage();
   const [traders, setTraders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -283,20 +288,20 @@ const TopTradersLeaderboard: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-semibold text-orange-400 flex items-center gap-2">
           <Trophy size={24} />
-          Top Traders
+          {t('dex.topTraders')}
         </h3>
-        <span className="text-sm text-gray-400">24h Volume</span>
+        <span className="text-sm text-gray-400">{t('dex.volume24h')}</span>
       </div>
       
       <div className="space-y-3">
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400 mx-auto"></div>
-            <p className="text-gray-400 mt-2">Cargando traders reales...</p>
+            <p className="text-gray-400 mt-2">{t('common.loading')}...</p>
           </div>
         ) : traders.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-400">No hay datos de traders disponibles</p>
+            <p className="text-gray-400">{t('dex.noTradersDataAvailable')}</p>
           </div>
         ) : (
           traders.map((trader, index) => (
@@ -334,6 +339,7 @@ const TopTradersLeaderboard: React.FC = () => {
 };
 
 const DEXDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const [dexStats, setDexStats] = useState({
     totalValueLocked: 0,
     volume24h: 0,
@@ -455,7 +461,7 @@ const DEXDashboard: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
       >
         <span className="bg-gradient-to-r from-amber-400 via-blue-500 to-orange-600 bg-clip-text text-transparent">
-          DEX Overview
+          {t('dex.dexOverview')}
         </span>
       </motion.h2>
 
@@ -463,32 +469,32 @@ const DEXDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           icon={DollarSign}
-          title="Total Value Locked"
-          value={isLoadingStats ? "Loading..." : formatNumber(dexStats.totalValueLocked)}
+          title={t('dex.totalValueLocked')}
+          value={isLoadingStats ? t('common.loading') + "..." : formatNumber(dexStats.totalValueLocked)}
           change="+5.2%"
           changeType="positive"
           color="#00F5FF" // Cyan
         />
         <StatCard
           icon={TrendingUp}
-          title="24h Volume"
-          value={isLoadingStats ? "Loading..." : formatNumber(dexStats.volume24h)}
+          title={t('dex.volume24h')}
+          value={isLoadingStats ? t('common.loading') + "..." : formatNumber(dexStats.volume24h)}
           change="-1.8%"
           changeType="negative"
           color="#EA580C" // Green
         />
         <StatCard
           icon={Users}
-          title="Active Users"
-          value={isLoadingStats ? "Loading..." : `${dexStats.activeUsers}`}
+          title={t('dex.activeUsers')}
+          value={isLoadingStats ? t('common.loading') + "..." : `${dexStats.activeUsers}`}
           change="+12.5%"
           changeType="positive"
           color="#F59E0B" // Pink
         />
         <StatCard
           icon={Zap}
-          title="Transactions"
-          value={isLoadingStats ? "Loading..." : `${dexStats.transactions}`}
+          title={t('dex.transactions')}
+          value={isLoadingStats ? t('common.loading') + "..." : `${dexStats.transactions}`}
           change="+7.1%"
           changeType="positive"
           color="#FFD700" // Gold
@@ -510,15 +516,15 @@ const DEXDashboard: React.FC = () => {
       >
         <h3 className="text-xl font-semibold text-gray-200 mb-6 flex items-center gap-2">
           <Zap size={24} className="text-yellow-400" />
-          Recent Activity
+          {t('dex.recentActivity')}
         </h3>
         <div className="space-y-3">
-          {[
+          {React.useMemo(() => [
             { type: "swap", user: "CryptoWhale", amount: "1,000 DUJYO", time: "2m ago", color: "#EA580C" },
-            { type: "liquidity", user: "NeonTrader", amount: "Added $50K", time: "5m ago", color: "#F59E0B" },
+            { type: "liquidity", user: "NeonTrader", amount: t('dex.added') + " $50K", time: "5m ago", color: "#F59E0B" },
             { type: "swap", user: "CyberPunk", amount: "500 USDC", time: "8m ago", color: "#EA580C" },
-            { type: "liquidity", user: "QuantumSwap", amount: "Removed $25K", time: "12m ago", color: "#F59E0B" }
-          ].map((activity, index) => (
+            { type: "liquidity", user: "QuantumSwap", amount: t('dex.removed') + " $25K", time: "12m ago", color: "#F59E0B" }
+          ], [t]).map((activity, index) => (
             <motion.div
               key={index}
               className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg border border-gray-600/30"
@@ -533,7 +539,7 @@ const DEXDashboard: React.FC = () => {
                 />
                 <div>
                   <div className="text-white font-semibold">{activity.user}</div>
-                  <div className="text-gray-400 text-sm">{activity.type === "swap" ? "Swapped" : "Liquidity"}</div>
+                  <div className="text-gray-400 text-sm">{activity.type === "swap" ? t('dex.swapped') : t('dex.liquidity')}</div>
                 </div>
               </div>
               <div className="text-right">

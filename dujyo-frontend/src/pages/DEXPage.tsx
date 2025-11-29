@@ -531,12 +531,12 @@ const DEXPage: React.FC = () => {
                       <TrendingUp className="w-8 h-8 text-amber-400" />
                     </div>
                     <div>
-                      <h3 className="text-xl md:text-2xl font-bold text-white mb-1">Stake Your $DYO Tokens</h3>
-                      <p className="text-gray-300">Earn passive rewards while supporting the network</p>
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-1">{t('dex.stakeYourDyoTokens')}</h3>
+                      <p className="text-gray-300">{t('dex.earnPassiveRewards')}</p>
                       <div className="flex items-center gap-4 mt-2">
                         <div>
                           <p className="text-3xl font-bold text-amber-400">{stakingAPY}% APY</p>
-                          <p className="text-xs text-gray-400">Annual Percentage Yield</p>
+                          <p className="text-xs text-gray-400">{t('dex.annualPercentageYield')}</p>
                         </div>
                       </div>
                     </div>
@@ -547,7 +547,7 @@ const DEXPage: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <span>Start Staking</span>
+                    <span>{t('dex.startStaking')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </motion.button>
                 </div>
@@ -669,32 +669,29 @@ const DEXPage: React.FC = () => {
                 <div className="flex items-start gap-4 mb-6">
                   <Info className="w-6 h-6 text-amber-400 flex-shrink-0 mt-1" />
                   <div className="flex-1">
-                    <h3 className="text-xl md:text-2xl font-bold text-white mb-3">$DYO Token Economy</h3>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-3">{t('dex.dyoTokenEconomy')}</h3>
                     <p className="text-gray-300 mb-4">
-                      The $DYO token powers the DUJYO Stream-to-Earn ecosystem. Every stream, view, and play generates $DYO tokens,
-                      creating a sustainable economy where creators and listeners earn together.
+                      {t('dex.dyoTokenEconomyDescription')}
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-gray-700/30 rounded-lg p-4">
-                        <p className="text-sm text-gray-400 mb-1">Total Supply</p>
+                        <p className="text-sm text-gray-400 mb-1">{t('dex.totalSupply')}</p>
                         <p className="text-xl font-bold text-amber-400">1,000,000,000 $DYO</p>
                       </div>
                       <div className="bg-gray-700/30 rounded-lg p-4">
-                        <p className="text-sm text-gray-400 mb-1">Streaming Rewards</p>
+                        <p className="text-sm text-gray-400 mb-1">{t('dex.streamingRewards')}</p>
                         <p className="text-xl font-bold text-amber-400">40%</p>
-                        <p className="text-xs text-gray-500 mt-1">Distributed to creators & listeners</p>
+                        <p className="text-xs text-gray-500 mt-1">{t('dex.distributedToCreatorsListeners')}</p>
                       </div>
                       <div className="bg-gray-700/30 rounded-lg p-4">
                         <p className="text-sm text-gray-400 mb-1">{t('dex.liquidityPool')}</p>
                         <p className="text-xl font-bold text-amber-400">30%</p>
-                        <p className="text-xs text-gray-500 mt-1">For DEX trading pairs</p>
+                        <p className="text-xs text-gray-500 mt-1">{t('dex.forDexTradingPairs')}</p>
                       </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-gray-700">
                       <p className="text-sm text-gray-400">
-                        <strong className="text-amber-300">How Streaming Rewards Fuel the Ecosystem:</strong> When users stream content,
-                        they earn $DYO tokens. These tokens can be staked for passive income, traded on the DEX, or used to purchase NFTs.
-                        This creates a circular economy that rewards participation and engagement.
+                        <strong className="text-amber-300">{t('dex.howStreamingRewardsFuel')}:</strong> {t('dex.howStreamingRewardsFuelDescription')}
                       </p>
                     </div>
                   </div>
@@ -717,10 +714,10 @@ const DEXPage: React.FC = () => {
                               <span className="text-amber-400 font-semibold">DYO DEX</span>
                 </div>
                 <p className="text-gray-400 text-sm">
-                  Decentralized Exchange for the DUJYO Ecosystem
+                  {t('dex.decentralizedExchangeForEcosystem')}
                 </p>
                 <p className="text-gray-500 text-xs mt-1">
-                  Built on DYO Blockchain • Powered by Automated Market Making • Stream-to-Earn Integrated
+                  {t('dex.builtOnDyoBlockchain')}
                 </p>
               </div>
             </div>
@@ -755,7 +752,7 @@ const DEXPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-white flex items-center gap-2">
                     <ArrowRight className="w-5 h-5 text-amber-400" />
-                    Transfer Streaming Earnings
+                    {t('dex.transferStreamingEarnings')}
                   </h3>
                   <button
                     onClick={() => setShowBridgeModal(false)}
@@ -766,7 +763,7 @@ const DEXPage: React.FC = () => {
                 </div>
                 <div className="space-y-4">
                   <div className="bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-400/30 rounded-lg p-4">
-                    <p className="text-sm text-gray-400 mb-1">Available to Transfer</p>
+                    <p className="text-sm text-gray-400 mb-1">{t('dex.availableToTransfer')}</p>
                     <p className="text-2xl font-bold text-amber-400">{streamingEarnings.toFixed(2)} $DYO</p>
                   </div>
                   <div className="text-sm text-gray-300">
@@ -780,13 +777,13 @@ const DEXPage: React.FC = () => {
                       }}
                       className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-400 hover:to-orange-500 transition-all duration-300"
                     >
-                      Transfer Now
+                      {t('dex.transferNow')}
                     </button>
                     <button
                       onClick={() => setShowBridgeModal(false)}
                       className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </button>
                   </div>
                 </div>
