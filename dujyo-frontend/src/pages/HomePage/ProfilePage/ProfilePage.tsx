@@ -768,20 +768,37 @@ const ProfilePage: React.FC = () => {
 
               {/* Content Sections */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {Object.keys(profilePageItems).map((title, index) => (
-                  <motion.div
-                    key={title}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-                  >
-                    <ContentSection
-                      title={title}
-                      items={profilePageItems[title]}
-                      onItemClick={handleContentClick}
-                    />
-                  </motion.div>
-                ))}
+                {Object.keys(profilePageItems)
+                  .filter((title): title is string => {
+                    // Validación: asegurar que title existe y que profilePageItems[title] es un array válido
+                    if (!title || typeof title !== 'string') return false;
+                    const items = profilePageItems[title];
+                    if (!Array.isArray(items)) return false;
+                    return true;
+                  })
+                  .map((title, index) => {
+                    // Validación adicional defensiva
+                    const items = profilePageItems[title];
+                    if (!Array.isArray(items)) {
+                      console.warn('🔍 DEBUG ProfilePage - Invalid items for title:', title, items);
+                      return null;
+                    }
+                    return (
+                      <motion.div
+                        key={title}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                      >
+                        <ContentSection
+                          title={title}
+                          items={items}
+                          onItemClick={handleContentClick}
+                        />
+                      </motion.div>
+                    );
+                  })
+                  .filter(item => item !== null)}
               </div>
             </div>
           )}

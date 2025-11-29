@@ -46,31 +46,47 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ title, items, on
       </div>
       
       <div className="grid grid-cols-1 gap-3">
-        {items.slice(0, 6).map((item, index) => (
-          <motion.div 
-            key={index} 
-            className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 cursor-pointer group"
-            onClick={() => onItemClick(item)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-          >
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{ backgroundColor: `${color}20` }}
+        {(Array.isArray(items) ? items : [])
+          .filter((item): item is string => {
+            // Validación robusta: eliminar null/undefined y verificar que sea string
+            if (item == null || item === undefined) return false;
+            if (typeof item !== 'string') return false;
+            return true;
+          })
+          .slice(0, 6)
+          .map((item, index) => {
+            // Validación adicional defensiva
+            if (!item || typeof item !== 'string') {
+              console.warn('🔍 DEBUG ContentSection - Invalid item in map after filter:', item);
+              return null;
+            }
+            return (
+              <motion.div 
+                key={index} 
+                className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-gray-500/50 transition-all duration-300 cursor-pointer group"
+                onClick={() => onItemClick(item)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Play size={14} style={{ color }} />
-              </div>
-              <p className="text-white font-medium truncate">{item}</p>
-            </div>
-            <div className="text-gray-400 text-sm">
-              {Math.floor(Math.random() * 3) + 1}:{Math.floor(Math.random() * 60).toString().padStart(2, '0')}
-            </div>
-          </motion.div>
-        ))}
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ backgroundColor: `${color}20` }}
+                  >
+                    <Play size={14} style={{ color }} />
+                  </div>
+                  <p className="text-white font-medium truncate">{item}</p>
+                </div>
+                <div className="text-gray-400 text-sm">
+                  {Math.floor(Math.random() * 3) + 1}:{Math.floor(Math.random() * 60).toString().padStart(2, '0')}
+                </div>
+              </motion.div>
+            );
+          })
+          .filter(item => item !== null)}
       </div>
       
       {items.length > 6 && (
