@@ -649,6 +649,10 @@ const translations: Translations = {
     en: 'Total',
     es: 'Total',
   },
+  'common.you': {
+    en: 'You',
+    es: 'Tú',
+  },
   
   // Navigation
   'nav.discover': {
@@ -2531,6 +2535,102 @@ const translations: Translations = {
   'dex.swapping': {
     en: 'Swapping...',
     es: 'Intercambiando...',
+  },
+  'dex.swapTokens': {
+    en: 'Swap Tokens',
+    es: 'Intercambiar Tokens',
+  },
+  'dex.youPay': {
+    en: 'You pay',
+    es: 'Pagas',
+  },
+  'dex.exchangeRate': {
+    en: 'Exchange Rate',
+    es: 'Tasa de Cambio',
+  },
+  'dex.confirmSwap': {
+    en: 'Confirm Swap',
+    es: 'Confirmar Intercambio',
+  },
+  'dex.manageLiquidity': {
+    en: 'Manage Liquidity',
+    es: 'Administrar Liquidez',
+  },
+  'dex.whatIsLiquidity': {
+    en: 'What is Liquidity?',
+    es: '¿Qué es la Liquidez?',
+  },
+  'dex.yourLiquidityPositions': {
+    en: 'Your Liquidity Positions',
+    es: 'Tus Posiciones de Liquidez',
+  },
+  'dex.token1': {
+    en: 'Token 1',
+    es: 'Token 1',
+  },
+  'dex.token2': {
+    en: 'Token 2',
+    es: 'Token 2',
+  },
+  'dex.yourPoolShare': {
+    en: 'Your Pool Share',
+    es: 'Tu Participación en el Pool',
+  },
+  'dex.mintTokens': {
+    en: 'Mint Tokens',
+    es: 'Acuñar Tokens',
+  },
+  'dex.amountToMint': {
+    en: 'Amount to Mint (DYO)',
+    es: 'Cantidad a Acuñar (DYO)',
+  },
+  'dex.amountToStake': {
+    en: 'Amount to Stake (DYO)',
+    es: 'Cantidad a Apostar (DYO)',
+  },
+  'dex.stakeDyo': {
+    en: 'Stake DYO',
+    es: 'Apostar DYO',
+  },
+  'dex.unstakeDyo': {
+    en: 'Unstake DYO',
+    es: 'Desapostar DYO',
+  },
+  'dex.staking': {
+    en: 'Staking...',
+    es: 'Apostando...',
+  },
+  'dex.unstaking': {
+    en: 'Unstaking...',
+    es: 'Desapostando...',
+  },
+  'dex.minting': {
+    en: 'Minting...',
+    es: 'Acuñando...',
+  },
+  'dex.mintDyoTokens': {
+    en: 'Mint DYO Tokens',
+    es: 'Acuñar Tokens DYO',
+  },
+  'dex.viewChart': {
+    en: 'View Chart',
+    es: 'Ver Gráfico',
+  },
+  'dex.quick': {
+    en: 'Quick',
+    es: 'Rápido',
+  },
+  'dex.addingLiquidity': {
+    en: 'Adding Liquidity...',
+    es: 'Agregando Liquidez...',
+  },
+  'dex.maxPerMint': {
+    en: 'Max: 10,000 DYO per mint',
+    es: 'Máx: 10,000 DYO por acuñación',
+  },
+  'dex.poolValue': {
+    en: 'Pool Value',
+    es: 'Valor del Pool',
   },
   'dex.transactionPending': {
     en: 'Transaction Pending',

@@ -6,6 +6,7 @@ import { useBlockchain } from '../../contexts/BlockchainContext';
 import { useUnifiedBalance } from '../../hooks/useUnifiedBalance';
 import { BalanceUpdateNotification } from '../common/BalanceUpdateNotification';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const TokenInput: React.FC<{ 
   label: string; 
@@ -68,6 +69,7 @@ const TokenInput: React.FC<{
 );
 
 const DEXSwap: React.FC = () => {
+  const { t } = useLanguage();
   const [fromAmount, setFromAmount] = useState('');
   const [toAmount, setToAmount] = useState('');
   const [fromToken, setFromToken] = useState('DYO');
@@ -562,7 +564,7 @@ const DEXSwap: React.FC = () => {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-white">Swap Tokens</h2>
+        <h2 className="text-3xl font-bold text-white">{t('dex.swapTokens')}</h2>
         <motion.button
           className="p-2 text-gray-400 hover:text-white transition-colors"
           whileHover={{ rotate: 180 }}
@@ -574,7 +576,7 @@ const DEXSwap: React.FC = () => {
 
       {/* From Token Input */}
       <TokenInput
-        label="You pay"
+        label={t('dex.youPay')}
         value={fromAmount}
         onChange={(e) => setFromAmount(e.target.value)}
         token={fromToken}
@@ -604,7 +606,7 @@ const DEXSwap: React.FC = () => {
 
       {/* To Token Input */}
       <TokenInput
-        label="You receive"
+        label={t('dex.youReceive')}
         value={toAmount}
         onChange={(e) => setToAmount(e.target.value)}
         token={toToken}
@@ -623,7 +625,7 @@ const DEXSwap: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <span>Exchange Rate</span>
+        <span>{t('dex.exchangeRate')}</span>
         <span className="text-white font-semibold">1 {fromToken} = 1.0 {toToken}</span>
       </motion.div>
 
@@ -658,12 +660,12 @@ const DEXSwap: React.FC = () => {
               >
                 <Zap size={20} />
               </motion.div>
-              Swapping...
+              {t('dex.swapping')}
             </>
           ) : (
             <>
               <Zap size={20} />
-              Confirm Swap
+              {t('dex.confirmSwap')}
             </>
           )}
         </span>
@@ -706,12 +708,12 @@ const DEXSwap: React.FC = () => {
       >
         <div className="flex items-center gap-2 mb-4">
           <Coins className="w-5 h-5 text-yellow-400" />
-          <h3 className="text-lg font-semibold text-white">Staking</h3>
+          <h3 className="text-lg font-semibold text-white">{t('profile.staking')}</h3>
         </div>
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-300 mb-2">Amount to Stake (DYO)</label>
+            <label className="block text-sm text-gray-300 mb-2">{t('dex.amountToStake')}</label>
             <input
               type="number"
               value={stakeAmount}
@@ -720,12 +722,12 @@ const DEXSwap: React.FC = () => {
               className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400"
             />
             <div className="flex justify-between items-center mt-2">
-              <span className="text-xs text-gray-400">Available: {available_dyo.toFixed(2)} DYO</span>
+              <span className="text-xs text-gray-400">{t('common.available')}: {available_dyo.toFixed(2)} DYO</span>
               <button
                 onClick={() => setStakeAmount(available_dyo.toString())}
                 className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors"
               >
-                Max
+                {t('dex.max')}
               </button>
             </div>
           </div>
@@ -738,7 +740,7 @@ const DEXSwap: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {isStaking ? 'Staking...' : 'Stake DYO'}
+            {isStaking ? t('dex.staking') : t('dex.stakeDyo')}
           </motion.button>
             
             <motion.button
@@ -748,7 +750,7 @@ const DEXSwap: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {isStaking ? 'Unstaking...' : 'Unstake DYO'}
+              {isStaking ? t('dex.unstaking') : t('dex.unstakeDyo')}
             </motion.button>
           </div>
           
@@ -777,12 +779,12 @@ const DEXSwap: React.FC = () => {
       >
         <div className="flex items-center gap-2 mb-4">
           <Zap className="w-5 h-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">Mint Tokens</h3>
+          <h3 className="text-lg font-semibold text-white">{t('dex.mintTokens')}</h3>
         </div>
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-300 mb-2">Amount to Mint (DYO)</label>
+            <label className="block text-sm text-gray-300 mb-2">{t('dex.amountToMint')}</label>
             <input
               type="number"
               value={mintAmount}
@@ -792,12 +794,12 @@ const DEXSwap: React.FC = () => {
               className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
             />
             <div className="flex justify-between items-center mt-2">
-              <span className="text-xs text-gray-400">Max: 10,000 DYO per mint</span>
+              <span className="text-xs text-gray-400">{t('dex.maxPerMint')}</span>
               <button
                 onClick={() => setMintAmount('1000')}
                 className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
               >
-                Quick: 1000
+                {t('dex.quick')}: 1000
               </button>
             </div>
           </div>
@@ -809,7 +811,7 @@ const DEXSwap: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {isMinting ? 'Minting...' : 'Mint DYO Tokens'}
+            {isMinting ? t('dex.minting') : t('dex.mintDyoTokens')}
           </motion.button>
           
           {mintMessage && (
@@ -835,14 +837,14 @@ const DEXSwap: React.FC = () => {
           whileHover={{ scale: 1.05 }}
         >
           <Maximize2 size={16} />
-          <span>View Chart</span>
+          <span>{t('dex.viewChart')}</span>
         </motion.button>
         <motion.button 
           className="flex items-center gap-2 text-gray-400 text-sm hover:text-green-400 transition-colors"
           whileHover={{ scale: 1.05 }}
         >
           <Settings size={16} />
-          <span>Settings</span>
+          <span>{t('common.settings')}</span>
         </motion.button>
       </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, Droplets, Info, TrendingUp, BarChart3 } from 'lucide-react';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const LiquidityInput: React.FC<{ 
   label: string; 
@@ -70,7 +71,7 @@ const LiquidityPosition: React.FC<{
         </div>
         <div>
           <h3 className="text-white font-semibold">{pair}</h3>
-          <p className="text-gray-400 text-sm">Liquidity Pool</p>
+          <p className="text-gray-400 text-sm">{t('dex.liquidityPool')}</p>
         </div>
       </div>
       <motion.button
@@ -85,11 +86,11 @@ const LiquidityPosition: React.FC<{
     
     <div className="grid grid-cols-2 gap-4 mb-3">
       <div>
-        <p className="text-gray-400 text-sm">Your Share</p>
+        <p className="text-gray-400 text-sm">{t('dex.yourPoolShare')}</p>
         <p className="text-orange-400 font-bold">{share}%</p>
       </div>
       <div>
-        <p className="text-gray-400 text-sm">Pool Value</p>
+        <p className="text-gray-400 text-sm">{t('dex.poolValue')}</p>
         <p className="text-white font-semibold">{value}</p>
       </div>
     </div>
@@ -105,6 +106,7 @@ const LiquidityPosition: React.FC<{
 );
 
 const DEXLiquidity: React.FC = () => {
+  const { t } = useLanguage();
   const [token1Amount, setToken1Amount] = useState('');
   const [token2Amount, setToken2Amount] = useState('');
   const [token1] = useState('DUJYO');
@@ -182,7 +184,7 @@ const DEXLiquidity: React.FC = () => {
         }}
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-bold text-white">Manage Liquidity</h2>
+          <h2 className="text-3xl font-bold text-white">{t('dex.manageLiquidity')}</h2>
           <motion.button
             className="p-2 text-gray-400 hover:text-white transition-colors"
             whileHover={{ rotate: 180 }}
@@ -205,7 +207,7 @@ const DEXLiquidity: React.FC = () => {
             whileTap={{ scale: 0.95 }}
           >
             <Plus size={18} />
-            <span>Add Liquidity</span>
+            <span>{t('dex.addLiquidity')}</span>
           </motion.button>
           <motion.button 
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
@@ -218,7 +220,7 @@ const DEXLiquidity: React.FC = () => {
             whileTap={{ scale: 0.95 }}
           >
             <Minus size={18} />
-            <span>Remove Liquidity</span>
+            <span>{t('dex.removeLiquidity')}</span>
           </motion.button>
         </div>
 
@@ -232,7 +234,7 @@ const DEXLiquidity: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <LiquidityInput
-                label="Token 1"
+                label={t('dex.token1')}
                 value={token1Amount}
                 onChange={(e) => setToken1Amount(e.target.value)}
                 token={token1}
@@ -241,7 +243,7 @@ const DEXLiquidity: React.FC = () => {
               />
 
               <LiquidityInput
-                label="Token 2"
+                label={t('dex.token2')}
                 value={token2Amount}
                 onChange={(e) => setToken2Amount(e.target.value)}
                 token={token2}
@@ -256,7 +258,7 @@ const DEXLiquidity: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <span>Your Pool Share</span>
+                <span>{t('dex.yourPoolShare')}</span>
                 <span className="text-orange-400 font-semibold">0.05%</span>
               </motion.div>
 
@@ -291,12 +293,12 @@ const DEXLiquidity: React.FC = () => {
                       >
                         <Droplets size={20} />
                       </motion.div>
-                      Adding Liquidity...
+                      {t('dex.addingLiquidity')}
                     </>
                   ) : (
                     <>
                       <Droplets size={20} />
-                      Add Liquidity
+                      {t('dex.addLiquidity')}
                     </>
                   )}
                 </span>
@@ -326,7 +328,7 @@ const DEXLiquidity: React.FC = () => {
             whileHover={{ scale: 1.05 }}
           >
             <Info size={16} />
-            <span>What is Liquidity?</span>
+            <span>{t('dex.whatIsLiquidity')}</span>
           </motion.button>
         </div>
       </motion.div>
@@ -340,7 +342,7 @@ const DEXLiquidity: React.FC = () => {
         >
           <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <BarChart3 size={24} className="text-orange-400" />
-            Your Liquidity Positions
+            {t('dex.yourLiquidityPositions')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {realPositions.map((position, index) => (

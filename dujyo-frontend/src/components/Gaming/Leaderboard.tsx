@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Medal, Crown, Star, TrendingUp, Users } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface Player {
   id: string;
@@ -26,6 +27,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   currentUserId,
   onPlayerClick
 }) => {
+  const { t } = useLanguage();
   const [sortedPlayers, setSortedPlayers] = useState<Player[]>([]);
   const [animatingRanks, setAnimatingRanks] = useState<Set<number>>(new Set());
 
@@ -110,14 +112,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
         <div className="flex items-center space-x-3">
           <Trophy className="w-8 h-8 text-yellow-400" />
           <div>
-            <h2 className="text-2xl font-bold neon-text-gaming">Global Leaderboard</h2>
-            <p className="text-gray-400">Top players worldwide</p>
+            <h2 className="text-2xl font-bold neon-text-gaming">{t('gaming.globalLeaderboard')}</h2>
+            <p className="text-gray-400">{t('gaming.topPlayersWorldwide')}</p>
           </div>
         </div>
         
         <div className="flex items-center space-x-2 text-gray-400">
           <Users className="w-5 h-5" />
-          <span>{players.length} players</span>
+          <span>{players.length} {t('gaming.players')}</span>
         </div>
       </div>
 
@@ -196,16 +198,16 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
                       </h3>
                       {isCurrentUser && (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
-                          You
+                          {t('common.you')}
                         </span>
                       )}
                     </div>
                     
                     <div className="flex items-center space-x-4 text-sm text-gray-400">
-                      <span>Level {player.level}</span>
-                      <span>{player.gamesPlayed} games</span>
+                      <span>{t('gaming.level')} {player.level}</span>
+                      <span>{player.gamesPlayed} {t('gaming.games')}</span>
                       <span className={getWinRateColor(player.winRate)}>
-                        {player.winRate}% win rate
+                        {player.winRate}% {t('gaming.winRate')}
                       </span>
                     </div>
                   </div>
@@ -215,7 +217,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
                     <div className={`text-xl font-bold ${getScoreColor(player.score)}`}>
                       {formatScore(player.score)}
                     </div>
-                    <div className="text-xs text-gray-400">points</div>
+                    <div className="text-xs text-gray-400">{t('gaming.points')}</div>
                   </div>
                 </div>
 
@@ -249,10 +251,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
       {/* Footer */}
       <div className="mt-6 pt-4 border-t border-gray-700">
         <div className="flex items-center justify-between text-sm text-gray-400">
-          <span>Updated every 5 minutes</span>
+          <span>{t('gaming.updatedEvery5Minutes')}</span>
           <div className="flex items-center space-x-2">
             <Star className="w-4 h-4" />
-            <span>Competitive Season 2024</span>
+            <span>{t('gaming.competitiveSeason')}</span>
           </div>
         </div>
       </div>
