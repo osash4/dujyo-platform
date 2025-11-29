@@ -473,7 +473,9 @@ export function WalletDashboard() {
 
   const filteredTransactions = useMemo(() => {
     if (!Array.isArray(transactions)) return [];
-    return transactions.filter((tx): tx is Transaction => {
+    // Primero eliminar cualquier null/undefined del array
+    const cleanTransactions = transactions.filter((tx): tx is Transaction => tx != null && tx !== undefined);
+    return cleanTransactions.filter((tx): tx is Transaction => {
       // Type guard robusto
       if (!tx || typeof tx !== 'object') return false;
       if (!tx.hash || typeof tx.hash !== 'string') return false;
