@@ -57,6 +57,7 @@ interface StakingHistory {
 
 // Component to display wallet address with copy functionality
 const WalletAddressDisplay: React.FC<{ walletAddress: string }> = ({ walletAddress }) => {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
