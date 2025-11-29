@@ -38,7 +38,7 @@ interface PrivacySettings {
 }
 
 const SettingsPage: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser, refreshUser } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
@@ -328,11 +328,17 @@ const SettingsPage: React.FC = () => {
       }
       
       if (response.ok) {
-        // Update local user state
-        if (user) {
-          const updatedUser = { ...user, displayName, photoURL: finalAvatarUrl };
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-        }
+        // Get updated profile data from response
+        const profileData = await response.json();
+        
+        // Update AuthContext with new data (this will update all components using user)
+        updateUser({
+          displayName: profileData.display_name || displayName,
+          photoURL: profileData.avatar_url || finalAvatarUrl,
+        });
+        
+        // Also refresh from backend to ensure we have the latest data
+        await refreshUser();
         
         setSaveStatus('success');
         setTimeout(() => setSaveStatus('idle'), 2000);

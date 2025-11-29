@@ -19,6 +19,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (updates: Partial<User>) => void; // ✅ Function to update user data
+  refreshUser: () => Promise<void>; // ✅ Function to reload user from backend
   getUserRole: () => UserRole;
   hasRole: (role: UserRole) => boolean;
   hasAnyRole: (roles: UserRole[]) => boolean;
@@ -396,7 +398,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       isSignedIn: !!user, 
       signIn, 
       signUp,
-      signOut, 
+      signOut,
+      updateUser, // ✅ Expose updateUser function
+      refreshUser, // ✅ Expose refreshUser function
       getUserRole, 
       hasRole, 
       hasAnyRole 
