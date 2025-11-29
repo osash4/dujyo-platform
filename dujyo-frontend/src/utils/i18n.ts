@@ -2406,10 +2406,7 @@ const translations: Translations = {
     en: 'Quick Actions',
     es: 'Acciones Rápidas',
   },
-  'wallet.uploadContent': {
-    en: 'Upload Content',
-    es: 'Subir Contenido',
-  },
+  // wallet.uploadContent already defined above (line 1222)
   'wallet.goToDEX': {
     en: 'Go to DEX',
     es: 'Ir a DEX',
