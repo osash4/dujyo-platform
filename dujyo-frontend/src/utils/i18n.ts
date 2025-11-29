@@ -353,6 +353,18 @@ const translations: Translations = {
     en: 'Play',
     es: 'Reproducir',
   },
+  'common.playNow': {
+    en: 'Play Now',
+    es: 'Reproducir Ahora',
+  },
+  'common.watchNow': {
+    en: 'Watch Now',
+    es: 'Ver Ahora',
+  },
+  'common.explore': {
+    en: 'Explore',
+    es: 'Explorar',
+  },
   'common.pause': {
     en: 'Pause',
     es: 'Pausar',
@@ -801,6 +813,10 @@ const translations: Translations = {
     en: 'Watch',
     es: 'Ver',
   },
+  'video.watchNow': {
+    en: 'Watch Now',
+    es: 'Ver Ahora',
+  },
   'video.views': {
     en: 'views',
     es: 'visualizaciones',
@@ -1133,10 +1149,6 @@ const translations: Translations = {
     en: 'Top videos ranked by total $DYO earnings. Rankings update based on views, watch time, and engagement.',
     es: 'Videos principales clasificados por ganancias totales en $DYO. Las clasificaciones se actualizan según visualizaciones, tiempo de visualización y compromiso.',
   },
-  'video.views': {
-    en: 'views',
-    es: 'visualizaciones',
-  },
   'video.payout': {
     en: 'Payout',
     es: 'Pago',
@@ -1152,10 +1164,6 @@ const translations: Translations = {
   'video.engagementRewardsSystem': {
     en: 'Engagement Rewards System',
     es: 'Sistema de Recompensas por Compromiso',
-  },
-  'video.likes': {
-    en: 'Likes',
-    es: 'Me Gusta',
   },
   'video.likesDescription': {
     en: 'Earn bonus $DYO for every like you give. Support creators and earn rewards!',
@@ -1252,6 +1260,38 @@ const translations: Translations = {
   'video.days': {
     en: 'days',
     es: 'días',
+  },
+  'video.startEarningAsCreator': {
+    en: 'Start Earning as Creator',
+    es: 'Comienza a Ganar como Creador',
+  },
+  'video.uploadFirstVideoDesc': {
+    en: 'Upload your first video and earn bonus $DYO tokens. New creators get special promotion rewards!',
+    es: '¡Sube tu primer video y gana tokens $DYO de bonificación. Los nuevos creadores obtienen recompensas de promoción especiales!',
+  },
+  'video.firstVideoBonus': {
+    en: 'First video bonus: 50 $DYO',
+    es: 'Bono del primer video: 50 $DYO',
+  },
+  'video.promotionBoost': {
+    en: 'Promotion boost for new creators',
+    es: 'Impulso de promoción para nuevos creadores',
+  },
+  'video.uploadFirstVideo': {
+    en: 'Upload Your First Video',
+    es: 'Sube Tu Primer Video',
+  },
+  'video.earn': {
+    en: 'Earn',
+    es: 'Gana',
+  },
+  'video.engagementMultiplier': {
+    en: 'Engagement Multiplier',
+    es: 'Multiplicador de Compromiso',
+  },
+  'video.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
   },
   
   // Gaming Page - Additional
@@ -1839,7 +1879,7 @@ const translations: Translations = {
     en: 'Available',
     es: 'Disponible',
   },
-  'profile.staking': {
+  'profile.stakingInProgress': {
     en: 'Staking...',
     es: 'Apostando...',
   },
@@ -1977,13 +2017,25 @@ const translations: Translations = {
     en: 'Content',
     es: 'Contenido',
   },
+  'marketplace.digitalContent': {
+    en: 'Digital Content',
+    es: 'Contenido Digital',
+  },
   'marketplace.nft': {
     en: 'NFT',
     es: 'NFT',
   },
+  'marketplace.nftsCollectibles': {
+    en: 'NFTs & Collectibles',
+    es: 'NFTs y Coleccionables',
+  },
   'marketplace.licenses': {
     en: 'Licenses',
     es: 'Licencias',
+  },
+  'marketplace.contentLicenses': {
+    en: 'Content Licenses',
+    es: 'Licencias de Contenido',
   },
   'marketplace.searchPlaceholder': {
     en: 'Search content, creators, NFTs...',
@@ -2061,10 +2113,6 @@ const translations: Translations = {
     en: 'Earnings per Stream',
     es: 'Ganancias por Transmisión',
   },
-  'marketplace.totalEarnings': {
-    en: 'Total Earnings',
-    es: 'Ganancias Totales',
-  },
   'marketplace.streamCount': {
     en: 'Stream Count',
     es: 'Conteo de Transmisiones',
@@ -2072,6 +2120,30 @@ const translations: Translations = {
   'marketplace.royaltyShare': {
     en: 'Royalty Share',
     es: 'Participación de Regalías',
+  },
+  'marketplace.royalty': {
+    en: 'Royalty',
+    es: 'Regalía',
+  },
+  'marketplace.highEarner': {
+    en: 'High Earner',
+    es: 'Alto Ganador',
+  },
+  'marketplace.perStream': {
+    en: 'Per Stream',
+    es: 'Por Transmisión',
+  },
+  'marketplace.recent24h': {
+    en: 'Recent 24h',
+    es: 'Recientes 24h',
+  },
+  'marketplace.engagement': {
+    en: 'Engagement',
+    es: 'Compromiso',
+  },
+  'marketplace.viewDetailsCalculator': {
+    en: 'View Details & Calculator',
+    es: 'Ver Detalles y Calculadora',
   },
   'marketplace.engagementScore': {
     en: 'Engagement Score',
@@ -2168,10 +2240,6 @@ const translations: Translations = {
   'marketplace.calculate': {
     en: 'Calculate',
     es: 'Calcular',
-  },
-  'marketplace.close': {
-    en: 'Close',
-    es: 'Cerrar',
   },
 };
 

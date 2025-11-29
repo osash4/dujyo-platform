@@ -752,25 +752,25 @@ const VideoPage: React.FC = () => {
                     <Upload className="w-8 h-8 text-cyan-400" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-white mb-2">Start Earning as Creator</h3>
+                    <h3 className="text-2xl font-bold text-white mb-2">{t('video.startEarningAsCreator')}</h3>
                     <p className="text-gray-300 mb-4">
-                      Upload your first video and earn bonus $DYO tokens. New creators get special promotion rewards!
+                      {t('video.uploadFirstVideoDesc')}
                     </p>
                     <div className="flex flex-wrap gap-4 text-sm">
                       <div className="flex items-center gap-2 text-cyan-400">
                         <Zap className="w-4 h-4" />
-                        <span>First video bonus: 50 $DYO</span>
+                        <span>{t('video.firstVideoBonus')}</span>
                       </div>
                       <div className="flex items-center gap-2 text-cyan-400">
                         <Sparkles className="w-4 h-4" />
-                        <span>Promotion boost for new creators</span>
+                        <span>{t('video.promotionBoost')}</span>
                       </div>
                     </div>
                     <button
                       onClick={() => window.location.href = '/upload'}
                       className="mt-4 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all duration-300"
                     >
-                      Upload Your First Video
+                      {t('video.uploadFirstVideo')}
                     </button>
                   </div>
                 </div>
@@ -827,7 +827,7 @@ const VideoPage: React.FC = () => {
                     {/* Earn $DYO Badge */}
                     <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400/30 rounded-full">
                       <Coins className="w-3 h-3 text-cyan-400" />
-                      <span className="text-xs font-semibold text-cyan-300">Earn {video.earnPerView.toFixed(2)} $DYO</span>
+                      <span className="text-xs font-semibold text-cyan-300">{t('video.earn')} {video.earnPerView.toFixed(2)} $DYO</span>
                     </div>
 
                     {/* Video Thumbnail */}
@@ -901,7 +901,7 @@ const VideoPage: React.FC = () => {
                           </div>
                         </div>
                         <div className="mt-2 text-xs text-cyan-300">
-                          Engagement Multiplier: {video.engagementMultiplier}x
+                          {t('video.engagementMultiplier')}: {video.engagementMultiplier}x
                         </div>
                       </div>
                       
@@ -930,7 +930,7 @@ const VideoPage: React.FC = () => {
               <div className="flex items-start gap-4">
                 <Info className="w-6 h-6 text-cyan-400 flex-shrink-0 mt-1" />
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white mb-3">Engagement Rewards System</h3>
+                  <h3 className="text-xl font-bold text-white mb-3">{t('video.engagementRewardsSystem')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-300">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
@@ -956,8 +956,7 @@ const VideoPage: React.FC = () => {
                   </div>
                   <div className="mt-4 pt-4 border-t border-cyan-400/20">
                     <p className="text-xs text-gray-400">
-                      <strong className="text-cyan-300">{t('video.communityEngagementMultiplier')}</strong> {t('video.communityEngagementDescription')} 
-                      the higher your earnings multiplier. Active community members can earn up to 2x more $DYO tokens!
+                      <strong className="text-cyan-300">{t('video.communityEngagementMultiplier')}</strong> {t('video.communityEngagementDescription')}
                     </p>
                   </div>
                 </div>
@@ -995,7 +994,7 @@ const VideoPage: React.FC = () => {
             </div>
             <div className="space-y-4">
               <div className="bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400/30 rounded-lg p-4">
-                <div className="text-sm text-gray-400 mb-1">Total Earnings</div>
+                <div className="text-sm text-gray-400 mb-1">{t('video.totalEarnings')}</div>
                 <div className="text-3xl font-bold text-cyan-400">{creatorEarnings.toFixed(2)} $DYO</div>
               </div>
               <div className="grid grid-cols-2 gap-4">

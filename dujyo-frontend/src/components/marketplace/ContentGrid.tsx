@@ -2,7 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { PurchaseButton } from './PurchaseButton';
-import { Coins, TrendingUp, Play, Eye, Gamepad2, Music, Video, Sparkles, Award, BarChart3, Zap, Info } from 'lucide-react';
+import { Coins, TrendingUp, Play, Eye, Gamepad2, Music, Video, Sparkles, Award, BarChart3, Zap, Info, Percent } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ContentItem {
   id: number;
@@ -34,6 +35,8 @@ interface ContentGridProps {
 }
 
 export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentClick, onPurchaseComplete }) => {
+  const { t } = useLanguage();
+  
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
       case 'music':
@@ -82,7 +85,7 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
               <div className="absolute top-2 right-2 z-10">
                 <div className="px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full text-xs font-bold text-white flex items-center gap-1">
                   <Award className="w-3 h-3" />
-                  High Earner
+                  {t('marketplace.highEarner')}
                 </div>
               </div>
             )}
@@ -126,11 +129,11 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
               <div className="mb-4 p-3 bg-gray-700/30 rounded-lg border border-amber-400/20">
                 <div className="grid grid-cols-2 gap-3 mb-2">
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Total Earnings</p>
+                    <p className="text-xs text-gray-400 mb-1">{t('marketplace.totalEarnings')}</p>
                     <p className="text-lg font-bold text-amber-400">{formatNumber(content.totalEarnings || 0)} $DYO</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Per Stream</p>
+                    <p className="text-xs text-gray-400 mb-1">{t('marketplace.perStream')}</p>
                     <p className="text-sm font-semibold text-white">{(content.earningsPerStream || 0).toFixed(3)} $DYO</p>
                   </div>
                 </div>
@@ -140,7 +143,7 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
                     {content.royaltyShare !== undefined && content.royaltyShare > 0 && (
                       <span className="text-amber-400 flex items-center gap-1">
                         <Percent className="w-3 h-3" />
-                        {content.royaltyShare}% Royalty
+                        {content.royaltyShare}% {t('marketplace.royalty')}
                       </span>
                     )}
                   </div>
@@ -148,7 +151,7 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
                 {content.recentEarnings !== undefined && content.recentEarnings > 0 && (
                   <div className="mt-2 pt-2 border-t border-gray-600/50">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-400">Recent 24h</span>
+                      <span className="text-gray-400">{t('marketplace.recent24h')}</span>
                       <span className="text-green-400 font-semibold">+{content.recentEarnings.toFixed(2)} $DYO</span>
                     </div>
                   </div>
@@ -160,7 +163,7 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
             {content.engagementScore !== undefined && content.engagementScore > 0 && (
               <div className="mb-4 flex items-center gap-2 text-xs">
                 <BarChart3 className="w-4 h-4 text-amber-400" />
-                <span className="text-gray-400">Engagement:</span>
+                <span className="text-gray-400">{t('marketplace.engagement')}:</span>
                 <span className="text-white font-semibold">{content.engagementScore.toFixed(1)}/10</span>
               </div>
             )}
@@ -182,7 +185,7 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
                     : 'bg-amber-500/10 text-amber-300 border border-amber-400/20'
                 }`}>
                   <Sparkles className="w-3 h-3" />
-                  {content.licenseTier === 'premium' ? 'Premium License' : 'Commercial License'}
+                  {content.licenseTier === 'premium' ? t('marketplace.premiumLicense') : t('marketplace.commercialLicense')}
                 </div>
               </div>
             )}
@@ -194,7 +197,7 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ contents, onContentCli
                 className="btn-secondary w-full py-2 px-4 text-sm flex items-center justify-center gap-2 min-h-[44px]"
             >
                 <Info className="w-4 h-4" />
-                View Details & Calculator
+                {t('marketplace.viewDetails')}
             </button>
             <PurchaseButton 
               content={content} 

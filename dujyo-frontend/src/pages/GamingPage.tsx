@@ -262,6 +262,7 @@ interface GamingMetrics {
 }
 
 const GamingPage: React.FC = () => {
+  const { t } = useLanguage();
   const { playTrack, setPlayerPosition } = usePlayerContext();
   const { user } = useAuth();
   const { connect, account, isConnecting } = useWallet();

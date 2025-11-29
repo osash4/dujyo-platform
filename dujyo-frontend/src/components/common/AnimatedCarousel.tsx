@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Video, Gamepad, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface CarouselItem {
   id: string;
@@ -28,6 +29,7 @@ const AnimatedCarousel: React.FC<AnimatedCarouselProps> = ({
   autoPlay = true,
   autoPlayInterval = 5000
 }) => {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -122,15 +124,15 @@ const AnimatedCarousel: React.FC<AnimatedCarouselProps> = ({
   const getPlayText = (type: string) => {
     switch (type) {
       case 'music':
-        return 'Play Now';
+        return t('common.playNow');
       case 'video':
-        return 'Watch Now';
+        return t('video.watchNow');
       case 'gaming':
-        return 'Play Now';
+        return t('gaming.playNow');
       case 'marketplace':
-        return 'Explore';
+        return t('common.explore');
       default:
-        return 'Play Now';
+        return t('common.playNow');
     }
   };
 
