@@ -484,13 +484,20 @@ export function WalletDashboard() {
       const matchesAmount =
         filters.amount === 'all' ||
         (filters.amount === 'high' ? (tx.amount || 0) > 1000 : (tx.amount || 0) <= 1000);
-      const matchesDate =
-        filters.dateRange === 'all' ||
-        (tx.timestamp && (
-          (filters.dateRange === 'today' && isToday(tx.timestamp)) ||
-          (filters.dateRange === 'week' && isThisWeek(new Date(tx.timestamp))) ||
-          (filters.dateRange === 'month' && isThisMonth(new Date(tx.timestamp)))
-        ));
+      let matchesDate = false;
+      if (filters.dateRange === 'all') {
+        matchesDate = true;
+      } else if (tx.timestamp) {
+        const timestampStr = String(tx.timestamp);
+        const timestampNum = Number(tx.timestamp);
+        if (filters.dateRange === 'today') {
+          matchesDate = isToday(timestampStr);
+        } else if (filters.dateRange === 'week') {
+          matchesDate = isThisWeek(new Date(timestampNum));
+        } else if (filters.dateRange === 'month') {
+          matchesDate = isThisMonth(new Date(timestampNum));
+        }
+      }
 
       return matchesSearch && matchesType && matchesAmount && matchesDate;
     });
