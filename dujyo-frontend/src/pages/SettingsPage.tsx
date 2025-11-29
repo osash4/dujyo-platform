@@ -186,6 +186,14 @@ const SettingsPage: React.FC = () => {
       const apiBaseUrl = getApiBaseUrl();
       const token = localStorage.getItem('jwt_token');
       
+      console.log('📤 Starting avatar upload...', {
+        apiBaseUrl,
+        hasToken: !!token,
+        fileName: avatarFile.name,
+        fileSize: avatarFile.size,
+        fileType: avatarFile.type
+      });
+      
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -193,30 +201,66 @@ const SettingsPage: React.FC = () => {
       const formData = new FormData();
       formData.append('avatar', avatarFile);
       
+      console.log('📤 Sending request to:', `${apiBaseUrl}/api/v1/user/avatar`);
+      console.log('📤 FormData entries:', Array.from(formData.entries()).map(([key, value]) => ({
+        key,
+        value: value instanceof File ? `${value.name} (${value.size} bytes)` : value
+      })));
+      
       const response = await fetch(`${apiBaseUrl}/api/v1/user/avatar`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
+          // Don't set Content-Type header - browser will set it automatically with boundary for FormData
         },
         body: formData,
       });
       
+      console.log('📥 Avatar upload response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Avatar upload success:', data);
         return data.avatar_url || null;
       } else {
         // Get more detailed error message
         let errorMessage = 'Failed to upload avatar';
+        let errorDetails: any = {};
         try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
+          const errorText = await response.text();
+          console.error('❌ Avatar upload error response:', errorText);
+          try {
+            const errorData = JSON.parse(errorText);
+            errorMessage = errorData.message || errorData.error || errorMessage;
+            errorDetails = errorData;
+          } catch {
+            errorMessage = errorText || errorMessage;
+          }
         } catch {
           errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
         }
+        console.error('❌ Avatar upload failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorMessage,
+          errorDetails
+        });
         throw new Error(errorMessage);
       }
     } catch (error) {
-      console.error('Error uploading avatar:', error);
+      console.error('❌ Error uploading avatar:', error);
+      if (error instanceof Error) {
+        console.error('❌ Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+      }
       throw error;
     }
   };
@@ -283,10 +327,22 @@ const SettingsPage: React.FC = () => {
         throw new Error(errorMessage);
       }
     } catch (error) {
-      console.error('Error saving profile:', error);
-      setSaveStatus('error');
-      // Show error message for longer if it's a critical error
-      setTimeout(() => setSaveStatus('idle'), 5000);
+      console.error('❌ Error saving profile:', error);
+      if (error instanceof Error) {
+        console.error('❌ Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+        // Show user-friendly error message
+        setSaveStatus('error');
+        // Show error message for longer if it's a critical error
+        setTimeout(() => setSaveStatus('idle'), 5000);
+      } else {
+        console.error('❌ Unknown error type:', error);
+        setSaveStatus('error');
+        setTimeout(() => setSaveStatus('idle'), 5000);
+      }
     } finally {
       setLoading(false);
     }

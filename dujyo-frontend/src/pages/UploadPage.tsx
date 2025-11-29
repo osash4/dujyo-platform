@@ -108,6 +108,16 @@ const UploadPage: React.FC = () => {
         throw new Error('No authentication token found');
       }
       
+      console.log('📤 Starting content upload...', {
+        title: formData.title,
+        type: formData.type,
+        fileName: formData.file?.name,
+        fileSize: formData.file?.size,
+        fileType: formData.file?.type,
+        hasThumbnail: !!formData.thumbnail,
+        user: user?.uid
+      });
+      
       // Create form data
       const uploadData = new FormData();
       uploadData.append('title', formData.title);
@@ -116,11 +126,16 @@ const UploadPage: React.FC = () => {
       uploadData.append('genre', formData.genre);
       uploadData.append('price', formData.price.toString());
       uploadData.append('type', formData.type);
-      uploadData.append('file', formData.file);
+      uploadData.append('file', formData.file!);
       if (formData.thumbnail) {
         uploadData.append('thumbnail', formData.thumbnail);
       }
       uploadData.append('user', user?.uid || '');
+      
+      console.log('📤 FormData entries:', Array.from(uploadData.entries()).map(([key, value]) => ({
+        key,
+        value: value instanceof File ? `${value.name} (${value.size} bytes, ${value.type})` : value
+      })));
       
       // Simulate upload progress
       const progressInterval = setInterval(() => {
@@ -135,10 +150,14 @@ const UploadPage: React.FC = () => {
       
       // Upload to backend
       const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/api/v1/upload/content`, {
+      const uploadUrl = `${apiBaseUrl}/api/v1/upload/content`;
+      console.log('📤 Sending request to:', uploadUrl);
+      
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
+          // Don't set Content-Type header - browser will set it automatically with boundary for FormData
         },
         body: uploadData
       });
@@ -146,20 +165,41 @@ const UploadPage: React.FC = () => {
       clearInterval(progressInterval);
       setUploadProgress(100);
       
+      console.log('📥 Content upload response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
       if (!response.ok) {
         // Get more detailed error message
         let errorMessage = 'Upload failed';
+        let errorDetails: any = {};
         try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
+          const errorText = await response.text();
+          console.error('❌ Content upload error response:', errorText);
+          try {
+            const errorData = JSON.parse(errorText);
+            errorMessage = errorData.message || errorData.error || errorMessage;
+            errorDetails = errorData;
+          } catch {
+            errorMessage = errorText || errorMessage;
+          }
         } catch {
-          const errorText = await response.text().catch(() => 'Unknown error');
-          errorMessage = `Upload failed: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`;
+          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
         }
+        console.error('❌ Content upload failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorMessage,
+          errorDetails
+        });
         throw new Error(errorMessage);
       }
       
       const result = await response.json();
+      console.log('✅ Content upload success:', result);
       
       // ✅ Success message with better feedback
       setMessage(`✅ Successfully uploaded "${formData.title}"! Redirecting to content manager...`);
@@ -182,7 +222,20 @@ const UploadPage: React.FC = () => {
       }, 2000);
       
     } catch (error) {
-      setMessage(`Error: ${error instanceof Error ? error.message : 'Upload failed'}`);
+      console.error('❌ Content upload error:', error);
+      if (error instanceof Error) {
+        console.error('❌ Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+        setMessage(`❌ Error: ${error.message}`);
+      } else if (typeof error === 'string') {
+        setMessage(`❌ Error: ${error}`);
+      } else {
+        console.error('❌ Unknown error type:', error);
+        setMessage('❌ Error: Upload failed. Please check the console for details.');
+      }
     } finally {
       setIsUploading(false);
       setTimeout(() => setUploadProgress(0), 2000);
