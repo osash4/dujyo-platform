@@ -1,6 +1,6 @@
 {
-  "name": "XWave - Web3 Streaming Platform",
-  "short_name": "XWave",
+  "name": "Dujyo - Web3 Streaming Platform",
+  "short_name": "Dujyo",
   "description": "The ultimate Web3 streaming platform for music, video, and gaming with blockchain rewards",
   "start_url": "/",
   "display": "standalone",
@@ -67,28 +67,28 @@
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "XWave Mobile Home Screen"
+      "label": "Dujyo Mobile Home Screen"
     },
     {
       "src": "/images/screenshot-mobile-2.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "XWave Mobile Music Player"
+      "label": "Dujyo Mobile Music Player"
     },
     {
       "src": "/images/screenshot-desktop-1.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "XWave Desktop Dashboard"
+      "label": "Dujyo Desktop Dashboard"
     },
     {
       "src": "/images/screenshot-desktop-2.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "XWave Desktop DEX Interface"
+      "label": "Dujyo Desktop DEX Interface"
     }
   ],
   "shortcuts": [
@@ -161,7 +161,7 @@
   "related_applications": [
     {
       "platform": "webapp",
-      "url": "https://xwave.com/manifest.json"
+      "url": "https://dujyo.com/manifest.json"
     }
   ],
   "prefer_related_applications": false,
@@ -185,7 +185,7 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+xwave",
+      "protocol": "web+dujyo",
       "url": "/protocol?url=%s"
     }
   ],

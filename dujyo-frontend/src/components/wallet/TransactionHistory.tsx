@@ -1,7 +1,8 @@
-
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowDownLeft, Clock, Hash } from 'lucide-react';
 import { format } from 'date-fns';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // Definir los tipos para las transacciones y los filtros
 interface Transaction {
@@ -25,6 +26,7 @@ interface TransactionHistoryProps {
 }
 
 export function TransactionHistory({ transactions, filters }: TransactionHistoryProps) {
+  const { t } = useLanguage();
   // Filtrar las transacciones según los filtros proporcionados
   const filteredTransactions = transactions.filter((tx) => {
     const matchesType = filters.type === 'all' || tx.type === filters.type;
@@ -51,10 +53,10 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white flex items-center gap-2">
           <Hash size={24} className="text-amber-400" />
-          Transaction History
+          {t('wallet.transactionHistory')}
         </h2>
         <span className="text-sm text-gray-400">
-          {filteredTransactions.length} transactions
+          {filteredTransactions.length} {t('wallet.transactions').toLowerCase()}
         </span>
       </div>
       
@@ -65,8 +67,8 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
           animate={{ opacity: 1 }}
         >
           <Hash size={48} className="mx-auto mb-4 opacity-50" />
-          <p>No transactions found</p>
-          <p className="text-sm mt-2">Your transaction history will appear here</p>
+          <p>{t('wallet.noTransactionsFound')}</p>
+          <p className="text-sm mt-2">{t('wallet.transactionHistoryWillAppear')}</p>
         </motion.div>
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">

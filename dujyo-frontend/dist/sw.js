@@ -1,4 +1,4 @@
-//! Service Worker for XWave Frontend
+//! Service Worker for Dujyo Frontend
 //! 
 //! This service worker provides:
 //! - Offline support with cache-first strategy
@@ -7,10 +7,10 @@
 //! - Cache management
 //! - Performance optimization
 
-const CACHE_NAME = 'xwave-v1';
-const STATIC_CACHE_NAME = 'xwave-static-v1';
-const DYNAMIC_CACHE_NAME = 'xwave-dynamic-v1';
-const API_CACHE_NAME = 'xwave-api-v1';
+const CACHE_NAME = 'dujyo-v1';
+const STATIC_CACHE_NAME = 'dujyo-static-v1';
+const DYNAMIC_CACHE_NAME = 'dujyo-dynamic-v1';
+const API_CACHE_NAME = 'dujyo-api-v1';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [

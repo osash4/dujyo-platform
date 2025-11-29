@@ -2493,6 +2493,38 @@ const translations: Translations = {
     en: 'No transactions found',
     es: 'No se encontraron transacciones',
   },
+  'wallet.transactionHistoryWillAppear': {
+    en: 'Your transaction history will appear here',
+    es: 'Tu historial de transacciones aparecerá aquí',
+  },
+  'wallet.earningAchievements': {
+    en: 'Earning Achievements',
+    es: 'Logros de Ganancias',
+  },
+  'wallet.progress': {
+    en: 'Progress',
+    es: 'Progreso',
+  },
+  'wallet.reward': {
+    en: 'Reward',
+    es: 'Recompensa',
+  },
+  'wallet.whatYouCanDoWithDyo': {
+    en: 'What You Can Do With $DYO Tokens',
+    es: 'Qué Puedes Hacer con los Tokens $DYO',
+  },
+  'wallet.dyoTokensUnlockFeatures': {
+    en: 'Your $DYO tokens unlock powerful features and opportunities across the DUJYO ecosystem.',
+    es: 'Tus tokens $DYO desbloquean características poderosas y oportunidades en todo el ecosistema DUJYO.',
+  },
+  'wallet.transactionFilters': {
+    en: 'Transaction Filters',
+    es: 'Filtros de Transacciones',
+  },
+  'wallet.transactionHistory': {
+    en: 'Transaction History',
+    es: 'Historial de Transacciones',
+  },
   'wallet.filterBy': {
     en: 'Filter by',
     es: 'Filtrar por',

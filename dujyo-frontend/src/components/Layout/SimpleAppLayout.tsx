@@ -176,13 +176,8 @@ const SimpleAppLayout: React.FC<SimpleAppLayoutProps> = ({ children }) => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-secondary)' }}>
-      {/* Main Header - Desktop only */}
-      <div className="hidden lg:block">
-        <MainHeader showSearch={true} showNotifications={true} />
-      </div>
-      
       {/* Main Content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', paddingTop: '64px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <main style={{ flex: 1, overflow: 'auto' }}>
           {children}
         </main>

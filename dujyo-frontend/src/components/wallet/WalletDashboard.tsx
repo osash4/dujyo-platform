@@ -887,7 +887,7 @@ export function WalletDashboard() {
             >
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Award className="w-5 h-5 text-amber-400" />
-                Earning Achievements
+                {t('wallet.earningAchievements')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {achievements.map((achievement, idx) => {
@@ -921,7 +921,7 @@ export function WalletDashboard() {
                       {!achievement.completed && (
                         <div className="mb-2">
                           <div className="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>Progress</span>
+                            <span>{t('wallet.progress')}</span>
                             <span>{achievement.progress}/{achievement.target}</span>
                           </div>
                           <div className="w-full bg-gray-600 rounded-full h-2">
@@ -935,7 +935,7 @@ export function WalletDashboard() {
                         </div>
                       )}
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-gray-400">Reward</span>
+                        <span className="text-xs text-gray-400">{t('wallet.reward')}</span>
                         <span className="text-sm font-bold text-amber-400">{achievement.reward} $DYO</span>
                       </div>
                     </motion.div>
@@ -955,9 +955,9 @@ export function WalletDashboard() {
             <div className="flex items-start gap-4 mb-4">
               <Info className="w-6 h-6 text-amber-400 flex-shrink-0 mt-1" />
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-white mb-2">What You Can Do With $DYO Tokens</h3>
+                <h3 className="text-lg font-bold text-white mb-2">{t('wallet.whatYouCanDoWithDyo')}</h3>
                 <p className="text-sm text-gray-300 mb-4">
-                  Your $DYO tokens unlock powerful features and opportunities across the DUJYO ecosystem.
+                  {t('wallet.dyoTokensUnlockFeatures')}
                 </p>
               </div>
             </div>
@@ -1009,7 +1009,7 @@ export function WalletDashboard() {
               transition={{ duration: 0.5, delay: 1.3 }}
             >
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-gray-700/50 shadow-lg">
-                <h3 className="text-lg font-semibold text-white mb-4">Transaction Filters</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">{t('wallet.transactionFilters')}</h3>
                 <FilterPanel
                   filters={filters}
                   onChange={(newFilters: FilterOption) => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Heart, Music, Video, Gamepad } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ContentSectionProps {
   title: string;
@@ -9,6 +10,7 @@ interface ContentSectionProps {
 }
 
 export const ContentSection: React.FC<ContentSectionProps> = ({ title, items, onItemClick }) => {
+  const { t } = useLanguage();
   const getIcon = (title: string) => {
     if (title.includes('Library') || title.includes('Recently')) return Music;
     if (title.includes('Liked')) return Heart;
@@ -76,7 +78,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ title, items, on
           className="w-full mt-4 py-2 text-gray-400 hover:text-white transition-colors duration-300 text-sm"
           whileHover={{ scale: 1.02 }}
         >
-          Ver {items.length - 6} más...
+          {t('common.viewMore', { count: items.length - 6 }).replace('{{count}}', (items.length - 6).toString())}
         </motion.button>
       )}
     </motion.section>
