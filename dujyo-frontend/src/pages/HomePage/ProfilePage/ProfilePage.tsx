@@ -1055,19 +1055,19 @@ const ProfilePage: React.FC = () => {
                   </button>
                 </div>
 
-                {stakingHistory.length > 0 ? (
+                {stakingHistory && Array.isArray(stakingHistory) && stakingHistory.length > 0 ? (
                   <div className="space-y-4">
                     {stakingHistory
                       .filter((tx): tx is StakingHistory => {
-                        return tx != null && 
-                               typeof tx === 'object' && 
-                               'id' in tx && 
-                               'type' in tx && 
-                               typeof tx.type === 'string' &&
-                               tx.id != null;
+                        if (!tx || typeof tx !== 'object') return false;
+                        if (!('id' in tx) || !tx.id) return false;
+                        if (!('type' in tx) || typeof tx.type !== 'string') return false;
+                        return true;
                       })
-                      .map((tx) => {
-                        const txType = tx?.type || 'unknown';
+                      .map((tx, index) => {
+                        // Validación adicional antes de renderizar
+                        if (!tx || !tx.type || !tx.id) return null;
+                        const txType = tx.type || 'unknown';
                         return (
                         <motion.div
                           key={tx.id}
