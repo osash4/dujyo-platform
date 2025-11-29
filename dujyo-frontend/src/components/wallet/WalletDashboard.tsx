@@ -1011,8 +1011,8 @@ export function WalletDashboard() {
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-gray-700/50 shadow-lg">
                 <h3 className="text-lg font-semibold text-white mb-4">{t('wallet.transactionFilters')}</h3>
                 <FilterPanel
-                  filters={filters}
-                  onChange={(newFilters: FilterOption) => {
+                  selectedFilters={filters}
+                  onFilterSelect={(newFilters: FilterOption) => {
                     setFilters(newFilters);
                   }}
                   options={{

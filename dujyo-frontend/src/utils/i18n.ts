@@ -3051,6 +3051,26 @@ const translations: Translations = {
     en: 'Purchasing...',
     es: 'Comprando...',
   },
+  'marketplace.items': {
+    en: 'items',
+    es: 'elementos',
+  },
+  'marketplace.streamingLicenseTiers': {
+    en: 'Streaming License Tiers',
+    es: 'Niveles de Licencia de Transmisión',
+  },
+  'marketplace.none': {
+    en: 'None',
+    es: 'Ninguno',
+  },
+  'marketplace.streamToEarnActive': {
+    en: 'Stream-to-Earn Active',
+    es: 'Transmite para Ganar Activo',
+  },
+  'marketplace.verifiedHighEarner': {
+    en: 'Verified High Earner',
+    es: 'Ganador Alto Verificado',
+  },
   'marketplace.purchaseSuccess': {
     en: 'Purchase successful!',
     es: '¡Compra exitosa!',
