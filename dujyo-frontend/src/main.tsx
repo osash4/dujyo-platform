@@ -39,6 +39,23 @@ if (true) { // Cambiar a process.env.NODE_ENV === 'development' después de enco
           return null;
         }
         
+        // 🔍 DETECTAR SI EL ITEM ES UN ARRAY (resultado de Object.entries)
+        // Si el item es un array de 2 elementos y el callback intenta acceder a .type,
+        // probablemente es Object.entries() mal usado
+        if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
+          console.warn('🔍 DEBUG Array.map - DETECTED Object.entries() RESULT:', {
+            index,
+            item,
+            itemIsArray: true,
+            itemLength: item.length,
+            firstElement: item[0],
+            secondElement: item[1],
+            arrayLength: array.length,
+            arraySample: array.slice(0, 5),
+            message: 'This looks like Object.entries() result. Make sure to destructure: ([key, value]) => ...'
+          });
+        }
+        
         // Intentar ejecutar el callback
         try {
           return callback(item, index, array);
@@ -49,13 +66,17 @@ if (true) { // Cambiar a process.env.NODE_ENV === 'development' después de enco
               error: error.message,
               item,
               itemType: typeof item,
-              itemKeys: item && typeof item === 'object' ? Object.keys(item) : 'N/A',
-              hasType: item && typeof item === 'object' ? 'type' in item : false,
-              typeValue: item && typeof item === 'object' && 'type' in item ? item.type : 'N/A',
+              itemIsArray: Array.isArray(item),
+              itemKeys: item && typeof item === 'object' && !Array.isArray(item) ? Object.keys(item) : 'N/A',
+              hasType: item && typeof item === 'object' && !Array.isArray(item) ? 'type' in item : false,
+              typeValue: item && typeof item === 'object' && !Array.isArray(item) && 'type' in item ? item.type : 'N/A',
               index,
               arrayLength: array.length,
               arraySample: array.slice(0, 5),
-              stackTrace: error.stack
+              stackTrace: error.stack,
+              suggestion: Array.isArray(item) && item.length === 2 
+                ? 'This is likely Object.entries() result. Use destructuring: ([key, value]) => value.type'
+                : 'Check if item is undefined or null before accessing .type'
             });
           }
           throw error;
