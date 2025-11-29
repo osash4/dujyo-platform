@@ -16,7 +16,8 @@ import {
   X,
   Moon,
   Sun,
-  Monitor
+  Monitor,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -36,7 +37,7 @@ interface PrivacySettings {
 }
 
 const SettingsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
@@ -185,6 +186,10 @@ const SettingsPage: React.FC = () => {
       const apiBaseUrl = getApiBaseUrl();
       const token = localStorage.getItem('jwt_token');
       
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
       const formData = new FormData();
       formData.append('avatar', avatarFile);
       
@@ -200,7 +205,15 @@ const SettingsPage: React.FC = () => {
         const data = await response.json();
         return data.avatar_url || null;
       } else {
-        throw new Error('Failed to upload avatar');
+        // Get more detailed error message
+        let errorMessage = 'Failed to upload avatar';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Error uploading avatar:', error);
@@ -216,13 +229,23 @@ const SettingsPage: React.FC = () => {
       const apiBaseUrl = getApiBaseUrl();
       const token = localStorage.getItem('jwt_token');
       
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
+      }
+      
       // Upload avatar first if changed
       let finalAvatarUrl = avatarUrl;
       if (avatarFile) {
-        finalAvatarUrl = await uploadAvatar() || avatarUrl;
-        setAvatarUrl(finalAvatarUrl);
-        setAvatarFile(null);
-        setAvatarPreview(null);
+        try {
+          finalAvatarUrl = await uploadAvatar() || avatarUrl;
+          setAvatarUrl(finalAvatarUrl);
+          setAvatarFile(null);
+          setAvatarPreview(null);
+        } catch (uploadError) {
+          // If avatar upload fails, continue with profile update but show warning
+          console.warn('Avatar upload failed, continuing with profile update:', uploadError);
+          // Don't throw - allow profile to be saved even if avatar upload fails
+        }
       }
       
       // Update profile
@@ -241,18 +264,29 @@ const SettingsPage: React.FC = () => {
       
       if (response.ok) {
         // Update local user state
-        const updatedUser = { ...user, displayName, photoURL: finalAvatarUrl };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        if (user) {
+          const updatedUser = { ...user, displayName, photoURL: finalAvatarUrl };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
         
         setSaveStatus('success');
         setTimeout(() => setSaveStatus('idle'), 2000);
       } else {
-        throw new Error('Failed to save profile');
+        // Get more detailed error message
+        let errorMessage = 'Failed to save profile';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          errorMessage = `Save failed: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Error saving profile:', error);
       setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      // Show error message for longer if it's a critical error
+      setTimeout(() => setSaveStatus('idle'), 5000);
     } finally {
       setLoading(false);
     }
@@ -406,6 +440,20 @@ const SettingsPage: React.FC = () => {
                     {tab.label}
                   </button>
                 ))}
+              </div>
+              
+              {/* Sign Out Button */}
+              <div className="mt-4 pt-4 border-t border-gray-700/50">
+                <button
+                  onClick={async () => {
+                    await signOut();
+                    window.location.href = '/';
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                >
+                  <LogOut size={18} />
+                  {t('auth.logout')}
+                </button>
               </div>
             </div>
           </motion.div>

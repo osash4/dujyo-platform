@@ -147,8 +147,16 @@ const UploadPage: React.FC = () => {
       setUploadProgress(100);
       
       if (!response.ok) {
-        const errorText = await response.text().catch(() => 'Unknown error');
-        throw new Error(`Upload failed: ${errorText}`);
+        // Get more detailed error message
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          const errorText = await response.text().catch(() => 'Unknown error');
+          errorMessage = `Upload failed: ${response.status} ${response.statusText}${errorText ? ` - ${errorText}` : ''}`;
+        }
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();

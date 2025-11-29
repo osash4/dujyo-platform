@@ -72,6 +72,76 @@ const translations: Translations = {
     es: 'Preguntas Frecuentes',
   },
   
+  // Onboarding
+  'onboarding.becomeArtist': {
+    en: 'Become an Artist',
+    es: 'Conviértete en Artista',
+  },
+  'onboarding.joinCreators': {
+    en: 'Join thousands of creators on DUJYO and start earning from your content. Upload music, videos, and gaming content to reach a global audience.',
+    es: 'Únete a miles de creadores en DUJYO y comienza a ganar con tu contenido. Sube música, videos y contenido de gaming para llegar a una audiencia global.',
+  },
+  'onboarding.artistTerms': {
+    en: 'Artist Terms & Conditions',
+    es: 'Términos y Condiciones para Artistas',
+  },
+  'onboarding.terms1Title': {
+    en: '1. Content Ownership',
+    es: '1. Propiedad del Contenido',
+  },
+  'onboarding.terms1Content': {
+    en: 'You retain all rights to your original content. By uploading to DUJYO, you grant us a non-exclusive license to distribute your content.',
+    es: 'Conservas todos los derechos sobre tu contenido original. Al subir contenido a DUJYO, nos otorgas una licencia no exclusiva para distribuir tu contenido.',
+  },
+  'onboarding.terms2Title': {
+    en: '2. Royalty Payments',
+    es: '2. Pagos de Regalías',
+  },
+  'onboarding.terms2Content': {
+    en: 'You will receive 70% of net revenue from your content. Payments are processed monthly on the first business day.',
+    es: 'Recibirás el 70% de los ingresos netos de tu contenido. Los pagos se procesan mensualmente el primer día hábil.',
+  },
+  'onboarding.terms3Title': {
+    en: '3. Content Guidelines',
+    es: '3. Directrices de Contenido',
+  },
+  'onboarding.terms3Content': {
+    en: 'All content must be original or properly licensed. No copyrighted material without permission. Content must comply with our community guidelines.',
+    es: 'Todo el contenido debe ser original o estar debidamente licenciado. No se permite material con derechos de autor sin permiso. El contenido debe cumplir con nuestras directrices comunitarias.',
+  },
+  'onboarding.terms4Title': {
+    en: '4. Quality Standards',
+    es: '4. Estándares de Calidad',
+  },
+  'onboarding.terms4Content': {
+    en: 'Audio content must be at least 320kbps. Video content must be at least 720p. Gaming content must be properly packaged.',
+    es: 'El contenido de audio debe ser de al menos 320kbps. El contenido de video debe ser de al menos 720p. El contenido de gaming debe estar correctamente empaquetado.',
+  },
+  'onboarding.terms5Title': {
+    en: '5. Account Security',
+    es: '5. Seguridad de la Cuenta',
+  },
+  'onboarding.terms5Content': {
+    en: 'You are responsible for maintaining the security of your account. Report any suspicious activity immediately.',
+    es: 'Eres responsable de mantener la seguridad de tu cuenta. Reporta cualquier actividad sospechosa de inmediato.',
+  },
+  'onboarding.agreeToTerms': {
+    en: 'I have read and agree to the Artist Terms and Conditions',
+    es: 'He leído y acepto los Términos y Condiciones para Artistas',
+  },
+  'onboarding.becomeArtistButton': {
+    en: 'Become an Artist!',
+    es: '¡Conviértete en Artista!',
+  },
+  'onboarding.upgrading': {
+    en: 'Upgrading...',
+    es: 'Actualizando...',
+  },
+  'onboarding.mustAcceptTerms': {
+    en: 'You must accept the terms to become an artist',
+    es: 'Debes aceptar los términos para convertirte en artista',
+  },
+  
   // Common
   'common.loading': {
     en: 'Loading...',

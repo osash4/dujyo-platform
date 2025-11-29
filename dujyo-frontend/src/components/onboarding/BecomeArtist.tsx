@@ -7,8 +7,10 @@ import {
 import { useAuth } from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const BecomeArtist: React.FC = () => {
+  const { t } = useLanguage();
   const { user, getUserRole, signIn } = useAuth();
   const navigate = useNavigate();
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -27,7 +29,7 @@ const BecomeArtist: React.FC = () => {
 
   const handleBecomeArtist = async () => {
     if (!termsAccepted) {
-      setError('You must accept the terms to become an artist');
+      setError(t('onboarding.mustAcceptTerms'));
       return;
     }
 
@@ -171,36 +173,30 @@ const BecomeArtist: React.FC = () => {
             >
               <Star size={48} className="text-white" />
             </motion.div>
-            <h2 className="text-3xl font-bold text-white mb-4">Become an Artist</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">{t('onboarding.becomeArtist')}</h2>
             <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              Join thousands of creators on DUJYO and start earning from your content. 
-              Upload music, videos, and gaming content to reach a global audience.
+              {t('onboarding.joinCreators')}
             </p>
           </div>
 
           {/* Terms & Conditions */}
           <div className="card p-6 rounded-xl border border-amber-400/20">
-            <h3 className="text-xl font-semibold text-white mb-4">Artist Terms & Conditions</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">{t('onboarding.artistTerms')}</h3>
             <div className="bg-gray-900/50 p-6 rounded-lg max-h-96 overflow-y-auto space-y-4 text-gray-300 text-sm" style={{ backgroundColor: 'var(--bg-card)' }}>
               <p>
-                <strong className="text-white">1. Content Ownership:</strong> You retain all rights to your original content. 
-                By uploading to DUJYO, you grant us a non-exclusive license to distribute your content.
+                <strong className="text-white">{t('onboarding.terms1Title')}:</strong> {t('onboarding.terms1Content')}
               </p>
               <p>
-                <strong className="text-white">2. Royalty Payments:</strong> You will receive 70% of net revenue from your content. 
-                Payments are processed monthly on the first business day.
+                <strong className="text-white">{t('onboarding.terms2Title')}:</strong> {t('onboarding.terms2Content')}
               </p>
               <p>
-                <strong className="text-white">3. Content Guidelines:</strong> All content must be original or properly licensed. 
-                No copyrighted material without permission. Content must comply with our community guidelines.
+                <strong className="text-white">{t('onboarding.terms3Title')}:</strong> {t('onboarding.terms3Content')}
               </p>
               <p>
-                <strong className="text-white">4. Quality Standards:</strong> Audio content must be at least 320kbps. 
-                Video content must be at least 720p. Gaming content must be properly packaged.
+                <strong className="text-white">{t('onboarding.terms4Title')}:</strong> {t('onboarding.terms4Content')}
               </p>
               <p>
-                <strong className="text-white">5. Account Security:</strong> You are responsible for maintaining the security of your account. 
-                Report any suspicious activity immediately.
+                <strong className="text-white">{t('onboarding.terms5Title')}:</strong> {t('onboarding.terms5Content')}
               </p>
             </div>
 
@@ -213,7 +209,7 @@ const BecomeArtist: React.FC = () => {
                 className="w-5 h-5 text-purple-500 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
               />
               <label htmlFor="terms" className="text-gray-300">
-                I have read and agree to the Artist Terms and Conditions
+                {t('onboarding.agreeToTerms')}
               </label>
             </div>
           </div>
@@ -238,7 +234,7 @@ const BecomeArtist: React.FC = () => {
               whileHover={{ scale: termsAccepted && !isLoading ? 1.05 : 1 }}
               whileTap={{ scale: termsAccepted && !isLoading ? 0.95 : 1 }}
             >
-              {isLoading ? 'Upgrading...' : 'Become an Artist!'}
+              {isLoading ? t('onboarding.upgrading') : t('onboarding.becomeArtistButton')}
               {!isLoading && <ArrowRight size={20} />}
             </motion.button>
           </div>
