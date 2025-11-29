@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "cd dujyo-frontend && npm run build",
-  "outputDirectory": "dujyo-frontend/dist",
-  "devCommand": "cd dujyo-frontend && npm run dev",
-  "installCommand": "cd dujyo-frontend && npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
   "framework": "vite",
-  "rootDirectory": "dujyo-frontend",
   "redirects": [
     {
       "source": "/(.*)",
