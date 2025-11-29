@@ -479,9 +479,9 @@ export function WalletDashboard() {
       if (!tx.hash || typeof tx.hash !== 'string') return false;
       if (!tx.type || typeof tx.type !== 'string') return false;
       
-      const matchesSearch = tx.hash.includes(searchQuery) || (tx.type && tx.type.includes(searchQuery));
-      const matchesType = filters.type === 'all' || tx.type === filters.type;
-      const matchesAmount =
+      const matchesSearch: boolean = Boolean(tx.hash.includes(searchQuery) || (tx.type && tx.type.includes(searchQuery)));
+      const matchesType: boolean = filters.type === 'all' || tx.type === filters.type;
+      const matchesAmount: boolean =
         filters.amount === 'all' ||
         (filters.amount === 'high' ? (tx.amount || 0) > 1000 : (tx.amount || 0) <= 1000);
       let matchesDate = false;
