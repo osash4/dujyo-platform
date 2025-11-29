@@ -11,7 +11,8 @@ if (!window.Buffer) {
 }
 
 // 🔍 DEBUG: Override temporal de Array.prototype.map para capturar errores de .type
-if (process.env.NODE_ENV === 'development') {
+// TEMPORALMENTE ACTIVADO EN PRODUCCIÓN PARA DEBUGGING
+if (true) { // Cambiar a process.env.NODE_ENV === 'development' después de encontrar el bug
   const originalMap = Array.prototype.map;
   Array.prototype.map = function(callback: any, thisArg?: any) {
     try {
