@@ -2,7 +2,7 @@ use tokio::sync::Mutex;
 use lazy_static::lazy_static;
 use crate::models::models::Transaction;
 use crate::handlers::wallet_repository;
-use sqlx::{PgPool, Row};
+use sqlx::PgPool;
 use tracing;
 
 // Sincronización de la cuenta conectada

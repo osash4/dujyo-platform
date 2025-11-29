@@ -1168,11 +1168,12 @@ const ProfilePage: React.FC = () => {
                                 TX: {tx.txHash}
                               </div>
                             )}
-                          </motion.div>
-                        );
-                      })
-                      .filter(item => item !== null)}
-                  </div>
+                      </motion.div>
+                    );
+                  })
+                  .filter(item => item !== null);
+                    })()}
+                </div>
                 ) : (
                   <div className="text-center py-8">
                     <Clock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -1331,7 +1332,9 @@ const ProfilePage: React.FC = () => {
                         </div>
                       </motion.div>
                     );
-                  })}
+                  })
+                  .filter(item => item !== null);
+                    })()}
                 </div>
               </motion.div>
             </div>

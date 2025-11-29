@@ -311,16 +311,6 @@ pub async fn claim_tokens_handler(
 }
 */
 
-use axum::{
-    extract::{State, Extension, Multipart},
-    http::StatusCode,
-    response::Json,
-    routing::{get, put, post},
-};
-use tokio::fs;
-use std::path::Path;
-use uuid::Uuid;
-
 #[derive(Deserialize)]
 pub struct UpdateProfileRequest {
     pub display_name: Option<String>,
