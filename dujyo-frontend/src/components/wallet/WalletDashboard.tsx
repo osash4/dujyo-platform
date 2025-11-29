@@ -34,9 +34,10 @@ type Transaction = {
   hash: string;
   type: string;
   amount: number;
-  timestamp: string;
+  timestamp: string | number;
   from?: string;
   to?: string;
+  created_at?: string;
 };
 
 type NFT = {
