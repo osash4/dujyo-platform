@@ -23,6 +23,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
+import { handleAuthError, getValidToken } from '../utils/authHelpers';
 
 interface NotificationPreferences {
   pushNotifications: boolean;
@@ -184,7 +185,7 @@ const SettingsPage: React.FC = () => {
     
     try {
       const apiBaseUrl = getApiBaseUrl();
-      const token = localStorage.getItem('jwt_token');
+      const token = getValidToken();
       
       console.log('📤 Starting avatar upload...', {
         apiBaseUrl,
@@ -195,7 +196,7 @@ const SettingsPage: React.FC = () => {
       });
       
       if (!token) {
-        throw new Error('No authentication token found');
+        throw new Error('No authentication token found. Please log in again.');
       }
       
       const formData = new FormData();
@@ -222,6 +223,18 @@ const SettingsPage: React.FC = () => {
         ok: response.ok,
         headers: Object.fromEntries(response.headers.entries())
       });
+      
+      // Check for auth errors first
+      const isAuthError = await handleAuthError(response, () => {
+        setSaveStatus('error');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      });
+      
+      if (isAuthError) {
+        throw new Error('Your session has expired. Please log in again.');
+      }
       
       if (response.ok) {
         const data = await response.json();
@@ -271,7 +284,7 @@ const SettingsPage: React.FC = () => {
     
     try {
       const apiBaseUrl = getApiBaseUrl();
-      const token = localStorage.getItem('jwt_token');
+      const token = getValidToken();
       
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
@@ -305,6 +318,18 @@ const SettingsPage: React.FC = () => {
           avatar_url: finalAvatarUrl,
         }),
       });
+      
+      // Check for auth errors first
+      const isAuthError = await handleAuthError(response, () => {
+        setSaveStatus('error');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      });
+      
+      if (isAuthError) {
+        throw new Error('Your session has expired. Please log in again.');
+      }
       
       if (response.ok) {
         // Update local user state

@@ -6,6 +6,7 @@ import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
+import { handleAuthError, getValidToken } from '../utils/authHelpers';
 
 interface UploadFormData {
   title: string;
@@ -103,9 +104,9 @@ const UploadPage: React.FC = () => {
     setMessage('');
     
     try {
-      const token = localStorage.getItem('jwt_token');
+      const token = getValidToken();
       if (!token) {
-        throw new Error('No authentication token found');
+        throw new Error('No authentication token found. Please log in again.');
       }
       
       console.log('📤 Starting content upload...', {
@@ -171,6 +172,18 @@ const UploadPage: React.FC = () => {
         ok: response.ok,
         headers: Object.fromEntries(response.headers.entries())
       });
+      
+      // Check for auth errors first
+      const isAuthError = await handleAuthError(response, () => {
+        setMessage('❌ Your session has expired. Redirecting to login...');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      });
+      
+      if (isAuthError) {
+        throw new Error('Your session has expired. Please log in again.');
+      }
       
       if (!response.ok) {
         // Get more detailed error message
