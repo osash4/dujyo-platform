@@ -64,6 +64,7 @@ const StatCard: React.FC<{ icon: React.ElementType; title: string; value: string
 
 // Futuristic Chart Component
 const FuturisticChart: React.FC = () => {
+  const { t } = useLanguage();
   const [data, setData] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -519,12 +520,15 @@ const DEXDashboard: React.FC = () => {
           {t('dex.recentActivity')}
         </h3>
         <div className="space-y-3">
-          {React.useMemo(() => [
-            { type: "swap", user: "CryptoWhale", amount: "1,000 DUJYO", time: "2m ago", color: "#EA580C" },
-            { type: "liquidity", user: "NeonTrader", amount: t('dex.added') + " $50K", time: "5m ago", color: "#F59E0B" },
-            { type: "swap", user: "CyberPunk", amount: "500 USDC", time: "8m ago", color: "#EA580C" },
-            { type: "liquidity", user: "QuantumSwap", amount: t('dex.removed') + " $25K", time: "12m ago", color: "#F59E0B" }
-          ], [t]).map((activity, index) => (
+          {React.useMemo(() => {
+            if (!t) return [];
+            return [
+              { type: "swap", user: "CryptoWhale", amount: "1,000 DUJYO", time: "2m ago", color: "#EA580C" },
+              { type: "liquidity", user: "NeonTrader", amount: t('dex.added') + " $50K", time: "5m ago", color: "#F59E0B" },
+              { type: "swap", user: "CyberPunk", amount: "500 USDC", time: "8m ago", color: "#EA580C" },
+              { type: "liquidity", user: "QuantumSwap", amount: t('dex.removed') + " $25K", time: "12m ago", color: "#F59E0B" }
+            ];
+          }, [t]).filter(activity => activity && activity.type).map((activity, index) => (
             <motion.div
               key={index}
               className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg border border-gray-600/30"
@@ -535,16 +539,16 @@ const DEXDashboard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div 
                   className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: activity.color }}
+                  style={{ backgroundColor: activity?.color || "#EA580C" }}
                 />
                 <div>
-                  <div className="text-white font-semibold">{activity.user}</div>
-                  <div className="text-gray-400 text-sm">{activity.type === "swap" ? t('dex.swapped') : t('dex.liquidity')}</div>
+                  <div className="text-white font-semibold">{activity?.user || 'Unknown'}</div>
+                  <div className="text-gray-400 text-sm">{activity?.type === "swap" ? t('dex.swapped') : t('dex.liquidity')}</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-white font-semibold">{activity.amount}</div>
-                <div className="text-gray-400 text-sm">{activity.time}</div>
+                <div className="text-white font-semibold">{activity?.amount || 'N/A'}</div>
+                <div className="text-gray-400 text-sm">{activity?.time || 'N/A'}</div>
               </div>
             </motion.div>
           ))}

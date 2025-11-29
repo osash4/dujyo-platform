@@ -1057,7 +1057,7 @@ const ProfilePage: React.FC = () => {
 
                 {stakingHistory.length > 0 ? (
                   <div className="space-y-4">
-                    {stakingHistory.filter(tx => tx && tx.id).map((tx) => {
+                    {stakingHistory.filter(tx => tx && tx.id && tx.type).map((tx) => {
                       if (!tx || !tx.type) return null;
                       return (
                       <motion.div
