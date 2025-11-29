@@ -290,12 +290,12 @@ const ProfilePage: React.FC = () => {
   // ✅ STAKE NATIVO CON TOKENS DYO
   const handleNativeStake = async () => {
     if (!account) {
-      setStakingMessage('Please connect your native blockchain wallet');
+      setStakingMessage(t('profile.pleaseConnectWallet'));
       return;
     }
     
     if (!stakingAmount || parseFloat(stakingAmount) <= 0) {
-      setStakingMessage('Please enter a valid amount');
+      setStakingMessage(t('profile.pleaseEnterValidAmount'));
       return;
     }
     
@@ -303,7 +303,7 @@ const ProfilePage: React.FC = () => {
     
     // ✅ VALIDAR BALANCE NATIVO DE DYO
     if (amount > nativeBalance.dyo) {
-      setStakingMessage(`Insufficient DYO balance. Available: ${nativeBalance.dyo.toFixed(2)} DYO`);
+      setStakingMessage(t('profile.insufficientBalance', { amount: nativeBalance.dyo.toFixed(2) }).replace('{{amount}}', nativeBalance.dyo.toFixed(2)));
       return;
     }
     
@@ -337,7 +337,7 @@ const ProfilePage: React.FC = () => {
       }
       
       const result = await response.json();
-      setStakingMessage(`Successfully staked ${amount} DYO tokens!`);
+      setStakingMessage(t('profile.successfullyStaked', { amount: amount.toString() }).replace('{{amount}}', amount.toString()));
       setStakingAmount('');
       
       // ✅ ACTUALIZAR BALANCES NATIVOS DESPUÉS DE STAKE
@@ -345,7 +345,7 @@ const ProfilePage: React.FC = () => {
       await loadNativeStakingInfo();
       
     } catch (error) {
-      setStakingMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setStakingMessage(t('profile.errorPrefix') + ': ' + (error instanceof Error ? error.message : t('profile.unknownError')));
     } finally {
       setIsStaking(false);
     }
@@ -354,12 +354,12 @@ const ProfilePage: React.FC = () => {
   // ✅ UNSTAKE NATIVO CON PERIODOS DE LOCK
   const handleNativeUnstake = async () => {
     if (!account) {
-      setStakingMessage('Please connect your native blockchain wallet');
+      setStakingMessage(t('profile.pleaseConnectWallet'));
       return;
     }
     
     if (!selectedPosition) {
-      setStakingMessage('Please select a staking position to unstake');
+      setStakingMessage(t('profile.pleaseSelectPosition'));
       return;
     }
     
@@ -401,7 +401,7 @@ const ProfilePage: React.FC = () => {
       await loadNativeStakingInfo();
       
     } catch (error) {
-      setStakingMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setStakingMessage(t('profile.errorPrefix') + ': ' + (error instanceof Error ? error.message : t('profile.unknownError')));
     } finally {
       setIsUnstaking(false);
     }
@@ -410,12 +410,12 @@ const ProfilePage: React.FC = () => {
   // ✅ CLAIM REWARDS NATIVOS
   const handleClaimRewards = async () => {
     if (!account) {
-      setStakingMessage('Please connect your native blockchain wallet');
+      setStakingMessage(t('profile.pleaseConnectWallet'));
       return;
     }
     
     if (nativeStakingInfo.availableRewards <= 0) {
-      setStakingMessage('No rewards available to claim');
+      setStakingMessage(t('profile.noRewardsAvailable'));
       return;
     }
     
@@ -448,14 +448,14 @@ const ProfilePage: React.FC = () => {
       }
       
       const result = await response.json();
-      setStakingMessage(`Successfully claimed ${result.amount} DYO rewards!`);
+      setStakingMessage(t('profile.successfullyClaimed', { amount: result.amount.toString() }).replace('{{amount}}', result.amount.toString()));
       
       // ✅ ACTUALIZAR BALANCES NATIVOS DESPUÉS DE CLAIM
       await loadNativeBalances();
       await loadNativeStakingInfo();
       
     } catch (error) {
-      setStakingMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setStakingMessage(t('profile.errorPrefix') + ': ' + (error instanceof Error ? error.message : t('profile.unknownError')));
     } finally {
       setIsClaiming(false);
     }
@@ -493,16 +493,16 @@ const ProfilePage: React.FC = () => {
     }
   ];
 
-  const achievements = [
-    { title: "First Trade", description: "Completed your first DEX trade", icon: TrendingUp, unlocked: true, rarity: "common", progress: 100 },
-    { title: "Music Lover", description: "Listened to 100+ tracks", icon: Music, unlocked: true, rarity: "rare", progress: 100 },
-    { title: "Gaming Master", description: "Played 50+ games", icon: Gamepad, unlocked: false, rarity: "epic", progress: 65 },
-    { title: "Content Creator", description: "Created 10+ pieces of content", icon: Video, unlocked: false, rarity: "legendary", progress: 30 },
-    { title: "Staking Pro", description: "Staked 1000+ DYO tokens", icon: Lock, unlocked: false, rarity: "rare", progress: 45 },
-    { title: "Early Adopter", description: "Joined DUJYO in the first month", icon: Zap, unlocked: true, rarity: "legendary", progress: 100 },
-    { title: "Validator", description: "Became a network validator", icon: Award, unlocked: false, rarity: "epic", progress: 0 },
-    { title: "Top Listener", description: "Top 10% of music listeners", icon: Trophy, unlocked: false, rarity: "rare", progress: 78 }
-  ];
+  const achievements = React.useMemo(() => [
+    { title: t('profile.achievementFirstTrade'), description: t('profile.achievementFirstTradeDesc'), icon: TrendingUp, unlocked: true, rarity: "common", progress: 100 },
+    { title: t('profile.achievementMusicLover'), description: t('profile.achievementMusicLoverDesc'), icon: Music, unlocked: true, rarity: "rare", progress: 100 },
+    { title: t('profile.achievementGamingMaster'), description: t('profile.achievementGamingMasterDesc'), icon: Gamepad, unlocked: false, rarity: "epic", progress: 65 },
+    { title: t('profile.achievementContentCreator'), description: t('profile.achievementContentCreatorDesc'), icon: Video, unlocked: false, rarity: "legendary", progress: 30 },
+    { title: t('profile.achievementStakingPro'), description: t('profile.achievementStakingProDesc'), icon: Lock, unlocked: false, rarity: "rare", progress: 45 },
+    { title: t('profile.achievementEarlyAdopter'), description: t('profile.achievementEarlyAdopterDesc'), icon: Zap, unlocked: true, rarity: "legendary", progress: 100 },
+    { title: t('profile.achievementValidator'), description: t('profile.achievementValidatorDesc'), icon: Award, unlocked: false, rarity: "epic", progress: 0 },
+    { title: t('profile.achievementTopListener'), description: t('profile.achievementTopListenerDesc'), icon: Trophy, unlocked: false, rarity: "rare", progress: 78 }
+  ], [t]);
 
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: 'var(--bg-primary)' }}>
