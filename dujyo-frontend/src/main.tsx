@@ -40,21 +40,10 @@ if (true) { // Cambiar a process.env.NODE_ENV === 'development' después de enco
         }
         
         // 🔍 DETECTAR SI EL ITEM ES UN ARRAY (resultado de Object.entries)
-        // Si el item es un array de 2 elementos y el callback intenta acceder a .type,
-        // probablemente es Object.entries() mal usado
-        if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
-          console.warn('🔍 DEBUG Array.map - DETECTED Object.entries() RESULT:', {
-            index,
-            item,
-            itemIsArray: true,
-            itemLength: item.length,
-            firstElement: item[0],
-            secondElement: item[1],
-            arrayLength: array.length,
-            arraySample: array.slice(0, 5),
-            message: 'This looks like Object.entries() result. Make sure to destructure: ([key, value]) => ...'
-          });
-        }
+        // Comentado para evitar logs innecesarios - Object.entries() es válido cuando se desestructura correctamente
+        // if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
+        //   console.warn('🔍 DEBUG Array.map - DETECTED Object.entries() RESULT:', {...});
+        // }
         
         // Intentar ejecutar el callback
         try {

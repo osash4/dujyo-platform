@@ -2427,6 +2427,34 @@ const translations: Translations = {
     en: 'Confidence',
     es: 'Confianza',
   },
+  'wallet.nextPayout': {
+    en: 'Next Payout',
+    es: 'Próximo Pago',
+  },
+  'wallet.estimatedPayout': {
+    en: 'Estimated Payout',
+    es: 'Pago Estimado',
+  },
+  'wallet.nextPayoutDate': {
+    en: 'Next payout',
+    es: 'Próximo pago',
+  },
+  'wallet.payoutSchedule': {
+    en: 'Payout schedule will be available after your first earnings.',
+    es: 'El calendario de pagos estará disponible después de tus primeras ganancias.',
+  },
+  'wallet.boostEarnings': {
+    en: 'Boost Your Earnings',
+    es: 'Aumenta Tus Ganancias',
+  },
+  'wallet.prediction': {
+    en: 'Prediction',
+    es: 'Predicción',
+  },
+  'wallet.unknown': {
+    en: 'Unknown',
+    es: 'Desconocido',
+  },
   'wallet.basedOn': {
     en: 'Based on',
     es: 'Basado en',

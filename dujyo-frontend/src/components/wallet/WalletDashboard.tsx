@@ -17,7 +17,7 @@ import {
   Coins, ArrowUpRight, ArrowDownLeft, RefreshCw,
   AlertCircle, CheckCircle, Zap, Music, Video, Gamepad2,
   Upload, Users, Target, Award, Sparkles, Info, Clock,
-  BarChart3, ExternalLink, Flame, Star, Trophy
+  BarChart3, ExternalLink, Flame, Star, Trophy, ArrowLeft
 } from 'lucide-react';
 
 type BalancesPallet = {
@@ -670,14 +670,25 @@ export function WalletDashboard() {
     <div className="space-y-6 p-4 md:p-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
-            <Wallet size={28} className="text-amber-400" />
-            {t('wallet.walletDashboard')}
-          </h2>
-          <p className="text-gray-400 text-sm mt-1">
-            {t('wallet.manageDigitalAssets')}
-          </p>
+        <div className="flex items-center gap-4">
+          <motion.button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg text-white transition-all duration-300 min-h-[44px]"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ArrowLeft size={20} />
+            <span>{t('common.back')}</span>
+          </motion.button>
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+              <Wallet size={28} className="text-amber-400" />
+              {t('wallet.walletDashboard')}
+            </h2>
+            <p className="text-gray-400 text-sm mt-1">
+              {t('wallet.manageDigitalAssets')}
+            </p>
+          </div>
         </div>
         <motion.button
           onClick={loadWalletData}
@@ -832,7 +843,7 @@ export function WalletDashboard() {
                         <PlatformIcon className="w-5 h-5" style={{ color: platform.color || '#F59E0B' }} />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-white">{platform.label || 'Unknown'}</h4>
+                        <h4 className="font-semibold text-white">{platform.label || t('wallet.unknown')}</h4>
                         <p className="text-2xl font-bold" style={{ color: platform.color || '#F59E0B' }}>
                           {(platform.earnings || 0).toFixed(2)} $DYO
                         </p>
@@ -875,8 +886,8 @@ export function WalletDashboard() {
                 {earningPredictions.map((prediction, idx) => (
                   <div key={prediction.period} className="bg-gray-700/30 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-semibold text-gray-300 capitalize">{prediction.period} Prediction</span>
-                      <span className="text-xs text-gray-400">{prediction.confidence}% confidence</span>
+                      <span className="text-sm font-semibold text-gray-300 capitalize">{prediction.period} {t('wallet.prediction')}</span>
+                      <span className="text-xs text-gray-400">{prediction.confidence}% {t('wallet.confidence')}</span>
                     </div>
                     <p className="text-2xl font-bold text-amber-400 mb-1">{prediction.predicted.toFixed(2)} $DYO</p>
                     <p className="text-xs text-gray-400">{prediction.basedOn}</p>
@@ -893,22 +904,22 @@ export function WalletDashboard() {
             >
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-amber-400" />
-                Next Payout
+                {t('wallet.nextPayout')}
               </h3>
               {nextPayoutDate ? (
                 <div className="space-y-4">
                   <div className="bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-400/30 rounded-lg p-4">
-                    <p className="text-sm text-gray-400 mb-1">Estimated Payout</p>
+                    <p className="text-sm text-gray-400 mb-1">{t('wallet.estimatedPayout')}</p>
                     <p className="text-3xl font-bold text-amber-400">{nextPayoutAmount.toFixed(2)} $DYO</p>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <Clock className="w-4 h-4" />
-                    <span>Next payout: {format(nextPayoutDate, 'MMM dd, yyyy')}</span>
+                    <span>{t('wallet.nextPayoutDate')}: {format(nextPayoutDate, 'MMM dd, yyyy')}</span>
                   </div>
                 </div>
               ) : (
                 <div className="text-gray-400 text-sm">
-                  <p>Payout schedule will be available after your first earnings.</p>
+                  <p>{t('wallet.payoutSchedule')}</p>
                 </div>
               )}
             </motion.div>
@@ -923,7 +934,7 @@ export function WalletDashboard() {
           >
             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Zap className="w-5 h-5 text-amber-400" />
-              Boost Your Earnings
+              {t('wallet.boostEarnings')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {quickActions.map((action, idx) => {
