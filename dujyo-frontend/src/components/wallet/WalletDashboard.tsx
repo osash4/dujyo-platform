@@ -739,11 +739,12 @@ export function WalletDashboard() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {platformEarnings.map((platform, idx) => {
+              {(platformEarnings || []).filter(platform => platform && platform.platform).map((platform, idx) => {
+                if (!platform || !platform.icon) return null;
                 const PlatformIcon = platform.icon;
                 return (
                   <motion.div
-                    key={platform.platform}
+                    key={platform.platform || idx}
                     className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/50"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -751,20 +752,20 @@ export function WalletDashboard() {
                     whileHover={{ scale: 1.02 }}
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${platform.color}20` }}>
-                        <PlatformIcon className="w-5 h-5" style={{ color: platform.color }} />
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${platform.color || '#F59E0B'}20` }}>
+                        <PlatformIcon className="w-5 h-5" style={{ color: platform.color || '#F59E0B' }} />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-white">{platform.label}</h4>
-                        <p className="text-2xl font-bold" style={{ color: platform.color }}>
-                          {platform.earnings.toFixed(2)} $DYO
+                        <h4 className="font-semibold text-white">{platform.label || 'Unknown'}</h4>
+                        <p className="text-2xl font-bold" style={{ color: platform.color || '#F59E0B' }}>
+                          {(platform.earnings || 0).toFixed(2)} $DYO
                         </p>
                       </div>
                     </div>
                     <div className="space-y-1 text-xs text-gray-400">
                       <div className="flex justify-between">
                         <span>{t('wallet.streamsViewsPlays')}:</span>
-                        <span className="text-white">{formatNumber(platform.streams)}</span>
+                        <span className="text-white">{formatNumber(platform.streams || 0)}</span>
                       </div>
                       <div className="w-full bg-gray-600 rounded-full h-1.5">
                         <motion.div
@@ -891,11 +892,12 @@ export function WalletDashboard() {
                 {t('wallet.earningAchievements')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {achievements.map((achievement, idx) => {
+                {(achievements || []).filter(achievement => achievement && achievement.id && achievement.icon).map((achievement, idx) => {
+                  if (!achievement || !achievement.icon) return null;
                   const AchievementIcon = achievement.icon;
                   return (
                     <motion.div
-                      key={achievement.id}
+                      key={achievement.id || idx}
                       className={`bg-gray-700/30 rounded-lg p-4 border ${
                         achievement.completed ? 'border-amber-400/50' : 'border-gray-600/50'
                       }`}
@@ -912,8 +914,8 @@ export function WalletDashboard() {
                           }`} />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-white text-sm">{achievement.title}</h4>
-                          <p className="text-xs text-gray-400">{achievement.description}</p>
+                          <h4 className="font-semibold text-white text-sm">{achievement.title || 'Unknown'}</h4>
+                          <p className="text-xs text-gray-400">{achievement.description || ''}</p>
                         </div>
                         {achievement.completed && (
                           <CheckCircle className="w-5 h-5 text-amber-400" />

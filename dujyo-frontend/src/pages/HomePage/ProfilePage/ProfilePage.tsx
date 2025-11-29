@@ -51,7 +51,7 @@ interface StakingHistory {
   type: 'stake' | 'unstake' | 'claim';
   amount: number;
   timestamp: number;
-  txHash: string;
+  txHash?: string;
   status: 'success' | 'pending' | 'failed';
 }
 
@@ -1057,53 +1057,62 @@ const ProfilePage: React.FC = () => {
 
                 {stakingHistory.length > 0 ? (
                   <div className="space-y-4">
-                    {stakingHistory.filter(tx => tx && tx.id && tx.type).map((tx) => {
-                      if (!tx || !tx.type) return null;
-                      return (
-                      <motion.div
-                        key={tx.id}
-                        className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${
-                              tx.type === 'stake' ? 'bg-yellow-500/20' :
-                              tx.type === 'unstake' ? 'bg-red-500/20' :
-                              'bg-green-500/20'
-                            }`}>
-                              {tx.type === 'stake' ? <Lock size={16} className="text-yellow-400" /> :
-                               tx.type === 'unstake' ? <Zap size={16} className="text-red-400" /> :
-                               <Award size={16} className="text-green-400" />}
+                    {stakingHistory
+                      .filter((tx): tx is StakingHistory => {
+                        return tx != null && 
+                               typeof tx === 'object' && 
+                               'id' in tx && 
+                               'type' in tx && 
+                               typeof tx.type === 'string' &&
+                               tx.id != null;
+                      })
+                      .map((tx) => {
+                        const txType = tx?.type || 'unknown';
+                        return (
+                        <motion.div
+                          key={tx.id}
+                          className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 rounded-lg ${
+                                txType === 'stake' ? 'bg-yellow-500/20' :
+                                txType === 'unstake' ? 'bg-red-500/20' :
+                                'bg-green-500/20'
+                              }`}>
+                                {txType === 'stake' ? <Lock size={16} className="text-yellow-400" /> :
+                                 txType === 'unstake' ? <Zap size={16} className="text-red-400" /> :
+                                 <Award size={16} className="text-green-400" />}
+                              </div>
+                              <div>
+                                <p className="text-white font-medium capitalize">{txType}</p>
+                                <p className="text-gray-400 text-sm">
+                                  {tx.timestamp ? new Date(tx.timestamp * 1000).toLocaleString() : 'N/A'}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-white font-medium capitalize">{tx.type || 'unknown'}</p>
-                              <p className="text-gray-400 text-sm">
-                                {tx.timestamp ? new Date(tx.timestamp * 1000).toLocaleString() : 'N/A'}
+                            <div className="text-right">
+                              <p className="text-white font-semibold">{(tx.amount || 0).toFixed(2)} DYO</p>
+                              <p className={`text-xs ${
+                                tx.status === 'success' ? 'text-green-400' :
+                                tx.status === 'pending' ? 'text-yellow-400' :
+                                'text-red-400'
+                              }`}>
+                                {(tx.status || 'unknown').toUpperCase()}
                               </p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-white font-semibold">{(tx.amount || 0).toFixed(2)} DYO</p>
-                            <p className={`text-xs ${
-                              tx.status === 'success' ? 'text-green-400' :
-                              tx.status === 'pending' ? 'text-yellow-400' :
-                              'text-red-400'
-                            }`}>
-                              {(tx.status || 'unknown').toUpperCase()}
-                            </p>
-                          </div>
-                        </div>
-                        {tx.txHash && (
-                          <div className="mt-2 text-xs text-gray-500 font-mono">
-                            TX: {tx.txHash}
-                          </div>
-                        )}
-                      </motion.div>
-                      );
-                    })}
+                          {tx.txHash && (
+                            <div className="mt-2 text-xs text-gray-500 font-mono">
+                              TX: {tx.txHash}
+                            </div>
+                          )}
+                        </motion.div>
+                        );
+                      })}
                   </div>
                 ) : (
                   <div className="text-center py-8">
