@@ -1082,65 +1082,54 @@ const ProfilePage: React.FC = () => {
                         }
                       })
                       .map((tx, index) => {
-                        // Validación adicional antes de renderizar - triple verificación con try-catch
-                        try {
-                          if (!tx || typeof tx !== 'object') return null;
-                          if (!('type' in tx)) return null;
-                          const typeValue = tx.type;
-                          if (typeof typeValue !== 'string' || !typeValue) return null;
-                          if (!('id' in tx) || !tx.id) return null;
-                          const txType: string = typeValue;
-                          
-                          return (
-                            <motion.div
-                              key={tx.id}
-                              className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                  <div className={`p-2 rounded-lg ${
-                                    txType === 'stake' ? 'bg-yellow-500/20' :
-                                    txType === 'unstake' ? 'bg-red-500/20' :
-                                    'bg-green-500/20'
-                                  }`}>
-                                    {txType === 'stake' ? <Lock size={16} className="text-yellow-400" /> :
-                                     txType === 'unstake' ? <Zap size={16} className="text-red-400" /> :
-                                     <Award size={16} className="text-green-400" />}
-                                  </div>
-                                  <div>
-                                    <p className="text-white font-medium capitalize">{txType}</p>
-                                    <p className="text-gray-400 text-sm">
-                                      {tx.timestamp ? new Date(tx.timestamp * 1000).toLocaleString() : 'N/A'}
-                                    </p>
-                                  </div>
+                        // El filter ya garantiza que tx tiene type e id válidos
+                        const txType: string = tx.type;
+                        
+                        return (
+                          <motion.div
+                            key={tx.id}
+                            className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-3">
+                                <div className={`p-2 rounded-lg ${
+                                  txType === 'stake' ? 'bg-yellow-500/20' :
+                                  txType === 'unstake' ? 'bg-red-500/20' :
+                                  'bg-green-500/20'
+                                }`}>
+                                  {txType === 'stake' ? <Lock size={16} className="text-yellow-400" /> :
+                                   txType === 'unstake' ? <Zap size={16} className="text-red-400" /> :
+                                   <Award size={16} className="text-green-400" />}
                                 </div>
-                                <div className="text-right">
-                                  <p className="text-white font-semibold">{(tx.amount || 0).toFixed(2)} DYO</p>
-                                  <p className={`text-xs ${
-                                    tx.status === 'success' ? 'text-green-400' :
-                                    tx.status === 'pending' ? 'text-yellow-400' :
-                                    'text-red-400'
-                                  }`}>
-                                    {(tx.status || 'unknown').toUpperCase()}
+                                <div>
+                                  <p className="text-white font-medium capitalize">{txType}</p>
+                                  <p className="text-gray-400 text-sm">
+                                    {tx.timestamp ? new Date(tx.timestamp * 1000).toLocaleString() : 'N/A'}
                                   </p>
                                 </div>
                               </div>
-                              {tx.txHash && (
-                                <div className="mt-2 text-xs text-gray-500 font-mono">
-                                  TX: {tx.txHash}
-                                </div>
-                              )}
-                            </motion.div>
-                          );
-                        } catch (e) {
-                          console.error('Error rendering stakingHistory item:', e, tx);
-                          return null;
-                        }
-                      })
-                      .filter(item => item !== null)}
+                              <div className="text-right">
+                                <p className="text-white font-semibold">{(tx.amount || 0).toFixed(2)} DYO</p>
+                                <p className={`text-xs ${
+                                  tx.status === 'success' ? 'text-green-400' :
+                                  tx.status === 'pending' ? 'text-yellow-400' :
+                                  'text-red-400'
+                                }`}>
+                                  {(tx.status || 'unknown').toUpperCase()}
+                                </p>
+                              </div>
+                            </div>
+                            {tx.txHash && (
+                              <div className="mt-2 text-xs text-gray-500 font-mono">
+                                TX: {tx.txHash}
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
                   </div>
                 ) : (
                   <div className="text-center py-8">
