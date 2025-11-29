@@ -407,7 +407,15 @@ export function WalletDashboard() {
 
       setBalance(userBalance);
       setNfts(userNFTs);
-      setTransactions(txHistory);
+      // Filtrar transacciones inválidas antes de establecerlas
+      const validTransactions = (txHistory || []).filter((tx: Transaction) => 
+        tx != null && 
+        typeof tx === 'object' && 
+        tx.hash && 
+        tx.type && 
+        typeof tx.type === 'string'
+      );
+      setTransactions(validTransactions);
       
       // Refresh earnings data
       await fetchStreamingEarnings();
@@ -463,18 +471,25 @@ export function WalletDashboard() {
   }, [walletAddress]);
 
   const filteredTransactions = useMemo(() => {
-    return transactions.filter((tx) => {
-      if (!tx || !tx.hash || !tx.type) return false;
+    if (!Array.isArray(transactions)) return [];
+    return transactions.filter((tx): tx is Transaction => {
+      // Type guard robusto
+      if (!tx || typeof tx !== 'object') return false;
+      if (!tx.hash || typeof tx.hash !== 'string') return false;
+      if (!tx.type || typeof tx.type !== 'string') return false;
+      
       const matchesSearch = tx.hash.includes(searchQuery) || (tx.type && tx.type.includes(searchQuery));
       const matchesType = filters.type === 'all' || tx.type === filters.type;
       const matchesAmount =
         filters.amount === 'all' ||
-        (filters.amount === 'high' ? tx.amount > 1000 : tx.amount <= 1000);
+        (filters.amount === 'high' ? (tx.amount || 0) > 1000 : (tx.amount || 0) <= 1000);
       const matchesDate =
         filters.dateRange === 'all' ||
-        (filters.dateRange === 'today' && isToday(tx.timestamp)) ||
-        (filters.dateRange === 'week' && isThisWeek(new Date(tx.timestamp))) ||
-        (filters.dateRange === 'month' && isThisMonth(new Date(tx.timestamp)));
+        (tx.timestamp && (
+          (filters.dateRange === 'today' && isToday(tx.timestamp)) ||
+          (filters.dateRange === 'week' && isThisWeek(new Date(tx.timestamp))) ||
+          (filters.dateRange === 'month' && isThisMonth(new Date(tx.timestamp)))
+        ));
 
       return matchesSearch && matchesType && matchesAmount && matchesDate;
     });

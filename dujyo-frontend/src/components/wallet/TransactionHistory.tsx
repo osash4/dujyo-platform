@@ -27,13 +27,17 @@ interface TransactionHistoryProps {
 
 export function TransactionHistory({ transactions, filters }: TransactionHistoryProps) {
   const { t } = useLanguage();
-  // Filtrar las transacciones según los filtros proporcionados
-  const filteredTransactions = (transactions || []).filter((tx) => {
-    if (!tx || !tx.type) return false;
+  // Filtrar las transacciones según los filtros proporcionados con validación robusta
+  const filteredTransactions = (Array.isArray(transactions) ? transactions : []).filter((tx): tx is Transaction => {
+    // Type guard robusto
+    if (!tx || typeof tx !== 'object') return false;
+    if (!tx.type || typeof tx.type !== 'string') return false;
+    if (!tx.hash || typeof tx.hash !== 'string') return false;
+    
     const matchesType = filters.type === 'all' || tx.type === filters.type;
     const matchesAmount =
       filters.amount === 'all' ||
-      (filters.amount === 'high' ? tx.amount > 1000 : tx.amount <= 1000);
+      (filters.amount === 'high' ? (tx.amount || 0) > 1000 : (tx.amount || 0) <= 1000);
     return matchesType && matchesAmount;
   });
 
@@ -74,13 +78,17 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {filteredTransactions.map((tx, index) => {
-            const Icon = getTransactionIcon(tx.type);
-            const colorClass = getTransactionColor(tx.type);
-            const bgClass = getTransactionBgColor(tx.type);
+            // Validación adicional antes de renderizar
+            if (!tx || !tx.type || !tx.hash) return null;
+            
+            const txType = tx.type || 'unknown';
+            const Icon = getTransactionIcon(txType);
+            const colorClass = getTransactionColor(txType);
+            const bgClass = getTransactionBgColor(txType);
             
             return (
               <motion.div
-                key={`${tx.hash}_${tx.timestamp}_${index}`}
+                key={`${tx.hash}_${tx.timestamp || index}_${index}`}
                 className={`border rounded-lg p-4 ${bgClass} backdrop-blur-sm`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -94,7 +102,7 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium text-white capitalize truncate">
-                        {tx.type} {tx.amount} DUJYO
+                        {txType} {(tx.amount || 0)} DUJYO
                       </div>
                       <div className="text-xs text-gray-400 flex items-center gap-1">
                         <Clock size={12} className="flex-shrink-0" />
@@ -110,10 +118,10 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className={`text-sm font-semibold ${colorClass} whitespace-nowrap`}>
-                      {tx.type === 'sent' ? '-' : '+'}{tx.amount} DUJYO
+                      {txType === 'sent' ? '-' : '+'}{(tx.amount || 0)} DUJYO
                     </div>
                     <div className="text-xs text-gray-400 truncate max-w-24">
-                      {tx.hash.slice(0, 8)}...
+                      {tx.hash ? `${tx.hash.slice(0, 8)}...` : 'N/A'}
                     </div>
                   </div>
                 </div>
