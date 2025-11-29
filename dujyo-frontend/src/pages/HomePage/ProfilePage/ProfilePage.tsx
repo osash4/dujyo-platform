@@ -1073,6 +1073,9 @@ const ProfilePage: React.FC = () => {
                 {stakingHistory && Array.isArray(stakingHistory) && stakingHistory.length > 0 ? (
                   <div className="space-y-4">
                     {stakingHistory
+                      // Primero eliminar cualquier null/undefined del array
+                      .filter((tx): tx is StakingHistory => tx != null && tx !== undefined)
+                      // Luego validar estructura y propiedades
                       .filter((tx): tx is StakingHistory => {
                         if (!tx || typeof tx !== 'object') return false;
                         if (!('id' in tx) || !tx.id) return false;
@@ -1082,12 +1085,12 @@ const ProfilePage: React.FC = () => {
                         return true;
                       })
                       .map((tx, index) => {
-                        // Validación adicional defensiva - aunque el filter ya validó
-                        if (!tx || typeof tx !== 'object' || !('type' in tx)) {
+                        // Validación adicional defensiva - triple check
+                        if (!tx || typeof tx !== 'object' || !('type' in tx) || !tx.type) {
                           console.warn('Invalid tx in map after filter:', tx);
                           return null;
                         }
-                        const txType: string = tx.type || 'unknown';
+                        const txType: string = String(tx.type) || 'unknown';
                         
                         return (
                           <motion.div
