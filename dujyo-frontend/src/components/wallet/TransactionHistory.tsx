@@ -27,12 +27,29 @@ interface TransactionHistoryProps {
 
 export function TransactionHistory({ transactions, filters }: TransactionHistoryProps) {
   const { t } = useLanguage();
+  
+  // 🔍 DEBUG: Log array state before processing
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 DEBUG TransactionHistory - transactions:', {
+      isArray: Array.isArray(transactions),
+      length: transactions?.length ?? 0,
+      hasUndefined: transactions?.some(item => item === undefined),
+      hasNull: transactions?.some(item => item === null),
+      sample: transactions?.slice(0, 3)
+    });
+  }
+  
   // Filtrar las transacciones según los filtros proporcionados con validación robusta
-  const filteredTransactions = (Array.isArray(transactions) ? transactions : []).filter((tx): tx is Transaction => {
+  // PRIMERO: Eliminar null/undefined
+  const cleanTransactions = (Array.isArray(transactions) ? transactions : [])
+    .filter((tx): tx is Transaction => tx != null && tx !== undefined);
+  
+  // SEGUNDO: Validar estructura y propiedades
+  const filteredTransactions = cleanTransactions.filter((tx): tx is Transaction => {
     // Type guard robusto
     if (!tx || typeof tx !== 'object') return false;
-    if (!tx.type || typeof tx.type !== 'string') return false;
-    if (!tx.hash || typeof tx.hash !== 'string') return false;
+    if (!('type' in tx) || !tx.type || typeof tx.type !== 'string') return false;
+    if (!('hash' in tx) || !tx.hash || typeof tx.hash !== 'string') return false;
     
     const matchesType = filters.type === 'all' || tx.type === filters.type;
     const matchesAmount =
@@ -77,11 +94,15 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
         </motion.div>
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {filteredTransactions.map((tx, index) => {
-            // Validación adicional antes de renderizar
-            if (!tx || !tx.type || !tx.hash) return null;
-            
-            const txType = tx.type || 'unknown';
+          {filteredTransactions
+            .map((tx, index) => {
+              // Validación adicional defensiva - triple check
+              if (!tx || typeof tx !== 'object' || !('type' in tx) || !tx.type) {
+                console.warn('🔍 DEBUG TransactionHistory - Invalid tx in map after filter:', tx);
+                return null;
+              }
+              
+              const txType = String(tx.type) || 'unknown';
             const Icon = getTransactionIcon(txType);
             const colorClass = getTransactionColor(txType);
             const bgClass = getTransactionBgColor(txType);
@@ -146,7 +167,8 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
                 )}
               </motion.div>
             );
-          })}
+          })
+          .filter(item => item !== null)}
         </div>
       )}
     </div>

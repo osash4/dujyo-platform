@@ -472,14 +472,27 @@ export function WalletDashboard() {
   }, [walletAddress]);
 
   const filteredTransactions = useMemo(() => {
+    // 🔍 DEBUG: Log array state before processing
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 DEBUG WalletDashboard filteredTransactions - transactions:', {
+        isArray: Array.isArray(transactions),
+        length: transactions?.length ?? 0,
+        hasUndefined: transactions?.some(item => item === undefined),
+        hasNull: transactions?.some(item => item === null),
+        sample: transactions?.slice(0, 3)
+      });
+    }
+    
     if (!Array.isArray(transactions)) return [];
-    // Primero eliminar cualquier null/undefined del array
+    // PRIMERO: Eliminar cualquier null/undefined del array
     const cleanTransactions = transactions.filter((tx): tx is Transaction => tx != null && tx !== undefined);
+    
+    // SEGUNDO: Validar estructura y propiedades
     return cleanTransactions.filter((tx): tx is Transaction => {
       // Type guard robusto
       if (!tx || typeof tx !== 'object') return false;
-      if (!tx.hash || typeof tx.hash !== 'string') return false;
-      if (!tx.type || typeof tx.type !== 'string') return false;
+      if (!('hash' in tx) || !tx.hash || typeof tx.hash !== 'string') return false;
+      if (!('type' in tx) || !tx.type || typeof tx.type !== 'string') return false;
       
       const matchesSearch: boolean = Boolean(tx.hash.includes(searchQuery) || (tx.type && tx.type.includes(searchQuery)));
       const matchesType: boolean = filters.type === 'all' || tx.type === filters.type;
