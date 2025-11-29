@@ -1268,22 +1268,41 @@ const ArtistDashboard: React.FC = () => {
         >
           <h3 className="text-xl font-bold text-white mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {metrics.recentActivity.length > 0 ? metrics.recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg">
-                {getActivityIcon(activity.type)}
-                <div className="flex-1">
-                  <p className="text-white text-sm">{activity.description}</p>
-                  <p className="text-gray-400 text-xs">
-                    {activity.timestamp.toLocaleTimeString()}
-                  </p>
-                </div>
-                {activity.amount && (
-                  <p className="text-green-400 font-semibold text-sm">
-                    +{formatDYO(activity.amount)}
-                  </p>
-                )}
-              </div>
-            )) : (
+            {metrics.recentActivity.length > 0 ? (
+              (Array.isArray(metrics.recentActivity) ? metrics.recentActivity : [])
+                .filter((activity): activity is NonNullable<typeof activity> => {
+                  // Validación robusta: eliminar null/undefined y verificar que tenga type
+                  if (!activity || typeof activity !== 'object') return false;
+                  if (!('type' in activity) || !activity.type) return false;
+                  if (!('id' in activity) || !activity.id) return false;
+                  return true;
+                })
+                .map((activity) => {
+                  // Validación adicional defensiva
+                  if (!activity || typeof activity !== 'object' || !('type' in activity) || !activity.type) {
+                    console.warn('🔍 DEBUG ArtistDashboard - Invalid activity in map:', activity);
+                    return null;
+                  }
+                  const activityType = String(activity.type) || 'unknown';
+                  return (
+                    <div key={activity.id} className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg">
+                      {getActivityIcon(activityType)}
+                      <div className="flex-1">
+                        <p className="text-white text-sm">{activity.description}</p>
+                        <p className="text-gray-400 text-xs">
+                          {activity.timestamp.toLocaleTimeString()}
+                        </p>
+                      </div>
+                      {activity.amount && (
+                        <p className="text-green-400 font-semibold text-sm">
+                          +{formatDYO(activity.amount)}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })
+                .filter(item => item !== null)
+            ) : (
               <div className="text-center py-12">
                 <Clock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                 <p className="text-gray-400 text-lg">No activity yet</p>

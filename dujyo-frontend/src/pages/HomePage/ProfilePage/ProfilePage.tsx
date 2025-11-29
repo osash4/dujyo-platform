@@ -1173,15 +1173,30 @@ const ProfilePage: React.FC = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {achievements.map((achievement, index) => {
-                    const Icon = achievement.icon;
-                    const rarityColors = {
-                      common: { bg: 'from-gray-500/20 to-gray-600/20', border: 'border-gray-500/50', icon: 'text-gray-400', glow: 'gray-400' },
-                      rare: { bg: 'from-blue-500/20 to-cyan-500/20', border: 'border-blue-500/50', icon: 'text-blue-400', glow: 'blue-400' },
-                      epic: { bg: 'from-purple-500/20 to-pink-500/20', border: 'border-purple-500/50', icon: 'text-purple-400', glow: 'purple-400' },
-                      legendary: { bg: 'from-amber-500/20 to-orange-500/20', border: 'border-amber-500/50', icon: 'text-amber-400', glow: 'amber-400' }
-                    };
-                    const colors = rarityColors[achievement.rarity as keyof typeof rarityColors] || rarityColors.common;
+                  {(Array.isArray(achievements) ? achievements : [])
+                    .filter((achievement): achievement is NonNullable<typeof achievement> => {
+                      // Validación robusta: eliminar null/undefined y verificar propiedades requeridas
+                      if (!achievement || typeof achievement !== 'object') return false;
+                      if (!('icon' in achievement) || !achievement.icon) return false;
+                      if (!('title' in achievement) || !achievement.title) return false;
+                      if (!('rarity' in achievement) || !achievement.rarity) return false;
+                      return true;
+                    })
+                    .map((achievement, index) => {
+                      // Validación adicional defensiva
+                      if (!achievement || typeof achievement !== 'object' || !achievement.icon || !achievement.title || !achievement.rarity) {
+                        console.warn('🔍 DEBUG ProfilePage achievements - Invalid achievement in map:', achievement);
+                        return null;
+                      }
+                      const Icon = achievement.icon;
+                      const rarityColors = {
+                        common: { bg: 'from-gray-500/20 to-gray-600/20', border: 'border-gray-500/50', icon: 'text-gray-400', glow: 'gray-400' },
+                        rare: { bg: 'from-blue-500/20 to-cyan-500/20', border: 'border-blue-500/50', icon: 'text-blue-400', glow: 'blue-400' },
+                        epic: { bg: 'from-purple-500/20 to-pink-500/20', border: 'border-purple-500/50', icon: 'text-purple-400', glow: 'purple-400' },
+                        legendary: { bg: 'from-amber-500/20 to-orange-500/20', border: 'border-amber-500/50', icon: 'text-amber-400', glow: 'amber-400' }
+                      };
+                      const achievementRarity = String(achievement.rarity) || 'common';
+                      const colors = rarityColors[achievementRarity as keyof typeof rarityColors] || rarityColors.common;
                     
                     return (
                       <motion.div
@@ -1217,7 +1232,7 @@ const ProfilePage: React.FC = () => {
                             ? `bg-${colors.glow}/20 text-${colors.glow} border border-${colors.glow}/50`
                             : 'bg-gray-700/50 text-gray-500'
                         }`}>
-                          {achievement.rarity.toUpperCase()}
+                          {achievementRarity.toUpperCase()}
                         </div>
                         
                         <div className="relative z-10">

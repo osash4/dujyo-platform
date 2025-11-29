@@ -528,30 +528,46 @@ const DEXDashboard: React.FC = () => {
               { type: "swap", user: "CyberPunk", amount: "500 USDC", time: "8m ago", color: "#EA580C" },
               { type: "liquidity", user: "QuantumSwap", amount: t('dex.removed') + " $25K", time: "12m ago", color: "#F59E0B" }
             ];
-          }, [t]).filter(activity => activity && activity.type).map((activity, index) => (
-            <motion.div
-              key={index}
-              className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg border border-gray-600/30"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: activity?.color || "#EA580C" }}
-                />
-                <div>
-                  <div className="text-white font-semibold">{activity?.user || 'Unknown'}</div>
-                  <div className="text-gray-400 text-sm">{activity?.type === "swap" ? t('dex.swapped') : t('dex.liquidity')}</div>
+          }, [t])
+          .filter((activity): activity is NonNullable<typeof activity> => {
+            // Validación robusta: eliminar null/undefined y verificar que tenga type
+            if (!activity || typeof activity !== 'object') return false;
+            if (!('type' in activity) || !activity.type) return false;
+            return true;
+          })
+          .map((activity, index) => {
+            // Validación adicional defensiva
+            if (!activity || typeof activity !== 'object' || !('type' in activity) || !activity.type) {
+              console.warn('🔍 DEBUG DEXDashboard - Invalid activity in map:', activity);
+              return null;
+            }
+            const activityType = String(activity.type) || 'unknown';
+            return (
+              <motion.div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg border border-gray-600/30"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: activity?.color || "#EA580C" }}
+                  />
+                  <div>
+                    <div className="text-white font-semibold">{activity?.user || 'Unknown'}</div>
+                    <div className="text-gray-400 text-sm">{activityType === "swap" ? t('dex.swapped') : t('dex.liquidity')}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <div className="text-white font-semibold">{activity?.amount || 'N/A'}</div>
-                <div className="text-gray-400 text-sm">{activity?.time || 'N/A'}</div>
-              </div>
-            </motion.div>
-          ))}
+                <div className="text-right">
+                  <div className="text-white font-semibold">{activity?.amount || 'N/A'}</div>
+                  <div className="text-gray-400 text-sm">{activity?.time || 'N/A'}</div>
+                </div>
+              </motion.div>
+            );
+          })
+          .filter(item => item !== null)}
         </div>
       </motion.div>
     </div>
