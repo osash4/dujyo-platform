@@ -2641,6 +2641,106 @@ const translations: Translations = {
     en: 'Copied!',
     es: '¡Copiado!',
   },
+  'profile.pleaseConnectWallet': {
+    en: 'Please connect your native blockchain wallet',
+    es: 'Por favor conecta tu billetera blockchain nativa',
+  },
+  'profile.pleaseEnterValidAmount': {
+    en: 'Please enter a valid amount',
+    es: 'Por favor ingresa una cantidad válida',
+  },
+  'profile.insufficientBalance': {
+    en: 'Insufficient DYO balance. Available: {{amount}} DYO',
+    es: 'Balance DYO insuficiente. Disponible: {{amount}} DYO',
+  },
+  'profile.successfullyStaked': {
+    en: 'Successfully staked {{amount}} DYO tokens!',
+    es: '¡{{amount}} tokens DYO apostados exitosamente!',
+  },
+  'profile.errorPrefix': {
+    en: 'Error',
+    es: 'Error',
+  },
+  'profile.unknownError': {
+    en: 'Unknown error',
+    es: 'Error desconocido',
+  },
+  'profile.pleaseSelectPosition': {
+    en: 'Please select a staking position to unstake',
+    es: 'Por favor selecciona una posición de apuesta para desapostar',
+  },
+  'profile.noRewardsAvailable': {
+    en: 'No rewards available to claim',
+    es: 'No hay recompensas disponibles para reclamar',
+  },
+  'profile.successfullyClaimed': {
+    en: 'Successfully claimed {{amount}} DYO rewards!',
+    es: '¡{{amount}} recompensas DYO reclamadas exitosamente!',
+  },
+  'profile.achievementFirstTrade': {
+    en: 'First Trade',
+    es: 'Primera Transacción',
+  },
+  'profile.achievementFirstTradeDesc': {
+    en: 'Completed your first DEX trade',
+    es: 'Completaste tu primera transacción en DEX',
+  },
+  'profile.achievementMusicLover': {
+    en: 'Music Lover',
+    es: 'Amante de la Música',
+  },
+  'profile.achievementMusicLoverDesc': {
+    en: 'Listened to 100+ tracks',
+    es: 'Escuchaste más de 100 canciones',
+  },
+  'profile.achievementGamingMaster': {
+    en: 'Gaming Master',
+    es: 'Maestro del Gaming',
+  },
+  'profile.achievementGamingMasterDesc': {
+    en: 'Played 50+ games',
+    es: 'Jugaste más de 50 juegos',
+  },
+  'profile.achievementContentCreator': {
+    en: 'Content Creator',
+    es: 'Creador de Contenido',
+  },
+  'profile.achievementContentCreatorDesc': {
+    en: 'Created 10+ pieces of content',
+    es: 'Creaste más de 10 piezas de contenido',
+  },
+  'profile.achievementStakingPro': {
+    en: 'Staking Pro',
+    es: 'Profesional de Apuestas',
+  },
+  'profile.achievementStakingProDesc': {
+    en: 'Staked 1000+ DYO tokens',
+    es: 'Apostaste más de 1000 tokens DYO',
+  },
+  'profile.achievementEarlyAdopter': {
+    en: 'Early Adopter',
+    es: 'Adoptante Temprano',
+  },
+  'profile.achievementEarlyAdopterDesc': {
+    en: 'Joined DUJYO in the first month',
+    es: 'Te uniste a DUJYO en el primer mes',
+  },
+  'profile.achievementValidator': {
+    en: 'Validator',
+    es: 'Validador',
+  },
+  'profile.achievementValidatorDesc': {
+    en: 'Became a network validator',
+    es: 'Te convertiste en validador de la red',
+  },
+  'profile.achievementTopListener': {
+    en: 'Top Listener',
+    es: 'Top Oyente',
+  },
+  'profile.achievementTopListenerDesc': {
+    en: 'Top 10% of music listeners',
+    es: 'Top 10% de oyentes de música',
+  },
   'profile.fullWalletAddress': {
     en: 'Full Wallet Address',
     es: 'Dirección Completa de Billetera',
