@@ -2353,6 +2353,10 @@ const translations: Translations = {
     en: 'Up to',
     es: 'Hasta',
   },
+  'gaming.bonus': {
+    en: 'bonus',
+    es: 'bonus',
+  },
   
   // Profile Page
   'profile.editProfile': {

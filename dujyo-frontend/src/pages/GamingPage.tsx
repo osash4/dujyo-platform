@@ -589,8 +589,8 @@ const GamingPage: React.FC = () => {
                   <div className="flex items-center justify-center gap-3">
                     <Flame className="w-5 h-5 text-emerald-400" />
                     <div>
-                      <p className="text-sm font-semibold text-emerald-300">Win Streak: {winStreak} games</p>
-                      <p className="text-xs text-gray-400">Earning {winStreak * 0.5}x bonus $DYO</p>
+                      <p className="text-sm font-semibold text-emerald-300">{t('gaming.winStreakGames')}: {winStreak} {t('gaming.games')}</p>
+                      <p className="text-xs text-gray-400">{t('gaming.earn')} {winStreak * 0.5}x {t('gaming.bonus')} $DYO</p>
                     </div>
                   </div>
                 </motion.div>
