@@ -617,6 +617,18 @@ const translations: Translations = {
     en: 'Open Filters',
     es: 'Abrir Filtros',
   },
+  'common.playPause': {
+    en: 'Play/Pause',
+    es: 'Reproducir/Pausar',
+  },
+  'common.playback': {
+    en: 'Playback',
+    es: 'Reproducción',
+  },
+  'common.navigation': {
+    en: 'Navigation',
+    es: 'Navegación',
+  },
   'common.days': {
     en: 'days',
     es: 'días',
@@ -2161,6 +2173,30 @@ const translations: Translations = {
     en: 'Points',
     es: 'Puntos',
   },
+  'gaming.prizePool': {
+    en: 'Prize Pool',
+    es: 'Premio Total',
+  },
+  'gaming.entryFee': {
+    en: 'Entry Fee',
+    es: 'Tarifa de Entrada',
+  },
+  'gaming.players': {
+    en: 'players',
+    es: 'jugadores',
+  },
+  'gaming.endsIn': {
+    en: 'Ends in',
+    es: 'Termina en',
+  },
+  'gaming.joinTournament': {
+    en: 'Join Tournament',
+    es: 'Unirse al Torneo',
+  },
+  'gaming.new': {
+    en: 'NEW',
+    es: 'NUEVO',
+  },
   
   // Profile Page
   'profile.editProfile': {
@@ -3165,7 +3201,10 @@ export function t(key: string, lang?: Language): string {
   const currentLang = lang || getLanguage();
   const translation = translations[key];
   if (!translation) {
-    console.warn(`Translation missing for key: ${key}`);
+    // Solo mostrar warning en desarrollo para no llenar la consola en producción
+    if (process.env.NODE_ENV === 'development') {
+      console.debug(`Translation missing for key: ${key}`);
+    }
     return key;
   }
   return translation[currentLang] || translation.en || key;

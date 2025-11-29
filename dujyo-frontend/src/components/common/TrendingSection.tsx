@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, Flame } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface TrendingItem {
   id: string;
@@ -21,11 +22,13 @@ interface TrendingSectionProps {
 }
 
 const TrendingSection: React.FC<TrendingSectionProps> = ({
-  title = "Trending Now",
+  title,
   items,
   onItemClick,
   className = ''
 }) => {
+  const { t } = useLanguage();
+  const defaultTitle = title || t('video.trendingNow');
   const typeColors = {
     music: { bg: 'from-amber-500/20 to-orange-500/20', border: 'border-amber-500/50', text: 'text-amber-400' },
     video: { bg: 'from-cyan-500/20 to-blue-500/20', border: 'border-cyan-500/50', text: 'text-cyan-400' },
@@ -44,7 +47,7 @@ const TrendingSection: React.FC<TrendingSectionProps> = ({
           <Flame size={24} className="text-amber-400" />
         </div>
         <h2 className="text-3xl font-bold text-white flex items-center gap-2">
-          {title}
+          {defaultTitle}
           <TrendingUp size={28} className="text-amber-400" />
         </h2>
       </motion.div>
@@ -69,7 +72,7 @@ const TrendingSection: React.FC<TrendingSectionProps> = ({
                   item.trend === 'up' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50' :
                   'bg-red-500/20 text-red-400 border border-red-500/50'
                 }`}>
-                  {item.trend === 'new' ? 'NEW' : item.trend === 'up' ? '↑' : '↓'}
+                  {item.trend === 'new' ? t('gaming.new') : item.trend === 'up' ? '↑' : '↓'}
                 </div>
               )}
 

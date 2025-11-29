@@ -714,19 +714,19 @@ const GamingPage: React.FC = () => {
                     <div className="space-y-2 text-sm mb-3">
                       <div className="flex items-center gap-2 text-emerald-400">
                         <Coins className="w-4 h-4" />
-                        <span className="font-semibold">Prize Pool: {tournament.prizePool.toFixed(2)} $DYO</span>
+                        <span className="font-semibold">{t('gaming.prizePool')}: {tournament.prizePool.toFixed(2)} $DYO</span>
                       </div>
                       <div className="flex items-center justify-between text-gray-400">
-                        <span>Entry Fee: {tournament.entryFee} $DYO</span>
-                        <span>{tournament.players}/{tournament.maxPlayers} players</span>
+                        <span>{t('gaming.entryFee')}: {tournament.entryFee} $DYO</span>
+                        <span>{tournament.players}/{tournament.maxPlayers} {t('gaming.players')}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
                       <Timer className="w-4 h-4" />
-                      <span>Ends in: {formatTimeRemaining(tournament.endTime)}</span>
+                      <span>{t('gaming.endsIn')}: {formatTimeRemaining(tournament.endTime)}</span>
                     </div>
                     <button className="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors text-sm font-medium">
-                      Join Tournament
+                      {t('gaming.joinTournament')}
                     </button>
                   </motion.div>
                 ))}
