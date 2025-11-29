@@ -279,7 +279,33 @@ export function WalletDashboard() {
       
       if (response.ok) {
         const data = await response.json();
-        setAchievements(data.achievements || []);
+        // 🔍 DEBUG: Log achievements from API
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔍 DEBUG WalletDashboard - achievements from API:', {
+            isArray: Array.isArray(data.achievements),
+            length: data.achievements?.length ?? 0,
+            hasUndefined: data.achievements?.some((item: any) => item === undefined),
+            hasNull: data.achievements?.some((item: any) => item === null),
+            sample: data.achievements?.slice(0, 3)
+          });
+        }
+        // Validar y filtrar achievements antes de establecerlos
+        const validAchievements = (Array.isArray(data.achievements) ? data.achievements : [])
+          .filter((achievement: any): achievement is EarningAchievement => {
+            // Validación robusta: eliminar null/undefined y verificar propiedades requeridas
+            if (!achievement || typeof achievement !== 'object') {
+              if (process.env.NODE_ENV === 'development') {
+                console.warn('🔍 DEBUG WalletDashboard - Filtered out invalid achievement:', achievement);
+              }
+              return false;
+            }
+            // Verificar que tenga las propiedades requeridas
+            if (!('id' in achievement) || !achievement.id) return false;
+            if (!('icon' in achievement) || !achievement.icon) return false;
+            if (!('title' in achievement) || !achievement.title) return false;
+            return true;
+          });
+        setAchievements(validAchievements);
       } else {
         // Default achievements
         setAchievements([
@@ -777,9 +803,21 @@ export function WalletDashboard() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(platformEarnings || []).filter(platform => platform && platform.platform).map((platform, idx) => {
-                if (!platform || !platform.icon) return null;
-                const PlatformIcon = platform.icon;
+              {(Array.isArray(platformEarnings) ? platformEarnings : [])
+                .filter((platform): platform is PlatformEarnings => {
+                  // Validación robusta: eliminar null/undefined y verificar propiedades requeridas
+                  if (!platform || typeof platform !== 'object') return false;
+                  if (!('platform' in platform) || !platform.platform) return false;
+                  if (!('icon' in platform) || !platform.icon) return false;
+                  return true;
+                })
+                .map((platform, idx) => {
+                  // Validación adicional defensiva
+                  if (!platform || typeof platform !== 'object' || !platform.icon) {
+                    console.warn('🔍 DEBUG WalletDashboard - Invalid platform in map after filter:', platform);
+                    return null;
+                  }
+                  const PlatformIcon = platform.icon;
                 return (
                   <motion.div
                     key={platform.platform || idx}
@@ -930,9 +968,27 @@ export function WalletDashboard() {
                 {t('wallet.earningAchievements')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(achievements || []).filter(achievement => achievement && achievement.id && achievement.icon).map((achievement, idx) => {
-                  if (!achievement || !achievement.icon) return null;
-                  const AchievementIcon = achievement.icon;
+                {(Array.isArray(achievements) ? achievements : [])
+                  .filter((achievement): achievement is EarningAchievement => {
+                    // Validación robusta: eliminar null/undefined y verificar propiedades requeridas
+                    if (!achievement || typeof achievement !== 'object') {
+                      if (process.env.NODE_ENV === 'development') {
+                        console.warn('🔍 DEBUG WalletDashboard - Filtered out invalid achievement:', achievement);
+                      }
+                      return false;
+                    }
+                    if (!('id' in achievement) || !achievement.id) return false;
+                    if (!('icon' in achievement) || !achievement.icon) return false;
+                    if (!('title' in achievement) || !achievement.title) return false;
+                    return true;
+                  })
+                  .map((achievement, idx) => {
+                    // Validación adicional defensiva
+                    if (!achievement || typeof achievement !== 'object' || !achievement.icon || !achievement.id) {
+                      console.warn('🔍 DEBUG WalletDashboard - Invalid achievement in map after filter:', achievement);
+                      return null;
+                    }
+                    const AchievementIcon = achievement.icon;
                   return (
                     <motion.div
                       key={achievement.id || idx}
