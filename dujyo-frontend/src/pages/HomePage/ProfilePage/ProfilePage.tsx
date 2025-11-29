@@ -982,7 +982,11 @@ const ProfilePage: React.FC = () => {
                                  position.id != null;
                         })
                         .map((position, index) => {
-                          if (!position || !position.id) return null;
+                          // Validación adicional defensiva
+                          if (!position || typeof position !== 'object' || !position.id) {
+                            console.warn('Invalid position in map after filter:', position);
+                            return null;
+                          }
                           return (
                           <div key={position.id || `position-${index}`} className="bg-gray-700/30 rounded-lg p-4">
                           <div className="flex justify-between items-center mb-2">
@@ -1017,7 +1021,8 @@ const ProfilePage: React.FC = () => {
                           </button>
                         </div>
                           );
-                        })}
+                        })
+                        .filter(item => item !== null)}
                     </div>
                   )}
                   
@@ -1128,7 +1133,8 @@ const ProfilePage: React.FC = () => {
                             )}
                           </motion.div>
                         );
-                      })}
+                      })
+                      .filter(item => item !== null)}
                   </div>
                 ) : (
                   <div className="text-center py-8">
