@@ -115,7 +115,7 @@ const ProfilePage: React.FC = () => {
   }
   
   const { account, isAuthenticated, balancesPallet } = useBlockchain();
-  const { user, getUserRole, hasRole } = useAuth();
+  const { user, getUserRole, hasRole, refreshUser } = useAuth();
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'overview' | 'wallet' | 'staking' | 'achievements' | 'artist-dashboard'>(
     hasRole('artist') ? 'artist-dashboard' : 'overview'
@@ -149,6 +149,7 @@ const ProfilePage: React.FC = () => {
   const [isClaiming, setIsClaiming] = useState(false);
   const [stakingHistory, setStakingHistory] = useState<StakingHistory[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<string>('');
+  const [avatarError, setAvatarError] = useState(false);
 
   const profilePageItems: ContentItems = useMemo(() => ({
     [t('profile.yourLibrary')]: [
@@ -252,6 +253,23 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  // ✅ CARGAR PERFIL DEL USUARIO DESDE EL BACKEND
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (user?.uid) {
+        console.log('🔄 [ProfilePage] Loading user profile from backend...');
+        await refreshUser();
+        setAvatarError(false); // Reset avatar error when user data is refreshed
+      }
+    };
+    loadUserProfile();
+  }, []); // Solo al montar el componente
+
+  // Reset avatar error when photoURL changes
+  useEffect(() => {
+    setAvatarError(false);
+  }, [user?.photoURL]);
+
   useEffect(() => {
     loadNativeBalances();
     
@@ -309,7 +327,7 @@ const ProfilePage: React.FC = () => {
     
     // ✅ VALIDAR BALANCE NATIVO DE DYO
     if (amount > nativeBalance.dyo) {
-      setStakingMessage(t('profile.insufficientBalance', { amount: nativeBalance.dyo.toFixed(2) }).replace('{{amount}}', nativeBalance.dyo.toFixed(2)));
+      setStakingMessage(t('profile.insufficientBalance').replace('{{amount}}', nativeBalance.dyo.toFixed(2)));
       return;
     }
     
@@ -343,7 +361,7 @@ const ProfilePage: React.FC = () => {
       }
       
       const result = await response.json();
-      setStakingMessage(t('profile.successfullyStaked', { amount: amount.toString() }).replace('{{amount}}', amount.toString()));
+      setStakingMessage(t('profile.successfullyStaked').replace('{{amount}}', amount.toString()));
       setStakingAmount('');
       
       // ✅ ACTUALIZAR BALANCES NATIVOS DESPUÉS DE STAKE
@@ -454,7 +472,7 @@ const ProfilePage: React.FC = () => {
       }
       
       const result = await response.json();
-      setStakingMessage(t('profile.successfullyClaimed', { amount: result.amount.toString() }).replace('{{amount}}', result.amount.toString()));
+      setStakingMessage(t('profile.successfullyClaimed').replace('{{amount}}', result.amount.toString()));
       
       // ✅ ACTUALIZAR BALANCES NATIVOS DESPUÉS DE CLAIM
       await loadNativeBalances();
@@ -550,12 +568,21 @@ const ProfilePage: React.FC = () => {
             </motion.div>
 
             <motion.div
-              className="w-32 h-32 mx-auto mb-6 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center"
+              className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-amber-500/50 shadow-2xl bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <User size={64} className="text-white" />
+              {user?.photoURL && !avatarError ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'Profile'}
+                  className="w-full h-full object-cover"
+                  onError={() => setAvatarError(true)}
+                />
+              ) : (
+                <User size={64} className="text-white" />
+              )}
             </motion.div>
 
             <motion.h1
