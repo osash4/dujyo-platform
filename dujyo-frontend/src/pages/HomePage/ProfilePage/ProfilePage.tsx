@@ -1057,7 +1057,9 @@ const ProfilePage: React.FC = () => {
 
                 {stakingHistory.length > 0 ? (
                   <div className="space-y-4">
-                    {stakingHistory.map((tx) => (
+                    {stakingHistory.filter(tx => tx && tx.id).map((tx) => {
+                      if (!tx || !tx.type) return null;
+                      return (
                       <motion.div
                         key={tx.id}
                         className="bg-gray-700/30 rounded-lg p-4 border border-gray-600/30"
@@ -1077,28 +1079,31 @@ const ProfilePage: React.FC = () => {
                                <Award size={16} className="text-green-400" />}
                             </div>
                             <div>
-                              <p className="text-white font-medium capitalize">{tx.type}</p>
+                              <p className="text-white font-medium capitalize">{tx.type || 'unknown'}</p>
                               <p className="text-gray-400 text-sm">
-                                {new Date(tx.timestamp * 1000).toLocaleString()}
+                                {tx.timestamp ? new Date(tx.timestamp * 1000).toLocaleString() : 'N/A'}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-white font-semibold">{tx.amount.toFixed(2)} DYO</p>
+                            <p className="text-white font-semibold">{(tx.amount || 0).toFixed(2)} DYO</p>
                             <p className={`text-xs ${
                               tx.status === 'success' ? 'text-green-400' :
                               tx.status === 'pending' ? 'text-yellow-400' :
                               'text-red-400'
                             }`}>
-                              {tx.status.toUpperCase()}
+                              {(tx.status || 'unknown').toUpperCase()}
                             </p>
                           </div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500 font-mono">
-                          TX: {tx.txHash}
-                        </div>
+                        {tx.txHash && (
+                          <div className="mt-2 text-xs text-gray-500 font-mono">
+                            TX: {tx.txHash}
+                          </div>
+                        )}
                       </motion.div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center py-8">
