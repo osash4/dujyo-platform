@@ -6,6 +6,7 @@ import AnimatedCarousel from "../../../components/common/AnimatedCarousel";
 import { usePlayerContext } from "../../../contexts/PlayerContext";
 import { useAuth } from "../../../auth/AuthContext";
 import { useWallet } from "../../../hooks/useWallet";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import { getApiBaseUrl } from "../../../utils/apiConfig";
 import Logo from "../../../components/common/Logo";
 import Breadcrumbs from "../../../components/common/Breadcrumbs";
@@ -140,6 +141,7 @@ interface StreamMetrics {
 }
 
 const MusicPage: React.FC = () => {
+  const { t } = useLanguage();
   const { playTrack, setPlayerPosition } = usePlayerContext();
   const { user } = useAuth();
   const { connect, account, isConnecting } = useWallet();
@@ -203,7 +205,7 @@ const MusicPage: React.FC = () => {
   
   // Curated playlist
   const curatedPlaylist = {
-    title: "DUJYO's Top Picks",
+    title: t('music.topPicks'),
     items: musicContent.map(song => ({
       id: song.id,
       title: song.title,
@@ -217,25 +219,25 @@ const MusicPage: React.FC = () => {
   const filterOptions: FilterOption[] = [
     {
       id: 'genre',
-      label: 'Genre',
+      label: t('music.genre'),
       type: 'checkbox',
       options: [
-        { value: 'reggaeton', label: 'Reggaeton' },
-        { value: 'drum-bass', label: 'Drum & Bass' },
-        { value: 'electronic', label: 'Electronic' },
-        { value: 'hip-hop', label: 'Hip Hop' }
+        { value: 'reggaeton', label: t('music.reggaeton') },
+        { value: 'drum-bass', label: t('music.drumBass') },
+        { value: 'electronic', label: t('music.electronic') },
+        { value: 'hip-hop', label: t('music.hipHop') }
       ]
     },
     {
       id: 'rating',
-      label: 'Minimum Rating',
+      label: t('music.minimumRating'),
       type: 'range',
       min: 0,
       max: 5
     },
     {
       id: 'search',
-      label: 'Search',
+      label: t('common.search'),
       type: 'search'
     }
   ];
@@ -267,9 +269,9 @@ const MusicPage: React.FC = () => {
   
   // Keyboard shortcuts
   const shortcuts = [
-    { key: 'space', description: 'Play/Pause', action: () => {}, category: 'Playback' },
-    { key: 'ctrl+k', description: 'Search', action: () => {}, category: 'Navigation' },
-    { key: 'ctrl+f', description: 'Open Filters', action: () => {}, category: 'Navigation' }
+    { key: 'space', description: t('common.playPause'), action: () => {}, category: t('common.playback') },
+    { key: 'ctrl+k', description: t('common.search'), action: () => {}, category: t('common.navigation') },
+    { key: 'ctrl+f', description: t('common.openFilters'), action: () => {}, category: t('common.navigation') }
   ];
 
   // Set player position to top when component mounts
@@ -342,14 +344,13 @@ const MusicPage: React.FC = () => {
               </motion.div>
 
               <h1 className="text-4xl md:text-6xl font-bold neon-text-music mb-4">
-                Music Universe
+                {t('music.title')}
               </h1>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-2">
-                Immerse yourself in the sounds of the future. 
-                Discover electronic beats, cyberpunk anthems, and digital symphonies.
+                {t('music.subtitle')}
               </p>
               <p className="text-sm text-amber-400/80 font-semibold mb-6">
-                Powered by DUJYO • Stream-to-Earn
+                {t('music.poweredBy')}
               </p>
 
               {/* Stream-to-Earn Hero Metrics */}
@@ -365,7 +366,7 @@ const MusicPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Coins className="w-5 h-5 text-amber-400" />
-                    <span className="text-xs text-gray-400">$DYO per Stream</span>
+                    <span className="text-xs text-gray-400">{t('music.dyoPerStream')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-amber-400"
@@ -375,7 +376,7 @@ const MusicPage: React.FC = () => {
                   >
                     {metrics.dyoPerStream.toFixed(2)} $DYO
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">Earn while you listen</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('music.earnWhileListen')}</p>
                 </motion.div>
 
                 <motion.div
@@ -384,7 +385,7 @@ const MusicPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Play className="w-5 h-5 text-amber-400" />
-                    <span className="text-xs text-gray-400">Total Streams</span>
+                    <span className="text-xs text-gray-400">{t('music.totalStreams')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-amber-400"
@@ -394,7 +395,7 @@ const MusicPage: React.FC = () => {
                   >
                     {formatNumber(metrics.totalStreams)}
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">And counting...</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('music.andCounting')}</p>
                 </motion.div>
 
                 <motion.div
@@ -403,7 +404,7 @@ const MusicPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Users className="w-5 h-5 text-amber-400" />
-                    <span className="text-xs text-gray-400">Active Listeners</span>
+                    <span className="text-xs text-gray-400">{t('music.activeListeners')}</span>
                   </div>
                   <motion.div
                     className="text-3xl font-bold text-amber-400"
@@ -413,7 +414,7 @@ const MusicPage: React.FC = () => {
                   >
                     {formatNumber(metrics.activeListeners)}
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">Earning together</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('music.earningTogether')}</p>
                 </motion.div>
               </motion.div>
 
@@ -426,7 +427,7 @@ const MusicPage: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Wallet className="w-5 h-5" />
-                  <span>View My Earnings: {userEarnings.toFixed(2)} $DYO</span>
+                  <span>{t('music.viewMyEarnings')}: {userEarnings.toFixed(2)} $DYO</span>
                 </motion.button>
               )}
 
@@ -441,21 +442,21 @@ const MusicPage: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Sparkles className="w-5 h-5 text-amber-400" />
                     <div>
-                      <p className="text-sm font-semibold text-amber-300">Listen to earn $DYO tokens</p>
-                      <p className="text-xs text-gray-400">Every stream counts towards your earnings</p>
+                      <p className="text-sm font-semibold text-amber-300">{t('music.listenToEarn')}</p>
+                      <p className="text-xs text-gray-400">{t('music.everyStreamCounts')}</p>
                     </div>
                   </div>
                   {listeningStreak > 0 && (
                     <div className="flex items-center gap-2">
                       <Trophy className="w-4 h-4 text-amber-400" />
-                      <span className="text-xs text-amber-300">Streak: {listeningStreak} days</span>
+                      <span className="text-xs text-amber-300">{t('music.streak')}: {listeningStreak} {t('common.days')}</span>
                     </div>
                   )}
                 </div>
                 {earningsProgress > 0 && (
                   <div className="mt-3">
                     <div className="flex justify-between text-xs text-gray-400 mb-1">
-                      <span>Progress to next milestone</span>
+                      <span>{t('music.progressToNextMilestone')}</span>
                       <span>{earningsProgress}%</span>
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-2">
@@ -495,7 +496,7 @@ const MusicPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <Trophy className="w-6 h-6 text-amber-400" />
-                  <h2 className="text-3xl font-bold text-white">Top Earners</h2>
+                  <h2 className="text-3xl font-bold text-white">{t('music.topEarners')}</h2>
                 </div>
                 <div className="relative">
                   <button
@@ -507,7 +508,7 @@ const MusicPage: React.FC = () => {
                   </button>
                   {showTooltip === 'earners' && (
                     <div className="absolute right-0 top-8 w-64 p-3 bg-gray-800 border border-amber-400/30 rounded-lg text-xs text-gray-300 z-10">
-                      Top artists ranked by total $DYO earnings. Rankings update in real-time based on stream counts and listener engagement.
+                      {t('music.topEarnersDescription')}
                     </div>
                   )}
                 </div>
@@ -539,10 +540,10 @@ const MusicPage: React.FC = () => {
                         <span>{earner.totalEarnings.toFixed(2)} $DYO</span>
                       </div>
                       <div className="text-gray-400">
-                        {formatNumber(earner.streams)} streams
+                        {formatNumber(earner.streams)} {t('music.streams')}
                       </div>
                       <div className="text-gray-500">
-                        {earner.monthlyEarnings.toFixed(2)} $DYO/month
+                        {earner.monthlyEarnings.toFixed(2)} $DYO/{t('common.month')}
                       </div>
                     </div>
                   </motion.div>
@@ -589,7 +590,7 @@ const MusicPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold neon-text-music">
-                  Featured Tracks
+                  {t('music.featuredTracks')}
                 </h2>
                 <AdvancedFilters
                   filters={filterOptions}
@@ -614,7 +615,7 @@ const MusicPage: React.FC = () => {
                     {/* Earn $DYO Badge */}
                     <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-400/30 rounded-full">
                       <Coins className="w-3 h-3 text-amber-400" />
-                      <span className="text-xs font-semibold text-amber-300">Earn {song.earnPerStream.toFixed(2)} $DYO</span>
+                      <span className="text-xs font-semibold text-amber-300">{t('music.earnAmount', { amount: song.earnPerStream.toFixed(2) })}</span>
                     </div>
 
                     <div className="flex items-center space-x-4">
@@ -642,16 +643,16 @@ const MusicPage: React.FC = () => {
                           <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1 text-amber-400">
                               <TrendingUp className="w-3 h-3" />
-                              <span>Artist: {song.earnings.toFixed(2)} $DYO</span>
+                              <span>{t('music.artist')}: {song.earnings.toFixed(2)} $DYO</span>
                             </div>
                             <div className="flex items-center gap-1 text-green-400">
                               <Users className="w-3 h-3" />
-                              <span>{formatNumber(song.listenersEarning)} $DYO earned</span>
+                              <span>{formatNumber(song.listenersEarning)} $DYO {t('music.earned')}</span>
                             </div>
                           </div>
                           <div className="mt-1 text-xs text-gray-500 flex items-center gap-2">
                             <Eye className="w-3 h-3" />
-                            <span>{formatNumber(song.streams)} streams • {formatNumber(song.dailyEarnings)} $DYO today</span>
+                            <span>{formatNumber(song.streams)} {t('music.streams')} • {formatNumber(song.dailyEarnings)} $DYO {t('common.today')}</span>
                           </div>
                         </div>
                       </div>
@@ -675,37 +676,36 @@ const MusicPage: React.FC = () => {
               <div className="flex items-start gap-4">
                 <Info className="w-6 h-6 text-amber-400 flex-shrink-0 mt-1" />
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white mb-3">How Stream-to-Earn Works</h3>
+                  <h3 className="text-xl font-bold text-white mb-3">{t('music.howStreamToEarnWorks')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
                     <div>
                       <h4 className="font-semibold text-amber-300 mb-2 flex items-center gap-2">
                         <Users className="w-4 h-4" />
-                        For Listeners
+                        {t('music.forListeners')}
                       </h4>
                       <ul className="space-y-1 text-xs">
-                        <li>• Earn {metrics.dyoPerStream.toFixed(2)} $DYO per stream</li>
-                        <li>• Longer listening = more earnings</li>
-                        <li>• Daily streaks unlock bonus rewards</li>
-                        <li>• Support artists while earning</li>
+                        <li>• {t('music.earnPerStream', { amount: metrics.dyoPerStream.toFixed(2) })}</li>
+                        <li>• {t('music.longerListeningMoreEarnings')}</li>
+                        <li>• {t('music.dailyStreaksUnlock')}</li>
+                        <li>• {t('music.supportArtistsWhileEarning')}</li>
                       </ul>
                     </div>
                     <div>
                       <h4 className="font-semibold text-amber-300 mb-2 flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
-                        For Artists
+                        {t('music.forArtists')}
                       </h4>
                       <ul className="space-y-1 text-xs">
-                        <li>• Earn from every stream of your content</li>
-                        <li>• Higher engagement = higher earnings</li>
-                        <li>• Real-time earnings tracking</li>
-                        <li>• Build your fanbase and income</li>
+                        <li>• {t('music.earnFromEveryStream')}</li>
+                        <li>• {t('music.higherEngagementHigherEarnings')}</li>
+                        <li>• {t('music.realTimeEarningsTracking')}</li>
+                        <li>• {t('music.buildFanbaseAndIncome')}</li>
                       </ul>
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-amber-400/20">
                     <p className="text-xs text-gray-400">
-                      <strong className="text-amber-300">Maximize your earnings:</strong> Listen to full tracks, maintain daily streaks, 
-                      discover new artists, and engage with the community to unlock bonus rewards.
+                      <strong className="text-amber-300">{t('music.maximizeEarnings')}:</strong> {t('music.maximizeEarningsDescription')}
                     </p>
                   </div>
                 </div>
@@ -732,7 +732,7 @@ const MusicPage: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                 <Wallet className="w-6 h-6 text-amber-400" />
-                My Earnings
+                {t('music.myEarnings')}
               </h3>
               <button
                 onClick={() => setShowEarningsModal(false)}
@@ -743,16 +743,16 @@ const MusicPage: React.FC = () => {
             </div>
             <div className="space-y-4">
               <div className="bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-400/30 rounded-lg p-4">
-                <div className="text-sm text-gray-400 mb-1">Total Earnings</div>
+                <div className="text-sm text-gray-400 mb-1">{t('music.totalEarnings')}</div>
                 <div className="text-3xl font-bold text-amber-400">{userEarnings.toFixed(2)} $DYO</div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Listening Streak</div>
-                  <div className="text-lg font-semibold text-white">{listeningStreak} days</div>
+                  <div className="text-xs text-gray-400 mb-1">{t('music.listeningStreak')}</div>
+                  <div className="text-lg font-semibold text-white">{listeningStreak} {t('common.days')}</div>
                 </div>
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Progress</div>
+                  <div className="text-xs text-gray-400 mb-1">{t('common.progress')}</div>
                   <div className="text-lg font-semibold text-white">{earningsProgress}%</div>
                 </div>
               </div>
@@ -760,7 +760,7 @@ const MusicPage: React.FC = () => {
                 onClick={() => setShowEarningsModal(false)}
                 className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors"
               >
-                Close
+                {t('common.close')}
               </button>
             </div>
           </motion.div>

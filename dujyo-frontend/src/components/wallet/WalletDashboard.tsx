@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useBlockchain } from '../../contexts/BlockchainContext';
 import { useAuth } from '../../auth/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 import { WalletBalance } from './WalletBalance';
 import { NFTGallery } from '../nft/NFTGalery';
@@ -90,6 +91,7 @@ interface QuickAction {
 }
 
 export function WalletDashboard() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { account, balancesPallet, nftPallet, currentBalance, lastBalanceUpdate } = useBlockchain() as {
     account: string | null;
@@ -193,7 +195,7 @@ export function WalletDashboard() {
             platform: 'music',
             earnings: data.musicEarnings || 0,
             streams: data.musicStreams || 0,
-            label: 'Music',
+            label: t('wallet.music'),
             icon: Music,
             color: '#F59E0B'
           },
@@ -202,7 +204,7 @@ export function WalletDashboard() {
             earnings: data.videoEarnings || 0,
             streams: data.videoViews || 0,
             views: data.videoViews || 0,
-            label: 'Video',
+            label: t('wallet.video'),
             icon: Video,
             color: '#00F5FF'
           },
@@ -211,7 +213,7 @@ export function WalletDashboard() {
             earnings: data.gamingEarnings || 0,
             streams: data.gamingPlays || 0,
             plays: data.gamingPlays || 0,
-            label: 'Gaming',
+            label: t('wallet.gaming'),
             icon: Gamepad2,
             color: '#10B981'
           }
@@ -248,13 +250,13 @@ export function WalletDashboard() {
             period: 'weekly',
             predicted: data.weeklyPrediction || 0,
             confidence: data.weeklyConfidence || 75,
-            basedOn: 'Current activity trends'
+            basedOn: t('wallet.currentActivityTrends')
           },
           {
             period: 'monthly',
             predicted: data.monthlyPrediction || 0,
             confidence: data.monthlyConfidence || 80,
-            basedOn: 'Historical patterns'
+            basedOn: t('wallet.historicalPatterns')
           }
         ]);
       }
@@ -282,8 +284,8 @@ export function WalletDashboard() {
         setAchievements([
           {
             id: 'top-earner',
-            title: 'Top 10% Earner',
-            description: 'Be in the top 10% of earners',
+            title: t('wallet.top10PercentEarner'),
+            description: t('wallet.beTop10PercentEarners'),
             progress: 75,
             target: 100,
             reward: 500,
@@ -292,8 +294,8 @@ export function WalletDashboard() {
           },
           {
             id: 'consistent-creator',
-            title: 'Consistent Creator',
-            description: 'Upload content for 30 days',
+            title: t('wallet.consistentCreator'),
+            description: t('wallet.uploadContent30Days'),
             progress: 20,
             target: 30,
             reward: 250,
@@ -302,8 +304,8 @@ export function WalletDashboard() {
           },
           {
             id: 'first-earnings',
-            title: 'First Earnings',
-            description: 'Earn your first $DYO',
+            title: t('wallet.firstEarnings'),
+            description: t('wallet.earnYourFirstDyo'),
             progress: 100,
             target: 100,
             reward: 50,
@@ -489,19 +491,19 @@ export function WalletDashboard() {
         await loadWalletData();
         setIsTransferModalOpen(false);
         setSelectedNFT(null);
-        setSuccessMessage('NFT transferido correctamente');
+        setSuccessMessage(t('wallet.nftTransferredSuccessfully'));
       } catch (err: any) {
-        setError('Error al transferir el NFT.');
+        setError(t('wallet.nftTransferError'));
         console.error(err);
       }
     }
   };
 
-  const quickActions: QuickAction[] = [
+  const quickActions: QuickAction[] = React.useMemo(() => [
     {
       id: 'upload',
-      title: 'Upload Content',
-      description: 'Start earning from your creations',
+      title: t('wallet.uploadContent'),
+      description: t('wallet.startEarningFromCreations'),
       potentialEarnings: '+50 $DYO/week',
       link: '/upload',
       icon: Upload,
@@ -509,8 +511,8 @@ export function WalletDashboard() {
     },
     {
       id: 'engage',
-      title: 'Engage Community',
-      description: 'Interact with creators and fans',
+      title: t('wallet.engageCommunity'),
+      description: t('wallet.interactWithCreatorsAndFans'),
       potentialEarnings: '+25 $DYO/week',
       link: '/profile',
       icon: Users,
@@ -518,49 +520,49 @@ export function WalletDashboard() {
     },
     {
       id: 'quests',
-      title: 'Complete Quests',
-      description: 'Finish daily challenges',
+      title: t('wallet.completeQuests'),
+      description: t('wallet.finishDailyChallenges'),
       potentialEarnings: '+15 $DYO/week',
       link: '/gaming',
       icon: Target,
       color: '#EA580C'
     }
-  ];
+  ], [t]);
 
-  const tokenUtilities = [
+  const tokenUtilities = React.useMemo(() => [
     {
-      title: 'Stake & Earn',
-      description: 'Stake $DYO tokens to earn passive rewards',
+      title: t('wallet.stakeEarn'),
+      description: t('wallet.stakeDyoTokens'),
       link: '/staking',
       icon: TrendingUp,
       color: '#F59E0B'
     },
     {
-      title: 'Trade on DEX',
-      description: 'Swap $DYO for other tokens',
+      title: t('wallet.tradeOnDex'),
+      description: t('wallet.swapDyoForTokens'),
       link: '/dex',
       icon: ArrowUpRight,
       color: '#FBBF24'
     },
     {
-      title: 'Buy NFTs',
-      description: 'Purchase exclusive content NFTs',
+      title: t('wallet.buyNfts'),
+      description: t('wallet.purchaseExclusiveNfts'),
       link: '/marketplace',
       icon: Sparkles,
       color: '#EA580C'
     },
     {
-      title: 'Premium Features',
-      description: 'Unlock advanced platform features',
+      title: t('wallet.premiumFeatures'),
+      description: t('wallet.unlockAdvancedFeatures'),
       link: '/profile',
       icon: Star,
       color: '#00F5FF'
     }
-  ];
+  ], [t]);
 
-  const walletStats = [
+  const walletStats = React.useMemo(() => [
     { 
-      label: "Total Balance", 
+      label: t('wallet.totalBalance'), 
       value: `${balance.toFixed(4)} $DYO`, 
       icon: Wallet, 
       color: "#F59E0B",
@@ -568,7 +570,7 @@ export function WalletDashboard() {
       changeType: "positive" as const
     },
     { 
-      label: "Streaming Earnings", 
+      label: t('wallet.streamingEarnings'), 
       value: `${totalStreamingEarnings.toFixed(2)} $DYO`, 
       icon: Coins, 
       color: "#FBBF24",
@@ -576,7 +578,7 @@ export function WalletDashboard() {
       changeType: "positive" as const
     },
     { 
-      label: "NFTs Owned", 
+      label: t('wallet.nftsOwned'), 
       value: nfts.length.toString(), 
       icon: Sparkles, 
       color: "#EA580C",
@@ -584,7 +586,7 @@ export function WalletDashboard() {
       changeType: "positive" as const
     },
     { 
-      label: "Transactions", 
+      label: t('wallet.transactions'), 
       value: transactions.length.toString(), 
       icon: Activity, 
       color: "#00F5FF",
@@ -606,10 +608,10 @@ export function WalletDashboard() {
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
             <Wallet size={28} className="text-amber-400" />
-            Wallet Dashboard
+            {t('wallet.walletDashboard')}
           </h2>
           <p className="text-gray-400 text-sm mt-1">
-            Manage your digital assets and track your Stream-to-Earn activity
+            {t('wallet.manageDigitalAssets')}
           </p>
         </div>
         <motion.button
@@ -620,7 +622,7 @@ export function WalletDashboard() {
           disabled={loading}
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-          <span>Refresh</span>
+          <span>{t('common.refresh')}</span>
         </motion.button>
       </div>
 
@@ -655,7 +657,7 @@ export function WalletDashboard() {
             animate={{ opacity: 1 }}
           >
             <RefreshCw size={24} className="animate-spin" />
-            <span>Loading wallet data...</span>
+            <span>{t('wallet.loadingWalletData')}</span>
           </motion.div>
         </div>
       )}
@@ -706,13 +708,13 @@ export function WalletDashboard() {
                     <Zap className="w-6 h-6 text-amber-400" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400">Current Session Earnings</p>
+                    <p className="text-sm text-gray-400">{t('wallet.currentSessionEarnings')}</p>
                     <p className="text-2xl font-bold text-amber-400">{currentSessionEarnings.toFixed(2)} $DYO</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <Clock className="w-4 h-4" />
-                  <span>Live updates</span>
+                  <span>{t('wallet.liveUpdates')}</span>
                 </div>
               </div>
             </motion.div>
@@ -728,11 +730,11 @@ export function WalletDashboard() {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <BarChart3 className="w-6 h-6 text-amber-400" />
-                Streaming Earnings Breakdown
+                {t('wallet.streamingEarningsBreakdown')}
               </h3>
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Coins className="w-4 h-4 text-amber-400" />
-                <span>Total: {totalStreamingEarnings.toFixed(2)} $DYO</span>
+                <span>{t('common.total')}: {totalStreamingEarnings.toFixed(2)} $DYO</span>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -760,7 +762,7 @@ export function WalletDashboard() {
                     </div>
                     <div className="space-y-1 text-xs text-gray-400">
                       <div className="flex justify-between">
-                        <span>Streams/Views/Plays:</span>
+                        <span>{t('wallet.streamsViewsPlays')}:</span>
                         <span className="text-white">{formatNumber(platform.streams)}</span>
                       </div>
                       <div className="w-full bg-gray-600 rounded-full h-1.5">
@@ -789,7 +791,7 @@ export function WalletDashboard() {
             >
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-amber-400" />
-                Earning Predictions
+                {t('wallet.earningPredictions')}
               </h3>
               <div className="space-y-4">
                 {earningPredictions.map((prediction, idx) => (

@@ -609,6 +609,30 @@ const translations: Translations = {
     en: 'Choose Login Method',
     es: 'Elegir Método de Inicio de Sesión',
   },
+  'common.openFilters': {
+    en: 'Open Filters',
+    es: 'Abrir Filtros',
+  },
+  'common.days': {
+    en: 'days',
+    es: 'días',
+  },
+  'common.month': {
+    en: 'month',
+    es: 'mes',
+  },
+  'common.today': {
+    en: 'today',
+    es: 'hoy',
+  },
+  'common.progress': {
+    en: 'Progress',
+    es: 'Progreso',
+  },
+  'common.total': {
+    en: 'Total',
+    es: 'Total',
+  },
   
   // Navigation
   'nav.discover': {
@@ -772,12 +796,180 @@ const translations: Translations = {
   
   // Music Page
   'music.title': {
-    en: 'Music',
-    es: 'Música',
+    en: 'Music Universe',
+    es: 'Universo Musical',
   },
   'music.subtitle': {
-    en: 'Discover and stream your favorite tracks',
-    es: 'Descubre y transmite tus canciones favoritas',
+    en: 'Immerse yourself in the sounds of the future. Discover electronic beats, cyberpunk anthems, and digital symphonies.',
+    es: 'Sumérgete en los sonidos del futuro. Descubre ritmos electrónicos, himnos cyberpunk y sinfonías digitales.',
+  },
+  'music.poweredBy': {
+    en: 'Powered by DUJYO • Stream-to-Earn',
+    es: 'Impulsado por DUJYO • Transmite para Ganar',
+  },
+  'music.dyoPerStream': {
+    en: '$DYO per Stream',
+    es: '$DYO por Transmisión',
+  },
+  'music.earnWhileListen': {
+    en: 'Earn while you listen',
+    es: 'Gana mientras escuchas',
+  },
+  'music.totalStreams': {
+    en: 'Total Streams',
+    es: 'Transmisiones Totales',
+  },
+  'music.andCounting': {
+    en: 'And counting...',
+    es: 'Y contando...',
+  },
+  'music.activeListeners': {
+    en: 'Active Listeners',
+    es: 'Oyentes Activos',
+  },
+  'music.earningTogether': {
+    en: 'Earning together',
+    es: 'Ganando juntos',
+  },
+  'music.viewMyEarnings': {
+    en: 'View My Earnings',
+    es: 'Ver Mis Ganancias',
+  },
+  'music.listenToEarn': {
+    en: 'Listen to earn $DYO tokens',
+    es: 'Escucha para ganar tokens $DYO',
+  },
+  'music.everyStreamCounts': {
+    en: 'Every stream counts towards your earnings',
+    es: 'Cada transmisión cuenta para tus ganancias',
+  },
+  'music.streak': {
+    en: 'Streak',
+    es: 'Racha',
+  },
+  'music.progressToNextMilestone': {
+    en: 'Progress to next milestone',
+    es: 'Progreso al siguiente hito',
+  },
+  'music.topEarners': {
+    en: 'Top Earners',
+    es: 'Top Ganadores',
+  },
+  'music.topEarnersDescription': {
+    en: 'Top artists ranked by total $DYO earnings. Rankings update in real-time based on stream counts and listener engagement.',
+    es: 'Artistas principales clasificados por ganancias totales en $DYO. Las clasificaciones se actualizan en tiempo real según el número de transmisiones y el compromiso de los oyentes.',
+  },
+  'music.streams': {
+    en: 'streams',
+    es: 'transmisiones',
+  },
+  'music.topPicks': {
+    en: "DUJYO's Top Picks",
+    es: 'Top Selecciones de DUJYO',
+  },
+  'music.featuredTracks': {
+    en: 'Featured Tracks',
+    es: 'Canciones Destacadas',
+  },
+  'music.earnAmount': {
+    en: 'Earn {{amount}} $DYO',
+    es: 'Gana {{amount}} $DYO',
+  },
+  'music.artist': {
+    en: 'Artist',
+    es: 'Artista',
+  },
+  'music.earned': {
+    en: 'earned',
+    es: 'ganado',
+  },
+  'music.howStreamToEarnWorks': {
+    en: 'How Stream-to-Earn Works',
+    es: 'Cómo Funciona Transmitir para Ganar',
+  },
+  'music.forListeners': {
+    en: 'For Listeners',
+    es: 'Para Oyentes',
+  },
+  'music.earnPerStream': {
+    en: 'Earn {{amount}} $DYO per stream',
+    es: 'Gana {{amount}} $DYO por transmisión',
+  },
+  'music.longerListeningMoreEarnings': {
+    en: 'Longer listening = more earnings',
+    es: 'Más tiempo escuchando = más ganancias',
+  },
+  'music.dailyStreaksUnlock': {
+    en: 'Daily streaks unlock bonus rewards',
+    es: 'Las rachas diarias desbloquean recompensas adicionales',
+  },
+  'music.supportArtistsWhileEarning': {
+    en: 'Support artists while earning',
+    es: 'Apoya a los artistas mientras ganas',
+  },
+  'music.forArtists': {
+    en: 'For Artists',
+    es: 'Para Artistas',
+  },
+  'music.earnFromEveryStream': {
+    en: 'Earn from every stream of your content',
+    es: 'Gana de cada transmisión de tu contenido',
+  },
+  'music.higherEngagementHigherEarnings': {
+    en: 'Higher engagement = higher earnings',
+    es: 'Mayor compromiso = mayores ganancias',
+  },
+  'music.realTimeEarningsTracking': {
+    en: 'Real-time earnings tracking',
+    es: 'Seguimiento de ganancias en tiempo real',
+  },
+  'music.buildFanbaseAndIncome': {
+    en: 'Build your fanbase and income',
+    es: 'Construye tu base de fans e ingresos',
+  },
+  'music.maximizeEarnings': {
+    en: 'Maximize your earnings',
+    es: 'Maximiza tus ganancias',
+  },
+  'music.maximizeEarningsDescription': {
+    en: 'Listen to full tracks, maintain daily streaks, discover new artists, and engage with the community to unlock bonus rewards.',
+    es: 'Escucha canciones completas, mantén rachas diarias, descubre nuevos artistas e interactúa con la comunidad para desbloquear recompensas adicionales.',
+  },
+  'music.myEarnings': {
+    en: 'My Earnings',
+    es: 'Mis Ganancias',
+  },
+  'music.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'music.listeningStreak': {
+    en: 'Listening Streak',
+    es: 'Racha de Escucha',
+  },
+  'music.genre': {
+    en: 'Genre',
+    es: 'Género',
+  },
+  'music.reggaeton': {
+    en: 'Reggaeton',
+    es: 'Reggaeton',
+  },
+  'music.drumBass': {
+    en: 'Drum & Bass',
+    es: 'Drum & Bass',
+  },
+  'music.electronic': {
+    en: 'Electronic',
+    es: 'Electrónica',
+  },
+  'music.hipHop': {
+    en: 'Hip Hop',
+    es: 'Hip Hop',
+  },
+  'music.minimumRating': {
+    en: 'Minimum Rating',
+    es: 'Calificación Mínima',
   },
   'music.nowPlaying': {
     en: 'Now Playing',
@@ -959,6 +1151,154 @@ const translations: Translations = {
     en: 'No transactions yet',
     es: 'Aún no hay transacciones',
   },
+  'wallet.walletDashboard': {
+    en: 'Wallet Dashboard',
+    es: 'Panel de Billetera',
+  },
+  'wallet.manageDigitalAssets': {
+    en: 'Manage your digital assets and track your Stream-to-Earn activity',
+    es: 'Administra tus activos digitales y rastrea tu actividad de Transmitir para Ganar',
+  },
+  'wallet.loadingWalletData': {
+    en: 'Loading wallet data...',
+    es: 'Cargando datos de billetera...',
+  },
+  'wallet.music': {
+    en: 'Music',
+    es: 'Música',
+  },
+  'wallet.video': {
+    en: 'Video',
+    es: 'Video',
+  },
+  'wallet.gaming': {
+    en: 'Gaming',
+    es: 'Gaming',
+  },
+  'wallet.currentActivityTrends': {
+    en: 'Current activity trends',
+    es: 'Tendencias de actividad actual',
+  },
+  'wallet.historicalPatterns': {
+    en: 'Historical patterns',
+    es: 'Patrones históricos',
+  },
+  'wallet.top10PercentEarner': {
+    en: 'Top 10% Earner',
+    es: 'Top 10% de Ganadores',
+  },
+  'wallet.beTop10PercentEarners': {
+    en: 'Be in the top 10% of earners',
+    es: 'Estar en el top 10% de ganadores',
+  },
+  'wallet.consistentCreator': {
+    en: 'Consistent Creator',
+    es: 'Creador Consistente',
+  },
+  'wallet.uploadContent30Days': {
+    en: 'Upload content for 30 days',
+    es: 'Sube contenido durante 30 días',
+  },
+  'wallet.firstEarnings': {
+    en: 'First Earnings',
+    es: 'Primeras Ganancias',
+  },
+  'wallet.earnYourFirstDyo': {
+    en: 'Earn your first $DYO',
+    es: 'Gana tu primer $DYO',
+  },
+  'wallet.nftTransferredSuccessfully': {
+    en: 'NFT transferred successfully',
+    es: 'NFT transferido correctamente',
+  },
+  'wallet.nftTransferError': {
+    en: 'Error transferring NFT',
+    es: 'Error al transferir el NFT',
+  },
+  'wallet.uploadContent': {
+    en: 'Upload Content',
+    es: 'Subir Contenido',
+  },
+  'wallet.startEarningFromCreations': {
+    en: 'Start earning from your creations',
+    es: 'Comienza a ganar con tus creaciones',
+  },
+  'wallet.engageCommunity': {
+    en: 'Engage Community',
+    es: 'Interactuar con la Comunidad',
+  },
+  'wallet.interactWithCreatorsAndFans': {
+    en: 'Interact with creators and fans',
+    es: 'Interactúa con creadores y fans',
+  },
+  'wallet.completeQuests': {
+    en: 'Complete Quests',
+    es: 'Completar Misiones',
+  },
+  'wallet.finishDailyChallenges': {
+    en: 'Finish daily challenges',
+    es: 'Completa desafíos diarios',
+  },
+  'wallet.stakeEarn': {
+    en: 'Stake & Earn',
+    es: 'Apostar y Ganar',
+  },
+  'wallet.stakeDyoTokens': {
+    en: 'Stake $DYO tokens to earn passive rewards',
+    es: 'Aposta tokens $DYO para ganar recompensas pasivas',
+  },
+  'wallet.tradeOnDex': {
+    en: 'Trade on DEX',
+    es: 'Comerciar en DEX',
+  },
+  'wallet.swapDyoForTokens': {
+    en: 'Swap $DYO for other tokens',
+    es: 'Intercambia $DYO por otros tokens',
+  },
+  'wallet.buyNfts': {
+    en: 'Buy NFTs',
+    es: 'Comprar NFTs',
+  },
+  'wallet.purchaseExclusiveNfts': {
+    en: 'Purchase exclusive content NFTs',
+    es: 'Compra NFTs de contenido exclusivo',
+  },
+  'wallet.premiumFeatures': {
+    en: 'Premium Features',
+    es: 'Características Premium',
+  },
+  'wallet.unlockAdvancedFeatures': {
+    en: 'Unlock advanced platform features',
+    es: 'Desbloquea características avanzadas de la plataforma',
+  },
+  'wallet.streamingEarnings': {
+    en: 'Streaming Earnings',
+    es: 'Ganancias por Transmisión',
+  },
+  'wallet.nftsOwned': {
+    en: 'NFTs Owned',
+    es: 'NFTs en Propiedad',
+  },
+  'wallet.currentSessionEarnings': {
+    en: 'Current Session Earnings',
+    es: 'Ganancias de Sesión Actual',
+  },
+  'wallet.liveUpdates': {
+    en: 'Live updates',
+    es: 'Actualizaciones en vivo',
+  },
+  'wallet.streamingEarningsBreakdown': {
+    en: 'Streaming Earnings Breakdown',
+    es: 'Desglose de Ganancias por Transmisión',
+  },
+  'wallet.streamsViewsPlays': {
+    en: 'Streams/Views/Plays',
+    es: 'Transmisiones/Visualizaciones/Reproducciones',
+  },
+  'wallet.earningPredictions': {
+    en: 'Earning Predictions',
+    es: 'Predicciones de Ganancias',
+  },
   
   // DEX
   'dex.title': {
@@ -1008,6 +1348,110 @@ const translations: Translations = {
   'dex.swapNow': {
     en: 'Swap Now',
     es: 'Intercambiar Ahora',
+  },
+  'dex.dashboard': {
+    en: 'Dashboard',
+    es: 'Panel',
+  },
+  'dex.analyticsMetrics': {
+    en: 'Analytics & Metrics',
+    es: 'Analíticas y Métricas',
+  },
+  'dex.tradeTokens': {
+    en: 'Trade Tokens',
+    es: 'Intercambiar Tokens',
+  },
+  'dex.provideLiquidity': {
+    en: 'Provide Liquidity',
+    es: 'Proporcionar Liquidez',
+  },
+  'dex.stakeEarn': {
+    en: 'Stake & Earn',
+    es: 'Apostar y Ganar',
+  },
+  'dex.earnApy': {
+    en: 'Earn {{apy}}% APY on your $DYO',
+    es: 'Gana {{apy}}% APY en tu $DYO',
+  },
+  'dex.highApy': {
+    en: 'High APY',
+    es: 'Alto APY',
+  },
+  'dex.earnFeesFromTrading': {
+    en: 'Earn fees from trading pairs',
+    es: 'Gana comisiones de pares de trading',
+  },
+  'dex.feeEarnings': {
+    en: 'Fee Earnings',
+    es: 'Ganancias por Comisiones',
+  },
+  'dex.tradeSwap': {
+    en: 'Trade & Swap',
+    es: 'Comerciar e Intercambiar',
+  },
+  'dex.swapDyoForTokens': {
+    en: 'Swap DYO for other tokens',
+    es: 'Intercambia DYO por otros tokens',
+  },
+  'dex.activeTrading': {
+    en: 'Active Trading',
+    es: 'Trading Activo',
+  },
+  'dex.earnedFromStreaming': {
+    en: 'Earned from Streaming',
+    es: 'Ganado por Transmisión',
+  },
+  'dex.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'dex.streamsViewsPlays': {
+    en: 'Streams/Views/Plays',
+    es: 'Transmisiones/Visualizaciones/Reproducciones',
+  },
+  'dex.perStream': {
+    en: 'Per Stream',
+    es: 'Por Transmisión',
+  },
+  'dex.transferToDex': {
+    en: 'Transfer to DEX',
+    es: 'Transferir a DEX',
+  },
+  'dex.subtitle': {
+    en: 'Trade, Swap & Provide Liquidity on the DUJYO Decentralized Exchange',
+    es: 'Comercia, Intercambia y Proporciona Liquidez en el Intercambio Descentralizado DUJYO',
+  },
+  'dex.volume24h': {
+    en: '24h Volume',
+    es: 'Volumen 24h',
+  },
+  'dex.activePairs': {
+    en: 'Active Pairs',
+    es: 'Pares Activos',
+  },
+  'dex.tokenEcosystemLive': {
+    en: '$DYO Token Ecosystem Live',
+    es: 'Ecosistema de Tokens $DYO Activo',
+  },
+  'dex.whatYouCanDoWithDyo': {
+    en: 'What You Can Do With $DYO Tokens',
+    es: 'Qué Puedes Hacer con los Tokens $DYO',
+  },
+  'dex.recommendedPairsForStreamers': {
+    en: 'Recommended Pairs for Streamers',
+    es: 'Pares Recomendados para Streamers',
+  },
+  'dex.volume': {
+    en: 'Volume',
+    es: 'Volumen',
+  },
+  'dex.liquidityPool': {
+    en: 'Liquidity Pool',
+    es: 'Pool de Liquidez',
+  },
+  'dex.transferEarningsDescription': {
+    en: 'Transfer your streaming earnings to your DEX wallet for trading, staking, or providing liquidity.',
+    es: 'Transfiere tus ganancias de transmisión a tu billetera DEX para trading, staking o proporcionar liquidez.',
   },
   
   // Profile Page

@@ -10,12 +10,14 @@ import { WalletConnector } from '../components/wallet/WalletConnector';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import { useAuth } from '../auth/AuthContext';
 import { useWallet } from '../hooks/useWallet';
+import { useLanguage } from '../contexts/LanguageContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
 import { BarChart3, ArrowLeftRight, Droplets, Zap, Sparkles, TrendingUp, Coins, Music, Video, Gamepad2, Wallet, TrendingDown, ExternalLink, Info, Award, Clock, ArrowRight } from 'lucide-react';
 import Logo from '../components/common/Logo';
 import '../styles/neon-colors.css';
 
 const DEXPage: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'swap' | 'liquidity'>('dashboard');
   const { setPlayerPosition } = usePlayerContext();
@@ -100,59 +102,59 @@ const DEXPage: React.FC = () => {
     setShowBridgeModal(true);
   };
 
-  const tabs = [
+  const tabs = React.useMemo(() => [
     {
       id: 'dashboard',
-      label: 'Dashboard',
+      label: t('dex.dashboard'),
       icon: BarChart3,
       color: '#00F5FF',
-      description: 'Analytics & Metrics'
+      description: t('dex.analyticsMetrics')
     },
     {
       id: 'swap',
-      label: 'Swap',
+      label: t('dex.swap'),
       icon: ArrowLeftRight,
       color: '#F59E0B',
-      description: 'Trade Tokens'
+      description: t('dex.tradeTokens')
     },
     {
       id: 'liquidity',
-      label: 'Liquidity',
+      label: t('dex.liquidity'),
       icon: Droplets,
       color: '#EA580C',
-      description: 'Provide Liquidity'
+      description: t('dex.provideLiquidity')
     }
-  ];
+  ], [t]);
 
-  const tokenUtilityActions = [
+  const tokenUtilityActions = React.useMemo(() => [
     {
       id: 'stake',
-      title: 'Stake & Earn',
-      description: `Earn ${stakingAPY}% APY on your $DYO`,
+      title: t('dex.stakeEarn'),
+      description: t('dex.earnApy', { apy: stakingAPY }),
       link: '/staking',
       icon: TrendingUp,
       color: '#F59E0B',
-      badge: 'High APY'
+      badge: t('dex.highApy')
     },
     {
       id: 'liquidity',
-      title: 'Provide Liquidity',
-      description: 'Earn fees from trading pairs',
+      title: t('dex.provideLiquidity'),
+      description: t('dex.earnFeesFromTrading'),
       link: '#liquidity',
       icon: Droplets,
       color: '#FBBF24',
-      badge: 'Fee Earnings'
+      badge: t('dex.feeEarnings')
     },
     {
       id: 'trade',
-      title: 'Trade & Swap',
-      description: 'Swap DYO for other tokens',
+      title: t('dex.tradeSwap'),
+      description: t('dex.swapDyoForTokens'),
       link: '#swap',
       icon: ArrowLeftRight,
       color: '#EA580C',
-      badge: 'Active Trading'
+      badge: t('dex.activeTrading')
     }
-  ];
+  ], [t, stakingAPY]);
 
   const recommendedPairs = [
     { from: 'DYO', to: 'DYS', liquidity: 'High', volume: '$1.2M' },
@@ -317,22 +319,22 @@ const DEXPage: React.FC = () => {
                   >
                     <div className="flex items-center justify-center gap-2 mb-3">
                       <Coins className="w-5 h-5 text-amber-400" />
-                      <span className="text-sm font-semibold text-amber-300">Earned from Streaming</span>
+                      <span className="text-sm font-semibold text-amber-300">{t('dex.earnedFromStreaming')}</span>
                     </div>
                     <div className="flex items-center justify-center gap-6 flex-wrap">
                       <div className="text-center">
                         <p className="text-3xl font-bold text-amber-400">{streamingEarnings.toFixed(2)} $DYO</p>
-                        <p className="text-xs text-gray-400 mt-1">Total Earnings</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('dex.totalEarnings')}</p>
                       </div>
                       <div className="h-12 w-px bg-gray-600" />
                       <div className="text-center">
                         <p className="text-xl font-bold text-amber-300">{formatNumber(streamCount)}</p>
-                        <p className="text-xs text-gray-400 mt-1">Streams/Views/Plays</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('dex.streamsViewsPlays')}</p>
                       </div>
                       <div className="h-12 w-px bg-gray-600" />
                       <div className="text-center">
                         <p className="text-xl font-bold text-amber-300">{earningRate.toFixed(3)} $DYO</p>
-                        <p className="text-xs text-gray-400 mt-1">Per Stream</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('dex.perStream')}</p>
                       </div>
                     </div>
                     <motion.button
@@ -342,7 +344,7 @@ const DEXPage: React.FC = () => {
                       whileTap={{ scale: 0.95 }}
                     >
                       <ArrowRight className="w-4 h-4" />
-                      <span>Transfer to DEX</span>
+                      <span>{t('dex.transferToDex')}</span>
                     </motion.button>
                   </motion.div>
                 )}
@@ -355,7 +357,7 @@ const DEXPage: React.FC = () => {
                   transition={{ duration: 1, delay: 0.8 }}
                 >
                   <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-4 md:mb-6 max-w-2xl mx-auto px-4">
-                    Trade, Swap & Provide Liquidity on the DUJYO Decentralized Exchange
+                    {t('dex.subtitle')}
                   </p>
                   
                   {/* Quick Stats - Responsive */}
@@ -369,7 +371,7 @@ const DEXPage: React.FC = () => {
                     >
                       <TrendingUp className="w-5 h-5 text-amber-400" />
                       <div className="text-left">
-                        <p className="text-xs text-gray-400">24h Volume</p>
+                        <p className="text-xs text-gray-400">{t('dex.volume24h')}</p>
                         <p className="text-sm font-bold text-amber-400">$2.4M</p>
                       </div>
                     </motion.div>
@@ -383,7 +385,7 @@ const DEXPage: React.FC = () => {
                     >
                       <Droplets className="w-5 h-5 text-orange-400" />
                       <div className="text-left">
-                        <p className="text-xs text-gray-400">Total Liquidity</p>
+                        <p className="text-xs text-gray-400">{t('dex.totalLiquidity')}</p>
                         <p className="text-sm font-bold text-orange-400">$18.7M</p>
                       </div>
                     </motion.div>
@@ -397,7 +399,7 @@ const DEXPage: React.FC = () => {
                     >
                       <Zap className="w-5 h-5 text-cyan-400" />
                       <div className="text-left">
-                        <p className="text-xs text-gray-400">Active Pairs</p>
+                        <p className="text-xs text-gray-400">{t('dex.activePairs')}</p>
                         <p className="text-sm font-bold text-cyan-400">12</p>
                       </div>
                     </motion.div>
@@ -450,7 +452,7 @@ const DEXPage: React.FC = () => {
                       }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
-                    <span className="text-amber-400 text-sm font-semibold">$DYO Token Ecosystem Live</span>
+                    <span className="text-amber-400 text-sm font-semibold">{t('dex.tokenEcosystemLive')}</span>
                   </div>
 
                   {/* Wallet Connector */}
@@ -471,7 +473,7 @@ const DEXPage: React.FC = () => {
                 transition={{ duration: 0.6 }}
               >
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">
-                  What You Can Do With $DYO Tokens
+                  {t('dex.whatYouCanDoWithDyo')}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                   {tokenUtilityActions.map((action, idx) => {
@@ -625,7 +627,7 @@ const DEXPage: React.FC = () => {
                       >
                         <div className="flex items-center gap-2 mb-4">
                           <Sparkles className="w-5 h-5 text-amber-400" />
-                          <h3 className="text-lg font-bold text-white">Recommended Pairs for Streamers</h3>
+                          <h3 className="text-lg font-bold text-white">{t('dex.recommendedPairsForStreamers')}</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           {recommendedPairs.map((pair, idx) => (
@@ -638,7 +640,7 @@ const DEXPage: React.FC = () => {
                                 <span className="text-xs text-amber-400">{pair.liquidity}</span>
                               </div>
                               <div className="text-xs text-gray-400">
-                                Volume: {pair.volume}
+                                {t('dex.volume')}: {pair.volume}
                               </div>
                             </div>
                           ))}
@@ -683,7 +685,7 @@ const DEXPage: React.FC = () => {
                         <p className="text-xs text-gray-500 mt-1">Distributed to creators & listeners</p>
                       </div>
                       <div className="bg-gray-700/30 rounded-lg p-4">
-                        <p className="text-sm text-gray-400 mb-1">Liquidity Pool</p>
+                        <p className="text-sm text-gray-400 mb-1">{t('dex.liquidityPool')}</p>
                         <p className="text-xl font-bold text-amber-400">30%</p>
                         <p className="text-xs text-gray-500 mt-1">For DEX trading pairs</p>
                       </div>
@@ -768,7 +770,7 @@ const DEXPage: React.FC = () => {
                     <p className="text-2xl font-bold text-amber-400">{streamingEarnings.toFixed(2)} $DYO</p>
                   </div>
                   <div className="text-sm text-gray-300">
-                    <p>Transfer your streaming earnings to your DEX wallet for trading, staking, or providing liquidity.</p>
+                    <p>{t('dex.transferEarningsDescription')}</p>
                   </div>
                   <div className="flex gap-3">
                     <button
