@@ -80,6 +80,15 @@ const SettingsPage: React.FC = () => {
     loadPrivacySettings();
   }, [user]);
 
+  // Update avatarUrl when user photoURL changes
+  useEffect(() => {
+    if (user?.photoURL && user.photoURL !== avatarUrl) {
+      setAvatarUrl(user.photoURL);
+      setAvatarPreview(null);
+      setAvatarFile(null);
+    }
+  }, [user?.photoURL]);
+
   const loadUserProfile = async () => {
     if (!user) return;
     
@@ -98,7 +107,12 @@ const SettingsPage: React.FC = () => {
         const data = await response.json();
         setDisplayName(data.display_name || user.displayName || '');
         setBio(data.bio || '');
-        setAvatarUrl(data.avatar_url || user.photoURL || '');
+        const newAvatarUrl = data.avatar_url || user.photoURL || '';
+        setAvatarUrl(newAvatarUrl);
+        // Also update user context if avatar changed
+        if (newAvatarUrl && newAvatarUrl !== user.photoURL) {
+          updateUser({ photoURL: newAvatarUrl });
+        }
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -339,6 +353,11 @@ const SettingsPage: React.FC = () => {
         
         // Also refresh from backend to ensure we have the latest data
         await refreshUser();
+        
+        // Update local state with the new avatar URL from the response
+        if (profileData.avatar_url) {
+          setAvatarUrl(profileData.avatar_url);
+        }
         
         setSaveStatus('success');
         setTimeout(() => setSaveStatus('idle'), 2000);
@@ -583,9 +602,16 @@ const SettingsPage: React.FC = () => {
                       <div className="flex items-center gap-4">
                         <div className="relative">
                           <img
-                            src={avatarPreview || avatarUrl || `https://ui-avatars.com/api/?name=${displayName || user?.email}&background=F59E0B&color=fff&size=128`}
+                            src={avatarPreview || avatarUrl || user?.photoURL || `https://ui-avatars.com/api/?name=${displayName || user?.email || 'User'}&background=F59E0B&color=fff&size=128`}
                             alt="Avatar"
                             className="w-24 h-24 rounded-full object-cover border-2 border-purple-500"
+                            onError={(e) => {
+                              // Fallback to generated avatar if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              if (!target.src.includes('ui-avatars.com')) {
+                                target.src = `https://ui-avatars.com/api/?name=${displayName || user?.email || 'User'}&background=F59E0B&color=fff&size=128`;
+                              }
+                            }}
                           />
                           {avatarPreview && (
                             <button

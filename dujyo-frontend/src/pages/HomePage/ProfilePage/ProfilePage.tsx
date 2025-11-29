@@ -592,7 +592,7 @@ const ProfilePage: React.FC = () => {
               transition={{ duration: 1, delay: 0.4 }}
             >
               <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-orange-400 bg-clip-text text-transparent">
-                {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : t('profile.userProfile')}
+                {t('common.welcome')}{user?.displayName ? `, ${user.displayName}` : ''}
               </span>
             </motion.h1>
 
@@ -602,7 +602,7 @@ const ProfilePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              {user?.displayName || 'DUJYO User'} • {getUserRole().toUpperCase()} • {t('profile.blockchainEnthusiast')}
+              {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : user?.email || 'DUJYO User'} • {getUserRole().toUpperCase()} • {t('profile.blockchainEnthusiast')}
             </motion.p>
             
             {/* Role Badge */}
