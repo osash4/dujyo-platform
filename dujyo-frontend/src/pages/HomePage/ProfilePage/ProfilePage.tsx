@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -150,28 +150,28 @@ const ProfilePage: React.FC = () => {
   const [stakingHistory, setStakingHistory] = useState<StakingHistory[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<string>('');
 
-  const profilePageItems: ContentItems = {
-    "Your Library": [
+  const profilePageItems: ContentItems = useMemo(() => ({
+    [t('profile.yourLibrary')]: [
       "Cyberpunk Symphony", "Neon Dreams", "Digital Revolution", 
       "Blockchain Beats", "Crypto Anthems", "DeFi Dance",
       "NFT Collection", "Web3 Vibes", "Metaverse Music"
     ],
-    "Liked Content": [
+    [t('profile.likedContent')]: [
       "Electric Vibes", "Future Bass", "Synthwave Classics",
       "AI Generated Music", "Quantum Sounds", "Digital Dreams",
       "Crypto Rock", "Blockchain Blues", "DeFi Jazz"
     ],
-    "Recommendations": [
+    [t('profile.recommendations')]: [
       "AI Generated Music", "Blockchain Beats", "Crypto Anthems",
       "Trending Now", "New Releases", "Popular This Week",
       "Similar Artists", "Genre Mix", "Discover Weekly"
     ],
-    "Recently Played": [
+    [t('profile.recentlyPlayed')]: [
       "DUJYO Theme", "Trading Music", "DeFi Dance",
       "Gaming Soundtrack", "Marketplace Mix", "DEX Vibes",
       "Profile Playlist", "Favorites", "Last Session"
     ]
-  };
+  }), [t]);
 
   // ✅ CARGAR BALANCES NATIVOS DE NUESTRA BLOCKCHAIN
   const loadNativeBalances = async () => {

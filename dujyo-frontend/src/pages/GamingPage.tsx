@@ -276,22 +276,32 @@ const GamingPage: React.FC = () => {
   const [userEarnings, setUserEarnings] = useState<number>(0);
   const [showEarningsModal, setShowEarningsModal] = useState(false);
   const [leaderboardFilter, setLeaderboardFilter] = useState<'all' | 'earnings'>('all');
-  const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([
-    { id: '1', title: 'Play 5 Games', description: 'Complete 5 games today', reward: 10, progress: 3, target: 5, completed: false, icon: Gamepad2 },
-    { id: '2', title: 'Win 3 Matches', description: 'Win 3 competitive matches', reward: 15, progress: 2, target: 3, completed: false, icon: Trophy },
-    { id: '3', title: 'Daily Login', description: 'Log in and play today', reward: 5, progress: 1, target: 1, completed: true, icon: Star }
-  ]);
+  const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
+  
+  // Initialize daily quests with translations
+  useEffect(() => {
+    setDailyQuests([
+      { id: '1', title: t('gaming.play5Games'), description: t('gaming.complete5Games'), reward: 10, progress: 3, target: 5, completed: false, icon: Gamepad2 },
+      { id: '2', title: t('gaming.win3Matches'), description: t('gaming.win3Competitive'), reward: 15, progress: 2, target: 3, completed: false, icon: Trophy },
+      { id: '3', title: t('gaming.dailyLogin'), description: t('gaming.logInAndPlay'), reward: 5, progress: 1, target: 1, completed: true, icon: Star }
+    ]);
+  }, [t]);
   const [tournaments, setTournaments] = useState<Tournament[]>([
     { id: '1', title: 'Cyberpunk Championship', prizePool: 5000, entryFee: 50, players: 245, maxPlayers: 500, endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), status: 'active' },
     { id: '2', title: 'Neon Racing Grand Prix', prizePool: 3000, entryFee: 30, players: 180, maxPlayers: 300, endTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), status: 'active' },
     { id: '3', title: 'VR Combat Tournament', prizePool: 7500, entryFee: 75, players: 320, maxPlayers: 400, endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), status: 'active' }
   ]);
-  const [achievements, setAchievements] = useState<Achievement[]>([
-    { id: '1', title: 'First Win', description: 'Win your first game', reward: 25, progress: 1, target: 1, completed: true, icon: Trophy },
-    { id: '2', title: 'Perfect Game', description: 'Win without taking damage', reward: 50, progress: 0, target: 1, completed: false, icon: Star },
-    { id: '3', title: 'Comeback King', description: 'Win after being 0-2 down', reward: 75, progress: 0, target: 1, completed: false, icon: Flame },
-    { id: '4', title: 'Win Streak', description: 'Win 10 games in a row', reward: 100, progress: 5, target: 10, completed: false, icon: Zap }
-  ]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  
+  // Initialize achievements with translations
+  useEffect(() => {
+    setAchievements([
+      { id: '1', title: t('gaming.firstWin'), description: t('gaming.winFirstGame'), reward: 25, progress: 1, target: 1, completed: true, icon: Trophy },
+      { id: '2', title: t('gaming.perfectGame'), description: t('gaming.winWithoutDamage'), reward: 50, progress: 0, target: 1, completed: false, icon: Star },
+      { id: '3', title: t('gaming.comebackKing'), description: t('gaming.winAfterDown'), reward: 75, progress: 0, target: 1, completed: false, icon: Flame },
+      { id: '4', title: t('gaming.winStreak'), description: t('gaming.win10InRow'), reward: 100, progress: 5, target: 10, completed: false, icon: Zap }
+    ]);
+  }, [t]);
   const [winStreak, setWinStreak] = useState(0);
   
   // Calculate total metrics
@@ -552,7 +562,7 @@ const GamingPage: React.FC = () => {
                   >
                     {formatNumber(metrics.totalEarnedToday)} $DYO
                   </motion.div>
-                  <p className="text-xs text-gray-400 mt-1">And counting...</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('gaming.andCounting')}</p>
                 </motion.div>
               </motion.div>
 
@@ -609,9 +619,9 @@ const GamingPage: React.FC = () => {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                  <h2 className="text-3xl font-bold text-white flex items-center gap-3">
                   <Target className="w-6 h-6 text-emerald-400" />
-                  Daily Quests
+                  {t('gaming.dailyQuests')}
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -644,7 +654,7 @@ const GamingPage: React.FC = () => {
                       </div>
                       <div className="mb-2">
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Progress</span>
+                          <span>{t('gaming.progress')}</span>
                           <span>{quest.progress}/{quest.target}</span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
@@ -659,7 +669,7 @@ const GamingPage: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-gray-400">Reward</span>
+                        <span className="text-xs text-gray-400">{t('gaming.reward')}</span>
                         <span className="text-sm font-bold text-emerald-400">{quest.reward} $DYO</span>
                       </div>
                     </motion.div>
@@ -681,7 +691,7 @@ const GamingPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold text-white flex items-center gap-3">
                   <Trophy className="w-6 h-6 text-emerald-400" />
-                  Active Tournaments
+                  {t('gaming.activeTournaments')}
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -708,7 +718,7 @@ const GamingPage: React.FC = () => {
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-bold text-white">{tournament.title}</h3>
                       <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">
-                        {tournament.status}
+                        {tournament.status === 'active' ? t('gaming.active') : tournament.status}
                       </span>
                     </div>
                     <div className="space-y-2 text-sm mb-3">
@@ -777,7 +787,7 @@ const GamingPage: React.FC = () => {
                       {!achievement.completed && achievement.target > 1 && (
                         <div className="mb-2">
                           <div className="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>Progress</span>
+                            <span>{t('gaming.progress')}</span>
                             <span>{achievement.progress}/{achievement.target}</span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-2">
@@ -791,7 +801,7 @@ const GamingPage: React.FC = () => {
                         </div>
                       )}
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-gray-400">Reward</span>
+                        <span className="text-xs text-gray-400">{t('gaming.reward')}</span>
                         <span className="text-sm font-bold text-emerald-400">{achievement.reward} $DYO</span>
                       </div>
                     </motion.div>
@@ -827,7 +837,7 @@ const GamingPage: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-3xl font-bold neon-text-gaming">
-                    Featured Games
+                    {t('gaming.featuredGames')}
                   </h2>
                   <AdvancedFilters
                     filters={filterOptions}
@@ -847,7 +857,7 @@ const GamingPage: React.FC = () => {
                       {/* Earn $DYO Badge */}
                       <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-green-600/20 border border-emerald-400/30 rounded-full">
                         <Coins className="w-3 h-3 text-emerald-400" />
-                        <span className="text-xs font-semibold text-emerald-300">Earn {game.avgEarnings.toFixed(2)} $DYO</span>
+                        <span className="text-xs font-semibold text-emerald-300">{t('gaming.earn')} {game.avgEarnings.toFixed(2)} $DYO</span>
                       </div>
                       <GamingCard
                         game={{
@@ -870,7 +880,7 @@ const GamingPage: React.FC = () => {
                             <span>{game.hourlyRate.toFixed(1)} $DYO/hr</span>
                           </div>
                           <div className="text-gray-400">
-                            Up to {game.potentialEarnings.toFixed(1)} $DYO
+                            {t('gaming.upTo')} {game.potentialEarnings.toFixed(1)} $DYO
                           </div>
                         </div>
                       </div>
@@ -898,7 +908,7 @@ const GamingPage: React.FC = () => {
                           : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
                       }`}
                     >
-                      All
+                      {t('gaming.all')}
                     </button>
                     <button
                       onClick={() => setLeaderboardFilter('earnings')}
@@ -941,7 +951,7 @@ const GamingPage: React.FC = () => {
               className="text-center"
             >
               <h2 className="text-3xl font-bold neon-text-gaming mb-8">
-                Gaming Statistics
+                {t('gaming.gamingStatistics')}
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -949,21 +959,21 @@ const GamingPage: React.FC = () => {
                   <div className="text-4xl font-bold neon-text-gaming mb-2">
                     {formatNumber(metrics.activeEarners)}
                   </div>
-                  <div className="text-gray-400">Active Earners</div>
+                  <div className="text-gray-400">{t('gaming.activeEarners')}</div>
                 </div>
                 
                 <div className="bg-gray-900 bg-opacity-50 rounded-lg p-6 neon-glow-gaming">
                   <div className="text-4xl font-bold neon-text-gaming mb-2">
                     {formatNumber(metrics.totalEarnedToday)}
                   </div>
-                  <div className="text-gray-400">$DYO Earned Today</div>
+                  <div className="text-gray-400">{t('gaming.earnedToday')}</div>
                 </div>
                 
                 <div className="bg-gray-900 bg-opacity-50 rounded-lg p-6 neon-glow-gaming">
                   <div className="text-4xl font-bold neon-text-gaming mb-2">
                     98.5%
                   </div>
-                  <div className="text-gray-400">Uptime</div>
+                  <div className="text-gray-400">{t('gaming.uptime')}</div>
                 </div>
               </div>
             </motion.div>
@@ -988,7 +998,7 @@ const GamingPage: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-bold text-white flex items-center gap-2">
                 <Wallet className="w-6 h-6 text-emerald-400" />
-                My Gaming Earnings
+                {t('gaming.myGamingEarnings')}
               </h3>
               <button
                 onClick={() => setShowEarningsModal(false)}
@@ -999,32 +1009,32 @@ const GamingPage: React.FC = () => {
             </div>
             <div className="space-y-4">
               <div className="bg-gradient-to-r from-emerald-500/20 to-green-600/20 border border-emerald-400/30 rounded-lg p-4">
-                <div className="text-sm text-gray-400 mb-1">Total Earnings</div>
+                <div className="text-sm text-gray-400 mb-1">{t('gaming.totalEarnings')}</div>
                 <div className="text-3xl font-bold text-emerald-400">{userEarnings.toFixed(2)} $DYO</div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Win Streak</div>
+                  <div className="text-xs text-gray-400 mb-1">{t('gaming.winStreakGames')}</div>
                   <div className="text-lg font-semibold text-white flex items-center gap-1">
                     <Flame className="w-4 h-4 text-emerald-400" />
-                    {winStreak} games
+                    {winStreak} {t('gaming.games')}
                   </div>
                 </div>
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-1">Games Played</div>
+                  <div className="text-xs text-gray-400 mb-1">{t('gaming.gamesPlayed')}</div>
                   <div className="text-lg font-semibold text-white">125</div>
                 </div>
               </div>
               <div className="bg-gray-700/50 rounded-lg p-3">
-                <div className="text-xs text-gray-400 mb-2">Earnings History</div>
-                <div className="text-sm text-gray-300">Last 7 days: 125.50 $DYO</div>
-                <div className="text-sm text-gray-300">Last 30 days: 520.75 $DYO</div>
+                <div className="text-xs text-gray-400 mb-2">{t('gaming.earningsHistory')}</div>
+                <div className="text-sm text-gray-300">{t('gaming.last7Days')}: 125.50 $DYO</div>
+                <div className="text-sm text-gray-300">{t('gaming.last30Days')}: 520.75 $DYO</div>
               </div>
               <button
                 onClick={() => setShowEarningsModal(false)}
                 className="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors"
               >
-                Close
+                {t('gaming.close')}
               </button>
             </div>
           </motion.div>

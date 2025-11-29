@@ -2197,6 +2197,162 @@ const translations: Translations = {
     en: 'NEW',
     es: 'NUEVO',
   },
+  'gaming.dailyQuests': {
+    en: 'Daily Quests',
+    es: 'Misiones Diarias',
+  },
+  'gaming.play5Games': {
+    en: 'Play 5 Games',
+    es: 'Juega 5 Juegos',
+  },
+  'gaming.complete5Games': {
+    en: 'Complete 5 games today',
+    es: 'Completa 5 juegos hoy',
+  },
+  'gaming.win3Matches': {
+    en: 'Win 3 Matches',
+    es: 'Gana 3 Partidas',
+  },
+  'gaming.win3Competitive': {
+    en: 'Win 3 competitive matches',
+    es: 'Gana 3 partidas competitivas',
+  },
+  'gaming.dailyLogin': {
+    en: 'Daily Login',
+    es: 'Inicio Diario',
+  },
+  'gaming.logInAndPlay': {
+    en: 'Log in and play today',
+    es: 'Inicia sesión y juega hoy',
+  },
+  'gaming.activeTournaments': {
+    en: 'Active Tournaments',
+    es: 'Torneos Activos',
+  },
+  'gaming.active': {
+    en: 'active',
+    es: 'activo',
+  },
+  'gaming.firstWin': {
+    en: 'First Win',
+    es: 'Primera Victoria',
+  },
+  'gaming.winFirstGame': {
+    en: 'Win your first game',
+    es: 'Gana tu primer juego',
+  },
+  'gaming.perfectGame': {
+    en: 'Perfect Game',
+    es: 'Juego Perfecto',
+  },
+  'gaming.winWithoutDamage': {
+    en: 'Win without taking damage',
+    es: 'Gana sin recibir daño',
+  },
+  'gaming.comebackKing': {
+    en: 'Comeback King',
+    es: 'Rey del Regreso',
+  },
+  'gaming.winAfterDown': {
+    en: 'Win after being 0-2 down',
+    es: 'Gana después de ir 0-2 abajo',
+  },
+  'gaming.winStreak': {
+    en: 'Win Streak',
+    es: 'Racha de Victorias',
+  },
+  'gaming.win10InRow': {
+    en: 'Win 10 games in a row',
+    es: 'Gana 10 juegos seguidos',
+  },
+  'gaming.featuredGames': {
+    en: 'Featured Games',
+    es: 'Juegos Destacados',
+  },
+  'gaming.earn': {
+    en: 'Earn',
+    es: 'Gana',
+  },
+  'gaming.free': {
+    en: 'FREE',
+    es: 'GRATIS',
+  },
+  'gaming.globalLeaderboard': {
+    en: 'Global Leaderboard',
+    es: 'Clasificación Global',
+  },
+  'gaming.topPlayersWorldwide': {
+    en: 'Top players worldwide',
+    es: 'Mejores jugadores del mundo',
+  },
+  'gaming.level': {
+    en: 'Level',
+    es: 'Nivel',
+  },
+  'gaming.games': {
+    en: 'games',
+    es: 'juegos',
+  },
+  'gaming.winRate': {
+    en: 'win rate',
+    es: 'tasa de victoria',
+  },
+  'gaming.updatedEvery5Minutes': {
+    en: 'Updated every 5 minutes',
+    es: 'Actualizado cada 5 minutos',
+  },
+  'gaming.competitiveSeason': {
+    en: 'Competitive Season 2024',
+    es: 'Temporada Competitiva 2024',
+  },
+  'gaming.gamingStatistics': {
+    en: 'Gaming Statistics',
+    es: 'Estadísticas de Gaming',
+  },
+  'gaming.uptime': {
+    en: 'Uptime',
+    es: 'Tiempo Activo',
+  },
+  'gaming.andCounting': {
+    en: 'And counting...',
+    es: 'Y contando...',
+  },
+  'gaming.myGamingEarnings': {
+    en: 'My Gaming Earnings',
+    es: 'Mis Ganancias de Gaming',
+  },
+  'gaming.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'gaming.winStreakGames': {
+    en: 'Win Streak',
+    es: 'Racha de Victorias',
+  },
+  'gaming.gamesPlayed': {
+    en: 'Games Played',
+    es: 'Juegos Jugados',
+  },
+  'gaming.earningsHistory': {
+    en: 'Earnings History',
+    es: 'Historial de Ganancias',
+  },
+  'gaming.last7Days': {
+    en: 'Last 7 days',
+    es: 'Últimos 7 días',
+  },
+  'gaming.last30Days': {
+    en: 'Last 30 days',
+    es: 'Últimos 30 días',
+  },
+  'gaming.close': {
+    en: 'Close',
+    es: 'Cerrar',
+  },
+  'gaming.upTo': {
+    en: 'Up to',
+    es: 'Hasta',
+  },
   
   // Profile Page
   'profile.editProfile': {
@@ -2691,6 +2847,10 @@ const translations: Translations = {
   'profile.recentlyPlayed': {
     en: 'Recently Played',
     es: 'Reproducido Recientemente',
+  },
+  'profile.viewMore': {
+    en: 'View more',
+    es: 'Ver más',
   },
   'profile.yourWalletAddress': {
     en: 'Your Wallet Address',
