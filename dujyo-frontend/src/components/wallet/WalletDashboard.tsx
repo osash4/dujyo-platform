@@ -593,7 +593,7 @@ export function WalletDashboard() {
       change: "+12",
       changeType: "positive" as const
     }
-  ];
+  ], [t, balance, totalStreamingEarnings, nfts.length, transactions.length, currentSessionEarnings]);
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
