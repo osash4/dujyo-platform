@@ -31,6 +31,7 @@ import {
 import { useAuth } from '../../auth/AuthContext';
 import { useBlockchain } from '../../contexts/BlockchainContext';
 import { useUnifiedBalance } from '../../hooks/useUnifiedBalance';
+import { useLanguage } from '../../contexts/LanguageContext';
 import QuickDexCard from './QuickDexCard';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 
@@ -138,6 +139,7 @@ interface AudienceMetric {
 }
 
 const ArtistDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const { user, getUserRole } = useAuth();
   const { account } = useBlockchain();
   const { available_dyo, staked, isUpdating } = useUnifiedBalance();
@@ -232,10 +234,10 @@ const ArtistDashboard: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
-      let walletAddress = user?.uid;
+      let walletAddress: string | undefined = user?.uid;
       
       if (!walletAddress || !walletAddress.startsWith('DU')) {
-        walletAddress = localStorage.getItem('dujyo_wallet_account');
+        walletAddress = localStorage.getItem('dujyo_wallet_account') || undefined;
       }
       
       if (!walletAddress || !walletAddress.startsWith('DU')) {
@@ -409,14 +411,14 @@ const ArtistDashboard: React.FC = () => {
         target: 1000,
         current: currentEarnings,
         deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        label: 'Monthly Goal'
+        label: t('artist.monthlyGoal')
       },
       {
         id: '2',
         target: 5000,
         current: currentEarnings,
         deadline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-        label: 'Quarterly Goal'
+        label: t('artist.quarterlyGoal')
       }
     ];
     setEarningGoals(goals);
@@ -478,25 +480,25 @@ const ArtistDashboard: React.FC = () => {
         const tips: OptimizationTip[] = [
           {
             id: '1',
-            title: 'Upload More Video Content',
-            description: 'Video content has 2x higher monetization rate than music',
-            impact: '+40% potential earnings',
+            title: t('artist.uploadMoreVideoContent'),
+            description: t('artist.videoContentHigherMonetization'),
+            impact: t('artist.impact40PercentEarnings'),
             category: 'content',
             priority: 'high'
           },
           {
             id: '2',
-            title: 'Engage Top Fans',
-            description: 'Top fans generate 5x more streams than average listeners',
-            impact: '+25% engagement boost',
+            title: t('artist.engageTopFans'),
+            description: t('artist.topFansGenerateMoreStreams'),
+            impact: t('artist.impact25PercentEngagement'),
             category: 'engagement',
             priority: 'high'
           },
           {
             id: '3',
-            title: 'Release Consistently',
-            description: 'Artists who release weekly have 40% higher retention',
-            impact: '+30% audience growth',
+            title: t('artist.releaseConsistently'),
+            description: t('artist.weeklyReleaseHigherRetention'),
+            impact: t('artist.impact30PercentAudience'),
             category: 'monetization',
             priority: 'medium'
           }
@@ -635,8 +637,8 @@ const ArtistDashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">No Data Available</h2>
-          <p className="text-gray-400">Unable to load artist metrics</p>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('artist.noDataAvailable')}</h2>
+          <p className="text-gray-400">{t('artist.unableToLoadMetrics')}</p>
         </div>
       </div>
     );
@@ -651,8 +653,8 @@ const ArtistDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Artist Dashboard</h1>
-          <p className="text-gray-400 mt-1">Welcome back, {user?.displayName}</p>
+          <h1 className="text-3xl font-bold text-white">{t('artist.artistDashboard')}</h1>
+          <p className="text-gray-400 mt-1">{t('artist.welcomeBack').replace('{{name}}', user?.displayName || '')}</p>
         </div>
         <div className="flex items-center space-x-4">
           <select
@@ -660,10 +662,10 @@ const ArtistDashboard: React.FC = () => {
             onChange={(e) => setSelectedPeriod(e.target.value as any)}
             className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:border-amber-500 focus:outline-none"
           >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
+            <option value="7d">{t('artist.last7Days')}</option>
+            <option value="30d">{t('artist.last30Days')}</option>
+            <option value="90d">{t('artist.last90Days')}</option>
+            <option value="1y">{t('artist.lastYear')}</option>
           </select>
         </div>
       </div>
@@ -677,33 +679,33 @@ const ArtistDashboard: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <Coins className="w-6 h-6 text-amber-400" />
-            DYO Token Economy
+            {t('artist.dyoTokenEconomy')}
           </h2>
           <div className="flex items-center gap-2 text-sm text-amber-400">
             <Sparkles className="w-4 h-4" />
-            <span>Stream-to-Earn Active</span>
+            <span>{t('artist.streamToEarnActive')}</span>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-gray-800/50 rounded-lg p-4">
-            <p className="text-sm text-gray-400 mb-1">Available Balance</p>
+            <p className="text-sm text-gray-400 mb-1">{t('artist.availableBalance')}</p>
             <p className="text-2xl font-bold text-amber-400">{formatDYO(available_dyo)}</p>
-            {isUpdating && <p className="text-xs text-gray-500 mt-1">Updating...</p>}
+            {isUpdating && <p className="text-xs text-gray-500 mt-1">{t('common.loading')}...</p>}
           </div>
           <div className="bg-gray-800/50 rounded-lg p-4">
-            <p className="text-sm text-gray-400 mb-1">Staked</p>
+            <p className="text-sm text-gray-400 mb-1">{t('artist.staked')}</p>
             <p className="text-2xl font-bold text-amber-400">{formatDYO(staked)}</p>
             {stakingInfo && (
               <p className="text-xs text-amber-400 mt-1">{stakingInfo.apy}% APY</p>
             )}
           </div>
           <div className="bg-gray-800/50 rounded-lg p-4">
-            <p className="text-sm text-gray-400 mb-1">Earning Rate</p>
-            <p className="text-2xl font-bold text-amber-400">{formatDYO(earningRate)}/day</p>
-            <p className="text-xs text-gray-500 mt-1">~{formatDYO(earningRate * 7)}/week</p>
+            <p className="text-sm text-gray-400 mb-1">{t('artist.earningRate')}</p>
+            <p className="text-2xl font-bold text-amber-400">{formatDYO(earningRate)}/{t('common.day')}</p>
+            <p className="text-xs text-gray-500 mt-1">~{formatDYO(earningRate * 7)}/{t('common.week')}</p>
           </div>
           <div className="bg-gray-800/50 rounded-lg p-4">
-            <p className="text-sm text-gray-400 mb-1">Total Earnings</p>
+            <p className="text-sm text-gray-400 mb-1">{t('artist.totalEarnings')}</p>
             <p className="text-2xl font-bold text-amber-400">{formatDYO(metrics.totalEarnings)}</p>
             <div className="flex items-center gap-1 mt-1">
               <TrendingUp className="w-3 h-3 text-green-400" />
@@ -723,31 +725,31 @@ const ArtistDashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Target className="w-5 h-5 text-amber-400" />
-              Earning Predictions
+              {t('artist.earningPredictions')}
             </h3>
             <div className="px-2 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-semibold">
-              {earningPredictions?.confidence || 0}% confidence
+              {earningPredictions?.confidence || 0}% {t('artist.confidence')}
             </div>
           </div>
           {earningPredictions && (
             <div className="space-y-4">
               <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-gray-400">Weekly Projection</p>
+                  <p className="text-sm text-gray-400">{t('artist.weeklyProjection')}</p>
                   <p className="text-lg font-bold text-amber-400">{formatDYO(earningPredictions.weekly)}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-gray-500" />
               </div>
               <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-gray-400">Monthly Projection</p>
+                  <p className="text-sm text-gray-400">{t('artist.monthlyProjection')}</p>
                   <p className="text-lg font-bold text-amber-400">{formatDYO(earningPredictions.monthly)}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-gray-500" />
               </div>
               <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-gray-400">Quarterly Projection</p>
+                  <p className="text-sm text-gray-400">{t('artist.quarterlyProjection')}</p>
                   <p className="text-lg font-bold text-amber-400">{formatDYO(earningPredictions.quarterly)}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-gray-500" />
@@ -764,13 +766,13 @@ const ArtistDashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Target className="w-5 h-5 text-amber-400" />
-              Earning Goals
+              {t('artist.earningGoals')}
             </h3>
             <button
               onClick={() => setShowGoalModal(true)}
               className="px-3 py-1 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600 transition-colors"
             >
-              + Add Goal
+              + {t('artist.addGoal')}
             </button>
           </div>
           <div className="space-y-4">
@@ -793,7 +795,7 @@ const ArtistDashboard: React.FC = () => {
                     />
                   </div>
                   <p className="text-xs text-gray-400">
-                    {progress.toFixed(0)}% complete • {Math.ceil((goal.deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days left
+                    {progress.toFixed(0)}% {t('artist.complete')} • {Math.ceil((goal.deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24))} {t('common.days')} {t('artist.left')}
                   </p>
                 </div>
               );
@@ -810,7 +812,7 @@ const ArtistDashboard: React.FC = () => {
       >
         <div className="flex items-center gap-2 mb-4">
           <Lightbulb className="w-5 h-5 text-amber-400" />
-          <h3 className="text-xl font-bold text-white">AI-Powered Optimization Tips</h3>
+          <h3 className="text-xl font-bold text-white">{t('artist.aiOptimizationTips')}</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {optimizationTips.map((tip, idx) => (
@@ -851,23 +853,23 @@ const ArtistDashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <Lock className="w-5 h-5 text-amber-400" />
-              Staking Benefits
+              {t('artist.stakingBenefits')}
             </h3>
             <div className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-semibold">
-              {stakingInfo.tier.toUpperCase()} Tier
+              {stakingInfo.tier.toUpperCase()} {t('artist.tier')}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="bg-gray-800/50 rounded-lg p-4">
-              <p className="text-sm text-gray-400 mb-1">Total Staked</p>
+              <p className="text-sm text-gray-400 mb-1">{t('artist.totalStaked')}</p>
               <p className="text-2xl font-bold text-amber-400">{formatDYO(stakingInfo.totalStaked)}</p>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-4">
-              <p className="text-sm text-gray-400 mb-1">Current APY</p>
+              <p className="text-sm text-gray-400 mb-1">{t('artist.currentApy')}</p>
               <p className="text-2xl font-bold text-amber-400">{stakingInfo.apy}%</p>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-4">
-              <p className="text-sm text-gray-400 mb-1">Staking Rewards</p>
+              <p className="text-sm text-gray-400 mb-1">{t('artist.stakingRewards')}</p>
               <p className="text-2xl font-bold text-amber-400">{formatDYO(stakingInfo.rewards)}</p>
             </div>
           </div>
@@ -877,11 +879,11 @@ const ArtistDashboard: React.FC = () => {
               className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-400 hover:to-orange-500 transition-all flex items-center gap-2"
             >
               <Lock className="w-4 h-4" />
-              <span>Stake More DYO</span>
+              <span>{t('artist.stakeMoreDyo')}</span>
               <ArrowRight className="w-4 h-4" />
             </a>
             <div className="text-sm text-gray-400">
-              Platform benefits: Higher visibility, Reduced fees, Priority support
+              {t('artist.platformBenefits')}
             </div>
           </div>
         </motion.div>
@@ -896,11 +898,11 @@ const ArtistDashboard: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <Activity className="w-5 h-5 text-amber-400" />
-            Real-Time Earning Streams
+            {t('artist.realTimeEarningStreams')}
           </h3>
           <div className="flex items-center gap-2 text-sm text-green-400">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span>Live</span>
+            <span>{t('artist.live')}</span>
           </div>
         </div>
         <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -927,8 +929,8 @@ const ArtistDashboard: React.FC = () => {
           ) : (
             <div className="text-center py-8 text-gray-400">
               <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No recent earnings</p>
-              <p className="text-xs mt-1">Earnings will appear here in real-time</p>
+              <p>{t('artist.noRecentEarnings')}</p>
+              <p className="text-xs mt-1">{t('artist.earningsWillAppearRealTime')}</p>
             </div>
           )}
         </div>
@@ -936,7 +938,7 @@ const ArtistDashboard: React.FC = () => {
 
       {/* Unified Metrics Header */}
       <div className="mb-6" data-tour="metrics">
-        <h2 className="text-xl font-bold text-white mb-4">Multistreaming Overview</h2>
+        <h2 className="text-xl font-bold text-white mb-4">{t('artist.multistreamingOverview')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -946,9 +948,9 @@ const ArtistDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Total Earnings</p>
+                <p className="text-green-100 text-sm font-medium">{t('artist.totalEarnings')}</p>
                 <p className="text-3xl font-bold text-white">{formatDYO(metrics.totalEarnings)}</p>
-                <p className="text-green-200 text-xs mt-2">All Content Types</p>
+                <p className="text-green-200 text-xs mt-2">{t('artist.allContentTypes')}</p>
                 <div className="flex items-center mt-2">
                   <ArrowUpRight className="w-4 h-4 text-green-200 mr-1" />
                   <span className="text-green-200 text-sm">+{metrics.earningsGrowth}%</span>
@@ -966,9 +968,9 @@ const ArtistDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Engagement</p>
+                <p className="text-blue-100 text-sm font-medium">{t('artist.totalEngagement')}</p>
                 <p className="text-3xl font-bold text-white">{formatNumber(metrics.totalEngagement)}</p>
-                <p className="text-blue-200 text-xs mt-2">Streams + Views + Hours</p>
+                <p className="text-blue-200 text-xs mt-2">{t('artist.streamsViewsHours')}</p>
                 <div className="flex items-center mt-2">
                   <TrendingUp className="w-4 h-4 text-blue-200 mr-1" />
                   <span className="text-blue-200 text-sm">+{metrics.streamsGrowth}%</span>
@@ -986,9 +988,9 @@ const ArtistDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Total Audience</p>
+                <p className="text-purple-100 text-sm font-medium">{t('artist.totalAudience')}</p>
                 <p className="text-3xl font-bold text-white">{formatNumber(metrics.totalAudience)}</p>
-                <p className="text-purple-200 text-xs mt-2">Unique Users Across Platforms</p>
+                <p className="text-purple-200 text-xs mt-2">{t('artist.uniqueUsersAcrossPlatforms')}</p>
                 <div className="flex items-center mt-2">
                   <ArrowUpRight className="w-4 h-4 text-purple-200 mr-1" />
                   <span className="text-purple-200 text-sm">+12.5%</span>
@@ -1002,7 +1004,7 @@ const ArtistDashboard: React.FC = () => {
 
       {/* Multistreaming Performance Analytics */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-white mb-4">Content Type Performance & ROI</h2>
+        <h2 className="text-xl font-bold text-white mb-4">{t('artist.contentTypePerformanceRoi')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Music Card */}
           <motion.div
@@ -1016,25 +1018,25 @@ const ArtistDashboard: React.FC = () => {
                 <Music className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Music</h3>
-                <p className="text-gray-400 text-sm">Streams & Listeners</p>
+                <h3 className="text-lg font-bold text-white">{t('artist.music')}</h3>
+                <p className="text-gray-400 text-sm">{t('artist.streamsListeners')}</p>
               </div>
             </div>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Earnings:</span>
+                <span className="text-gray-400 text-sm">{t('artist.earnings')}:</span>
                 <span className="text-green-400 font-semibold">{formatDYO(metrics.music.earnings)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Streams:</span>
+                <span className="text-gray-400 text-sm">{t('artist.streams')}:</span>
                 <span className="text-white font-semibold">{formatNumber(metrics.music.engagement)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Earning Rate:</span>
-                <span className="text-amber-400 font-semibold">{formatDYO(metrics.music.earningRate || 0)}/stream</span>
+                <span className="text-gray-400 text-sm">{t('artist.earningRate')}:</span>
+                <span className="text-amber-400 font-semibold">{formatDYO(metrics.music.earningRate || 0)}/{t('artist.stream')}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">ROI:</span>
+                <span className="text-gray-400 text-sm">{t('artist.roi')}:</span>
                 <span className="text-blue-400 font-semibold">{metrics.music.roi?.toFixed(2) || '0.00'}%</span>
               </div>
               <div className="flex items-center mt-2">

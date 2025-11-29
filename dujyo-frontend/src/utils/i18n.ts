@@ -1300,6 +1300,248 @@ const translations: Translations = {
     es: 'Predicciones de Ganancias',
   },
   
+  // Artist Dashboard
+  'artist.artistDashboard': {
+    en: 'Artist Dashboard',
+    es: 'Panel de Artista',
+  },
+  'artist.welcomeBack': {
+    en: 'Welcome back, {{name}}',
+    es: 'Bienvenido de nuevo, {{name}}',
+  },
+  'artist.last7Days': {
+    en: 'Last 7 days',
+    es: 'Últimos 7 días',
+  },
+  'artist.last30Days': {
+    en: 'Last 30 days',
+    es: 'Últimos 30 días',
+  },
+  'artist.last90Days': {
+    en: 'Last 90 days',
+    es: 'Últimos 90 días',
+  },
+  'artist.lastYear': {
+    en: 'Last year',
+    es: 'Último año',
+  },
+  'artist.dyoTokenEconomy': {
+    en: 'DYO Token Economy',
+    es: 'Economía de Tokens DYO',
+  },
+  'artist.streamToEarnActive': {
+    en: 'Stream-to-Earn Active',
+    es: 'Transmitir para Ganar Activo',
+  },
+  'artist.availableBalance': {
+    en: 'Available Balance',
+    es: 'Balance Disponible',
+  },
+  'artist.staked': {
+    en: 'Staked',
+    es: 'Apostado',
+  },
+  'artist.earningRate': {
+    en: 'Earning Rate',
+    es: 'Tasa de Ganancia',
+  },
+  'artist.totalEarnings': {
+    en: 'Total Earnings',
+    es: 'Ganancias Totales',
+  },
+  'artist.earningPredictions': {
+    en: 'Earning Predictions',
+    es: 'Predicciones de Ganancias',
+  },
+  'artist.confidence': {
+    en: 'confidence',
+    es: 'confianza',
+  },
+  'artist.weeklyProjection': {
+    en: 'Weekly Projection',
+    es: 'Proyección Semanal',
+  },
+  'artist.monthlyProjection': {
+    en: 'Monthly Projection',
+    es: 'Proyección Mensual',
+  },
+  'artist.quarterlyProjection': {
+    en: 'Quarterly Projection',
+    es: 'Proyección Trimestral',
+  },
+  'artist.earningGoals': {
+    en: 'Earning Goals',
+    es: 'Objetivos de Ganancia',
+  },
+  'artist.addGoal': {
+    en: 'Add Goal',
+    es: 'Agregar Objetivo',
+  },
+  'artist.complete': {
+    en: 'complete',
+    es: 'completo',
+  },
+  'artist.left': {
+    en: 'left',
+    es: 'restantes',
+  },
+  'artist.monthlyGoal': {
+    en: 'Monthly Goal',
+    es: 'Objetivo Mensual',
+  },
+  'artist.quarterlyGoal': {
+    en: 'Quarterly Goal',
+    es: 'Objetivo Trimestral',
+  },
+  'artist.aiOptimizationTips': {
+    en: 'AI-Powered Optimization Tips',
+    es: 'Consejos de Optimización con IA',
+  },
+  'artist.uploadMoreVideoContent': {
+    en: 'Upload More Video Content',
+    es: 'Sube Más Contenido de Video',
+  },
+  'artist.videoContentHigherMonetization': {
+    en: 'Video content has 2x higher monetization rate than music',
+    es: 'El contenido de video tiene una tasa de monetización 2x mayor que la música',
+  },
+  'artist.impact40PercentEarnings': {
+    en: '+40% potential earnings',
+    es: '+40% ganancias potenciales',
+  },
+  'artist.engageTopFans': {
+    en: 'Engage Top Fans',
+    es: 'Interactúa con los Mejores Fans',
+  },
+  'artist.topFansGenerateMoreStreams': {
+    en: 'Top fans generate 5x more streams than average listeners',
+    es: 'Los mejores fans generan 5x más transmisiones que los oyentes promedio',
+  },
+  'artist.impact25PercentEngagement': {
+    en: '+25% engagement boost',
+    es: '+25% impulso de compromiso',
+  },
+  'artist.releaseConsistently': {
+    en: 'Release Consistently',
+    es: 'Lanza Consistentemente',
+  },
+  'artist.weeklyReleaseHigherRetention': {
+    en: 'Artists who release weekly have 40% higher retention',
+    es: 'Los artistas que lanzan semanalmente tienen 40% más retención',
+  },
+  'artist.impact30PercentAudience': {
+    en: '+30% audience growth',
+    es: '+30% crecimiento de audiencia',
+  },
+  'artist.noDataAvailable': {
+    en: 'No Data Available',
+    es: 'No Hay Datos Disponibles',
+  },
+  'artist.unableToLoadMetrics': {
+    en: 'Unable to load artist metrics',
+    es: 'No se pudieron cargar las métricas del artista',
+  },
+  'artist.stakingBenefits': {
+    en: 'Staking Benefits',
+    es: 'Beneficios de Apuesta',
+  },
+  'artist.tier': {
+    en: 'Tier',
+    es: 'Nivel',
+  },
+  'artist.totalStaked': {
+    en: 'Total Staked',
+    es: 'Total Apostado',
+  },
+  'artist.currentApy': {
+    en: 'Current APY',
+    es: 'APY Actual',
+  },
+  'artist.stakingRewards': {
+    en: 'Staking Rewards',
+    es: 'Recompensas de Apuesta',
+  },
+  'artist.stakeMoreDyo': {
+    en: 'Stake More DYO',
+    es: 'Apostar Más DYO',
+  },
+  'artist.platformBenefits': {
+    en: 'Platform benefits: Higher visibility, Reduced fees, Priority support',
+    es: 'Beneficios de la plataforma: Mayor visibilidad, Tarifas reducidas, Soporte prioritario',
+  },
+  'artist.realTimeEarningStreams': {
+    en: 'Real-Time Earning Streams',
+    es: 'Flujos de Ganancia en Tiempo Real',
+  },
+  'artist.live': {
+    en: 'Live',
+    es: 'En Vivo',
+  },
+  'artist.noRecentEarnings': {
+    en: 'No recent earnings',
+    es: 'No hay ganancias recientes',
+  },
+  'artist.earningsWillAppearRealTime': {
+    en: 'Earnings will appear here in real-time',
+    es: 'Las ganancias aparecerán aquí en tiempo real',
+  },
+  'artist.multistreamingOverview': {
+    en: 'Multistreaming Overview',
+    es: 'Resumen de Multitransmisión',
+  },
+  'artist.allContentTypes': {
+    en: 'All Content Types',
+    es: 'Todos los Tipos de Contenido',
+  },
+  'artist.totalEngagement': {
+    en: 'Total Engagement',
+    es: 'Compromiso Total',
+  },
+  'artist.streamsViewsHours': {
+    en: 'Streams + Views + Hours',
+    es: 'Transmisiones + Visualizaciones + Horas',
+  },
+  'artist.uniqueUsersAcrossPlatforms': {
+    en: 'Unique Users Across Platforms',
+    es: 'Usuarios Únicos en Todas las Plataformas',
+  },
+  'artist.contentTypePerformanceRoi': {
+    en: 'Content Type Performance & ROI',
+    es: 'Rendimiento y ROI por Tipo de Contenido',
+  },
+  'artist.music': {
+    en: 'Music',
+    es: 'Música',
+  },
+  'artist.streamsListeners': {
+    en: 'Streams & Listeners',
+    es: 'Transmisiones y Oyentes',
+  },
+  'artist.earnings': {
+    en: 'Earnings',
+    es: 'Ganancias',
+  },
+  'artist.streams': {
+    en: 'Streams',
+    es: 'Transmisiones',
+  },
+  'artist.stream': {
+    en: 'stream',
+    es: 'transmisión',
+  },
+  'artist.roi': {
+    en: 'ROI',
+    es: 'ROI',
+  },
+  'common.week': {
+    en: 'week',
+    es: 'semana',
+  },
+  'common.day': {
+    en: 'day',
+    es: 'día',
+  },
+  
   // DEX
   'dex.title': {
     en: 'Decentralized Exchange',
