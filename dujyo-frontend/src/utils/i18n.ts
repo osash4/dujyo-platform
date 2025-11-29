@@ -2279,17 +2279,10 @@ const translations: Translations = {
     en: 'Total Liquidity',
     es: 'Liquidez Total',
   },
-  'dex.volume24h': {
-    en: '24h Volume',
-    es: 'Volumen 24h',
-  },
+  // dex.volume24h and dex.last24Hours already defined above
   'dex.change24h': {
     en: '24h Change',
     es: 'Cambio 24h',
-  },
-  'dex.last24Hours': {
-    en: 'Last 24 Hours',
-    es: 'Últimas 24 Horas',
   },
   'dex.priceChart': {
     en: 'Price Chart',
