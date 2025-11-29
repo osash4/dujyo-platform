@@ -94,7 +94,14 @@ export function TransactionHistory({ transactions, filters }: TransactionHistory
         </motion.div>
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {filteredTransactions
+          {(Array.isArray(filteredTransactions) ? filteredTransactions : [])
+            .filter((tx): tx is Transaction => {
+              // Validación EXTRA antes del map - cuarta capa de seguridad
+              if (!tx || typeof tx !== 'object') return false;
+              if (!('type' in tx) || tx.type === undefined || tx.type === null) return false;
+              if (typeof tx.type !== 'string') return false;
+              return true;
+            })
             .map((tx, index) => {
               // Validación adicional defensiva - triple check
               if (!tx || typeof tx !== 'object' || !('type' in tx) || !tx.type) {

@@ -164,18 +164,36 @@ export function BlockchainProvider({ children }: BlockchainProviderProps): JSX.E
         const data = await response.json();
         console.log('Transacciones reales obtenidas:', data);
 
-        // Transform to frontend format
-        const realTransactions = data.transactions?.map((tx: any) => ({
-          hash: tx.hash || tx.id,
-          type: tx.from === account ? 'sent' : 'received',
-          amount: parseFloat(tx.amount) || 0,
-          timestamp: tx.timestamp || tx.created_at,
-          from: tx.from,
-          to: tx.to,
-          status: tx.status || 'confirmed',
-          gasUsed: tx.gas_used || 0,
-          blockNumber: tx.block_number || 0
-        })) || [];
+        // Transform to frontend format with robust validation
+        const realTransactions = (data.transactions || [])
+          .filter((tx: any): tx is NonNullable<typeof tx> => {
+            // Eliminar null/undefined antes de mapear
+            if (!tx || typeof tx !== 'object') return false;
+            return true;
+          })
+          .map((tx: any) => {
+            // Validación adicional defensiva
+            if (!tx || typeof tx !== 'object') {
+              console.warn('🔍 DEBUG BlockchainContext - Invalid tx in map:', tx);
+              return null;
+            }
+            
+            // Asegurar que type siempre esté definido
+            const txType = tx.from === account ? 'sent' : 'received';
+            
+            return {
+              hash: tx.hash || tx.id || '',
+              type: txType,
+              amount: parseFloat(tx.amount) || 0,
+              timestamp: tx.timestamp || tx.created_at || Date.now(),
+              from: tx.from || '',
+              to: tx.to || '',
+              status: tx.status || 'confirmed',
+              gasUsed: tx.gas_used || 0,
+              blockNumber: tx.block_number || 0
+            };
+          })
+          .filter((tx): tx is NonNullable<typeof tx> => tx != null && tx !== undefined && tx.type != null);
 
         console.log(`${realTransactions.length} transacciones reales cargadas`);
         return realTransactions;
