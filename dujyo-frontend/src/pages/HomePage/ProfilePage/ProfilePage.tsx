@@ -1077,8 +1077,12 @@ const ProfilePage: React.FC = () => {
                         return true;
                       })
                       .map((tx, index) => {
-                        // El filter ya garantiza que tx tiene type e id válidos
-                        const txType: string = tx.type;
+                        // Validación adicional defensiva - aunque el filter ya validó
+                        if (!tx || typeof tx !== 'object' || !('type' in tx)) {
+                          console.warn('Invalid tx in map after filter:', tx);
+                          return null;
+                        }
+                        const txType: string = tx.type || 'unknown';
                         
                         return (
                           <motion.div
