@@ -108,6 +108,11 @@ const WalletAddressDisplay: React.FC<{ walletAddress: string }> = ({ walletAddre
 };
 
 const ProfilePage: React.FC = () => {
+  // 🔍 PROFILE DEBUG: Component mounted
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 PROFILE DEBUG - ProfilePage component mounted');
+  }
+  
   const { account, isAuthenticated, balancesPallet } = useBlockchain();
   const { user, getUserRole, hasRole } = useAuth();
   const { t } = useLanguage();
@@ -1072,25 +1077,54 @@ const ProfilePage: React.FC = () => {
 
                 {stakingHistory && Array.isArray(stakingHistory) && stakingHistory.length > 0 ? (
                   <div className="space-y-4">
-                    {stakingHistory
-                      // Primero eliminar cualquier null/undefined del array
-                      .filter((tx): tx is StakingHistory => tx != null && tx !== undefined)
-                      // Luego validar estructura y propiedades
-                      .filter((tx): tx is StakingHistory => {
-                        if (!tx || typeof tx !== 'object') return false;
-                        if (!('id' in tx) || !tx.id) return false;
-                        if (!('type' in tx)) return false;
-                        const typeValue = tx.type;
-                        if (typeof typeValue !== 'string' || !typeValue) return false;
-                        return true;
-                      })
-                      .map((tx, index) => {
-                        // Validación adicional defensiva - triple check
-                        if (!tx || typeof tx !== 'object' || !('type' in tx) || !tx.type) {
-                          console.warn('Invalid tx in map after filter:', tx);
-                          return null;
-                        }
-                        const txType: string = String(tx.type) || 'unknown';
+                    {(() => {
+                      // 🔍 PROFILE DEBUG: Log stakingHistory before processing
+                      if (process.env.NODE_ENV === 'development') {
+                        console.log('🔍 PROFILE DEBUG - stakingHistory:', {
+                          isArray: Array.isArray(stakingHistory),
+                          length: stakingHistory?.length ?? 0,
+                          hasUndefined: stakingHistory?.some(item => item === undefined),
+                          hasNull: stakingHistory?.some(item => item === null),
+                          hasUndefinedType: stakingHistory?.some(item => item && typeof item === 'object' && !('type' in item)),
+                          sample: stakingHistory?.slice(0, 3)
+                        });
+                      }
+                      
+                      return (Array.isArray(stakingHistory) ? stakingHistory : [])
+                        // PRIMERO: Eliminar cualquier null/undefined del array
+                        .filter((tx): tx is StakingHistory => {
+                          const isValid = tx != null && tx !== undefined;
+                          if (!isValid && process.env.NODE_ENV === 'development') {
+                            console.warn('🔍 PROFILE DEBUG - Filtered out null/undefined tx:', tx);
+                          }
+                          return isValid;
+                        })
+                        // SEGUNDO: Validar estructura y propiedades
+                        .filter((tx): tx is StakingHistory => {
+                          if (!tx || typeof tx !== 'object') return false;
+                          if (!('id' in tx) || !tx.id) return false;
+                          if (!('type' in tx)) {
+                            if (process.env.NODE_ENV === 'development') {
+                              console.warn('🔍 PROFILE DEBUG - tx missing type property:', tx);
+                            }
+                            return false;
+                          }
+                          const typeValue = tx.type;
+                          if (typeValue === undefined || typeValue === null || typeof typeValue !== 'string' || !typeValue) {
+                            if (process.env.NODE_ENV === 'development') {
+                              console.warn('🔍 PROFILE DEBUG - tx has invalid type:', { tx, typeValue });
+                            }
+                            return false;
+                          }
+                          return true;
+                        })
+                        .map((tx, index) => {
+                          // Validación adicional defensiva - triple check
+                          if (!tx || typeof tx !== 'object' || !('type' in tx) || tx.type === undefined || tx.type === null) {
+                            console.error('🔍 PROFILE DEBUG - Invalid tx in map after filter:', tx);
+                            return null;
+                          }
+                          const txType: string = String(tx.type) || 'unknown';
                         
                         return (
                           <motion.div
@@ -1173,21 +1207,38 @@ const ProfilePage: React.FC = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {(Array.isArray(achievements) ? achievements : [])
-                    .filter((achievement): achievement is NonNullable<typeof achievement> => {
-                      // Validación robusta: eliminar null/undefined y verificar propiedades requeridas
-                      if (!achievement || typeof achievement !== 'object') return false;
-                      if (!('icon' in achievement) || !achievement.icon) return false;
-                      if (!('title' in achievement) || !achievement.title) return false;
-                      if (!('rarity' in achievement) || !achievement.rarity) return false;
-                      return true;
-                    })
-                    .map((achievement, index) => {
-                      // Validación adicional defensiva
-                      if (!achievement || typeof achievement !== 'object' || !achievement.icon || !achievement.title || !achievement.rarity) {
-                        console.warn('🔍 DEBUG ProfilePage achievements - Invalid achievement in map:', achievement);
-                        return null;
-                      }
+                  {(() => {
+                    // 🔍 PROFILE DEBUG: Log achievements before processing
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log('🔍 PROFILE DEBUG - achievements:', {
+                        isArray: Array.isArray(achievements),
+                        length: achievements?.length ?? 0,
+                        hasUndefined: achievements?.some(item => item === undefined),
+                        hasNull: achievements?.some(item => item === null),
+                        sample: achievements?.slice(0, 3)
+                      });
+                    }
+                    
+                    return (Array.isArray(achievements) ? achievements : [])
+                      .filter((achievement): achievement is NonNullable<typeof achievement> => {
+                        // Validación robusta: eliminar null/undefined y verificar propiedades requeridas
+                        if (!achievement || typeof achievement !== 'object') {
+                          if (process.env.NODE_ENV === 'development') {
+                            console.warn('🔍 PROFILE DEBUG - Filtered out invalid achievement:', achievement);
+                          }
+                          return false;
+                        }
+                        if (!('icon' in achievement) || !achievement.icon) return false;
+                        if (!('title' in achievement) || !achievement.title) return false;
+                        if (!('rarity' in achievement) || !achievement.rarity) return false;
+                        return true;
+                      })
+                      .map((achievement, index) => {
+                        // Validación adicional defensiva
+                        if (!achievement || typeof achievement !== 'object' || !achievement.icon || !achievement.title || !achievement.rarity) {
+                          console.error('🔍 PROFILE DEBUG - Invalid achievement in map after filter:', achievement);
+                          return null;
+                        }
                       const Icon = achievement.icon;
                       const rarityColors = {
                         common: { bg: 'from-gray-500/20 to-gray-600/20', border: 'border-gray-500/50', icon: 'text-gray-400', glow: 'gray-400' },
