@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, FolderArchiveIcon } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SearchBarProps {
   value: string;           // Propiedad para manejar el valor de la búsqueda
@@ -9,6 +10,7 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onSearch }) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   // Función que maneja el envío de la búsqueda
@@ -34,7 +36,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onSearch }) => {
         {/* Campo de búsqueda */}
         <input
           type="text"
-          placeholder="What are you in the mood for?"
+          placeholder={t('page.searchPlaceholder')}
           value={value} // Usamos el valor pasado como prop
           onChange={onChange} // Llamamos la función onChange pasada como prop
           className="search-input w-full p-3 pl-10 pr-10 rounded-full bg-[#2c3e50] text-white placeholder-white"  // Agregar padding para el ícono
