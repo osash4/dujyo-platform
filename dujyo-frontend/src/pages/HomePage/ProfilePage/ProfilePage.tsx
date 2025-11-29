@@ -1134,7 +1134,12 @@ const ProfilePage: React.FC = () => {
                           )}
                         </motion.div>
                         );
-                      })}
+                        } catch (e) {
+                          console.error('Error rendering stakingHistory item:', e, tx);
+                          return null;
+                        }
+                      })
+                      .filter(item => item !== null)}
                   </div>
                 ) : (
                   <div className="text-center py-8">
