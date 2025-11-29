@@ -464,7 +464,8 @@ export function WalletDashboard() {
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((tx) => {
-      const matchesSearch = tx.hash.includes(searchQuery) || tx.type.includes(searchQuery);
+      if (!tx || !tx.hash || !tx.type) return false;
+      const matchesSearch = tx.hash.includes(searchQuery) || (tx.type && tx.type.includes(searchQuery));
       const matchesType = filters.type === 'all' || tx.type === filters.type;
       const matchesAmount =
         filters.amount === 'all' ||

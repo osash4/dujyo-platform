@@ -111,33 +111,33 @@ export function ContentMarketplace(): JSX.Element {
 
   // Initialize license tiers - use useMemo to ensure t is available
   const licenseTiersData = React.useMemo(() => [
-    {
-      id: 'personal',
+      {
+        id: 'personal',
       name: t('marketplace.personalUse'),
-      price: 0,
-      royaltyShare: 0,
+        price: 0,
+        royaltyShare: 0,
       features: [t('marketplace.basicStreamingRights'), t('marketplace.noCommercialUse'), t('marketplace.personalListening')],
-      earningPotential: 0,
-      color: '#6B7280'
-    },
-    {
-      id: 'commercial',
+        earningPotential: 0,
+        color: '#6B7280'
+      },
+      {
+        id: 'commercial',
       name: t('marketplace.commercialLicense'),
-      price: 50,
-      royaltyShare: 5,
+        price: 50,
+        royaltyShare: 5,
       features: [t('marketplace.commercialStreamingRights'), `5% ${t('marketplace.royaltySharePercent')}`, t('marketplace.contentMonetization'), t('marketplace.analyticsAccess')],
-      earningPotential: 0.05,
-      color: '#F59E0B'
-    },
-    {
-      id: 'premium',
+        earningPotential: 0.05,
+        color: '#F59E0B'
+      },
+      {
+        id: 'premium',
       name: t('marketplace.premiumLicense'),
-      price: 150,
-      royaltyShare: 10,
+        price: 150,
+        royaltyShare: 10,
       features: [t('marketplace.fullCommercialRights'), `10% ${t('marketplace.royaltySharePercent')}`, t('marketplace.prioritySupport'), t('marketplace.advancedAnalytics'), t('marketplace.contentPromotion'), t('marketplace.nftMintingRights')],
-      earningPotential: 0.10,
-      color: '#EA580C'
-    }
+        earningPotential: 0.10,
+        color: '#EA580C'
+      }
   ], [t]);
 
   // Initialize license tiers

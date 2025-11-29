@@ -17,6 +17,11 @@ interface FilterPanelProps {
 }
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({ options, selectedFilters, onFilterSelect }) => {
+  // Validaciones defensivas
+  if (!options || !selectedFilters || !onFilterSelect) {
+    return null;
+  }
+
   // Maneja los cambios en los checkboxes
   const handleCheckboxChange = (category: keyof FilterOption, value: string) => {
     // Actualiza el estado de los filtros de acuerdo con la categoría
@@ -26,6 +31,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ options, selectedFilte
     });
   };
 
+  // Validar que options tenga las propiedades necesarias
+  const safeOptions = {
+    type: Array.isArray(options.type) ? options.type : [],
+    dateRange: Array.isArray(options.dateRange) ? options.dateRange : [],
+    amount: Array.isArray(options.amount) ? options.amount : []
+  };
+
+  const safeFilters = {
+    type: selectedFilters.type || 'all',
+    dateRange: selectedFilters.dateRange || 'all',
+    amount: selectedFilters.amount || 'all'
+  };
+
   return (
     <div className="space-y-2">
       <h3 className="text-lg font-bold">Filters</h3>
@@ -33,12 +51,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ options, selectedFilte
       {/* Filtrar por tipo */}
       <div>
         <h4 className="text-md font-semibold">Type</h4>
-        {options.type.map((value) => (
+        {safeOptions.type.map((value) => (
           <div key={value}>
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={selectedFilters.type === value} // Marcar el checkbox si está seleccionado
+                checked={safeFilters.type === value} // Marcar el checkbox si está seleccionado
                 onChange={() => handleCheckboxChange('type', value)} // Llamar a la función de cambio de checkbox
                 className="form-checkbox"
               />
@@ -51,12 +69,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ options, selectedFilte
       {/* Filtrar por rango de fecha */}
       <div>
         <h4 className="text-md font-semibold">Date Range</h4>
-        {options.dateRange.map((value) => (
+        {safeOptions.dateRange.map((value) => (
           <div key={value}>
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={selectedFilters.dateRange === value} // Marcar el checkbox si está seleccionado
+                checked={safeFilters.dateRange === value} // Marcar el checkbox si está seleccionado
                 onChange={() => handleCheckboxChange('dateRange', value)} // Llamar a la función de cambio de checkbox
                 className="form-checkbox"
               />
@@ -69,12 +87,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ options, selectedFilte
       {/* Filtrar por cantidad */}
       <div>
         <h4 className="text-md font-semibold">Amount</h4>
-        {options.amount.map((value) => (
+        {safeOptions.amount.map((value) => (
           <div key={value}>
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={selectedFilters.amount === value} // Marcar el checkbox si está seleccionado
+                checked={safeFilters.amount === value} // Marcar el checkbox si está seleccionado
                 onChange={() => handleCheckboxChange('amount', value)} // Llamar a la función de cambio de checkbox
                 className="form-checkbox"
               />

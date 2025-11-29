@@ -28,7 +28,8 @@ interface TransactionHistoryProps {
 export function TransactionHistory({ transactions, filters }: TransactionHistoryProps) {
   const { t } = useLanguage();
   // Filtrar las transacciones según los filtros proporcionados
-  const filteredTransactions = transactions.filter((tx) => {
+  const filteredTransactions = (transactions || []).filter((tx) => {
+    if (!tx || !tx.type) return false;
     const matchesType = filters.type === 'all' || tx.type === filters.type;
     const matchesAmount =
       filters.amount === 'all' ||
