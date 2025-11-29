@@ -91,3 +91,121 @@ export function getValidToken(): string | null {
   return localStorage.getItem('jwt_token');
 }
 
+/**
+ * Get refresh token
+ */
+export function getRefreshToken(): string | null {
+  return localStorage.getItem('refresh_token');
+}
+
+/**
+ * Store tokens (access and refresh)
+ */
+export function storeTokens(accessToken: string, refreshToken?: string): void {
+  localStorage.setItem('jwt_token', accessToken);
+  if (refreshToken) {
+    localStorage.setItem('refresh_token', refreshToken);
+  }
+}
+
+/**
+ * Clear all tokens
+ */
+export function clearTokens(): void {
+  localStorage.removeItem('jwt_token');
+  localStorage.removeItem('refresh_token');
+}
+
+/**
+ * Refresh access token using refresh token
+ */
+export async function refreshAccessToken(): Promise<string | null> {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    console.warn('⚠️ No refresh token found');
+    return null;
+  }
+
+  try {
+    const { getApiBaseUrl } = await import('./apiConfig');
+    const apiBaseUrl = getApiBaseUrl();
+    
+    const response = await fetch(`${apiBaseUrl}/api/v1/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        refresh_token: refreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('❌ Failed to refresh token:', response.status);
+      clearTokens();
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.success && data.token) {
+      // Store new tokens
+      storeTokens(data.token, data.refresh_token || refreshToken);
+      console.log('✅ Token refreshed successfully');
+      return data.token;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('❌ Error refreshing token:', error);
+    clearTokens();
+    return null;
+  }
+}
+
+/**
+ * Wrapper for fetch that automatically refreshes token on 401
+ */
+export async function fetchWithAutoRefresh(
+  url: string,
+  options: RequestInit = {},
+  onUnauthorized?: () => void
+): Promise<Response> {
+  let token = getValidToken();
+  
+  // Add Authorization header if token exists
+  const headers = new Headers(options.headers);
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+  
+  let response = await fetch(url, {
+    ...options,
+    headers,
+  });
+  
+  // If 401, try to refresh token and retry once
+  if (response.status === 401) {
+    console.log('🔄 Token expired, attempting to refresh...');
+    const newToken = await refreshAccessToken();
+    
+    if (newToken) {
+      // Retry request with new token
+      headers.set('Authorization', `Bearer ${newToken}`);
+      response = await fetch(url, {
+        ...options,
+        headers,
+      });
+      
+      // If still 401 after refresh, handle auth error
+      if (response.status === 401) {
+        return handleAuthError(response, onUnauthorized).then(() => response);
+      }
+    } else {
+      // Refresh failed, handle auth error
+      return handleAuthError(response, onUnauthorized).then(() => response);
+    }
+  }
+  
+  return response;
+}
+

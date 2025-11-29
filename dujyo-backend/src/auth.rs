@@ -53,9 +53,10 @@ impl JwtConfig {
         })
     }
     
+    // Generate access token (short-lived, 7 days)
     pub fn generate_token(&self, address: &str) -> Result<String, jsonwebtoken::errors::Error> {
         let now = chrono::Utc::now().timestamp() as usize;
-        let exp = now + (24 * 60 * 60); // 24 hours
+        let exp = now + (7 * 24 * 60 * 60); // 7 days (increased from 24 hours)
         
         let claims = Claims {
             sub: address.to_string(),
@@ -65,6 +66,41 @@ impl JwtConfig {
         };
         
         encode(&Header::default(), &claims, &self.encoding_key)
+    }
+    
+    // Generate refresh token (long-lived, 30 days)
+    pub fn generate_refresh_token(&self, address: &str) -> Result<String, jsonwebtoken::errors::Error> {
+        let now = chrono::Utc::now().timestamp() as usize;
+        let exp = now + (30 * 24 * 60 * 60); // 30 days
+        
+        let claims = Claims {
+            sub: address.to_string(),
+            exp,
+            iat: now,
+            iss: "dujyo-blockchain-refresh".to_string(), // Different issuer for refresh tokens
+        };
+        
+        encode(&Header::default(), &claims, &self.encoding_key)
+    }
+    
+    // Verify refresh token (allows expired tokens to be checked)
+    pub fn verify_refresh_token(&self, token: &str) -> Result<Claims, jsonwebtoken::errors::Error> {
+        let mut validation = Validation::default();
+        validation.validate_exp = false; // Don't validate expiration for refresh tokens (we check manually)
+        let token_data = decode::<Claims>(token, &self.decoding_key, &validation)?;
+        
+        // Manually check expiration (but allow longer grace period)
+        let now = chrono::Utc::now().timestamp() as usize;
+        if token_data.claims.exp < now {
+            return Err(jsonwebtoken::errors::Error::from(jsonwebtoken::errors::ErrorKind::ExpiredSignature));
+        }
+        
+        // Verify it's a refresh token (check issuer)
+        if token_data.claims.iss != "dujyo-blockchain-refresh" {
+            return Err(jsonwebtoken::errors::Error::from(jsonwebtoken::errors::ErrorKind::InvalidIssuer));
+        }
+        
+        Ok(token_data.claims)
     }
     
     pub fn verify_token(&self, token: &str) -> Result<Claims, jsonwebtoken::errors::Error> {
@@ -163,30 +199,37 @@ pub async fn login_handler(
             Some((wallet_address, password_hash)) => {
                 // Verify password
                 if verify(password, &password_hash).unwrap_or(false) {
-                    // Generate JWT token
+                    // Generate access token and refresh token
                     let token = state.jwt_config
                         .generate_token(&wallet_address)
+                        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+                    
+                    let refresh_token = state.jwt_config
+                        .generate_refresh_token(&wallet_address)
                         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
                     
                     return Ok(axum::Json(LoginResponse {
                         success: true,
                         token,
+                        refresh_token: Some(refresh_token),
                         message: "Login successful".to_string(),
                         wallet_address: Some(wallet_address.clone()),
                     }));
                 } else {
-                    return Ok(axum::Json(LoginResponse {
-                        success: false,
-                        token: String::new(),
-                        message: "Invalid email or password".to_string(),
-                        wallet_address: None,
-                    }));
+                return Ok(axum::Json(LoginResponse {
+                    success: false,
+                    token: String::new(),
+                    refresh_token: None,
+                    message: "Invalid email or password".to_string(),
+                    wallet_address: None,
+                }));
                 }
             }
             None => {
                 return Ok(axum::Json(LoginResponse {
                     success: false,
                     token: String::new(),
+                    refresh_token: None,
                     message: "Invalid email or password".to_string(),
                     wallet_address: None,
                 }));
@@ -202,6 +245,7 @@ pub async fn login_handler(
                 return Ok(axum::Json(LoginResponse {
                     success: false,
                     token: String::new(),
+                    refresh_token: None,
                     message: "Invalid signature".to_string(),
                     wallet_address: None,
                 }));
@@ -224,19 +268,25 @@ pub async fn login_handler(
             return Ok(axum::Json(LoginResponse {
                 success: false,
                 token: String::new(),
+                refresh_token: None,
                 message: "Wallet address not found. Please register first.".to_string(),
                 wallet_address: None,
             }));
         }
         
-        // Generate JWT token for the address
+        // Generate access token and refresh token
         let token = state.jwt_config
             .generate_token(address)
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        
+        let refresh_token = state.jwt_config
+            .generate_refresh_token(address)
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         
         return Ok(axum::Json(LoginResponse {
             success: true,
             token,
+            refresh_token: Some(refresh_token),
             message: "Login successful".to_string(),
             wallet_address: Some(address.clone()),
         }));
@@ -246,8 +296,59 @@ pub async fn login_handler(
     Ok(axum::Json(LoginResponse {
         success: false,
         token: String::new(),
+        refresh_token: None,
         message: "Please provide either email/password or wallet address".to_string(),
         wallet_address: None,
+    }))
+}
+
+// Refresh token endpoint handler
+#[derive(Deserialize)]
+pub struct RefreshTokenRequest {
+    pub refresh_token: String,
+}
+
+#[derive(Serialize)]
+pub struct RefreshTokenResponse {
+    pub success: bool,
+    pub token: String,
+    pub refresh_token: Option<String>,
+    pub message: String,
+}
+
+pub async fn refresh_token_handler(
+    State(state): State<crate::server::AppState>,
+    axum::Json(payload): axum::Json<RefreshTokenRequest>,
+) -> Result<axum::Json<RefreshTokenResponse>, StatusCode> {
+    // Verify refresh token
+    let claims = match state.jwt_config.verify_refresh_token(&payload.refresh_token) {
+        Ok(claims) => claims,
+        Err(e) => {
+            eprintln!("❌ Refresh token verification failed: {}", e);
+            return Ok(axum::Json(RefreshTokenResponse {
+                success: false,
+                token: String::new(),
+                refresh_token: None,
+                message: "Invalid or expired refresh token".to_string(),
+            }));
+        }
+    };
+    
+    // Generate new access token
+    let new_token = state.jwt_config
+        .generate_token(&claims.sub)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    // Optionally generate a new refresh token (rotate refresh tokens for security)
+    let new_refresh_token = state.jwt_config
+        .generate_refresh_token(&claims.sub)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    
+    Ok(axum::Json(RefreshTokenResponse {
+        success: true,
+        token: new_token,
+        refresh_token: Some(new_refresh_token),
+        message: "Token refreshed successfully".to_string(),
     }))
 }
 
@@ -265,6 +366,7 @@ pub struct LoginRequest {
 pub struct LoginResponse {
     pub success: bool,
     pub token: String,
+    pub refresh_token: Option<String>, // ✅ Refresh token for automatic renewal
     pub message: String,
     pub wallet_address: Option<String>,
 }
@@ -301,6 +403,7 @@ pub struct RegisterRequest {
 pub struct RegisterResponse {
     pub success: bool,
     pub token: String,
+    pub refresh_token: Option<String>, // ✅ Refresh token for automatic renewal
     pub message: String,
     pub user_id: Option<String>,
     pub wallet_address: Option<String>,
@@ -320,6 +423,7 @@ pub async fn register_handler(
         return Ok(axum::Json(RegisterResponse {
             success: false,
             token: String::new(),
+            refresh_token: None,
             message: "Invalid email address".to_string(),
             user_id: None,
             wallet_address: None,
@@ -331,6 +435,7 @@ pub async fn register_handler(
         return Ok(axum::Json(RegisterResponse {
             success: false,
             token: String::new(),
+            refresh_token: None,
             message: "Password must be at least 6 characters".to_string(),
             user_id: None,
             wallet_address: None,
@@ -365,6 +470,7 @@ pub async fn register_handler(
             return Ok(axum::Json(RegisterResponse {
                 success: false,
                 token: String::new(),
+                refresh_token: None,
                 message: format!("Database connection error. Please check backend logs."),
                 user_id: None,
                 wallet_address: None,
@@ -376,6 +482,7 @@ pub async fn register_handler(
         return Ok(axum::Json(RegisterResponse {
             success: false,
             token: String::new(),
+            refresh_token: None,
             message: "Email already registered".to_string(),
             user_id: None,
             wallet_address: None,
@@ -398,6 +505,7 @@ pub async fn register_handler(
                 return Ok(axum::Json(RegisterResponse {
                     success: false,
                     token: String::new(),
+                    refresh_token: None,
                     message: format!("Database connection error. Please check backend logs."),
                     user_id: None,
                     wallet_address: None,
@@ -409,6 +517,7 @@ pub async fn register_handler(
             return Ok(axum::Json(RegisterResponse {
                 success: false,
                 token: String::new(),
+                refresh_token: None,
                 message: "Username already taken".to_string(),
                 user_id: None,
                 wallet_address: None,
@@ -492,14 +601,19 @@ pub async fn register_handler(
                 }
             }
             
-            // Generate JWT token
+            // Generate access token and refresh token
             let token = state.jwt_config
                 .generate_token(&wallet_address)
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+            
+            let refresh_token = state.jwt_config
+                .generate_refresh_token(&wallet_address)
                 .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
             
             Ok(axum::Json(RegisterResponse {
                 success: true,
                 token,
+                refresh_token: Some(refresh_token),
                 message: "Registration successful".to_string(),
                 user_id: Some(wallet_address.clone()),
                 wallet_address: Some(wallet_address),
@@ -510,6 +624,7 @@ pub async fn register_handler(
             Ok(axum::Json(RegisterResponse {
                 success: false,
                 token: String::new(),
+                refresh_token: None,
                 message: "Failed to create user".to_string(),
                 user_id: None,
                 wallet_address: None,
@@ -533,6 +648,7 @@ pub async fn register_handler(
             Ok(axum::Json(RegisterResponse {
                 success: false,
                 token: String::new(),
+                refresh_token: None,
                 message: error_msg,
                 user_id: None,
                 wallet_address: None,

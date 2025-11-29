@@ -23,7 +23,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
-import { handleAuthError, getValidToken } from '../utils/authHelpers';
+import { handleAuthError, getValidToken, fetchWithAutoRefresh } from '../utils/authHelpers';
 
 interface NotificationPreferences {
   pushNotifications: boolean;
@@ -208,12 +208,9 @@ const SettingsPage: React.FC = () => {
         value: value instanceof File ? `${value.name} (${value.size} bytes)` : value
       })));
       
-      const response = await fetch(`${apiBaseUrl}/api/v1/user/avatar`, {
+      const response = await fetchWithAutoRefresh(`${apiBaseUrl}/api/v1/user/avatar`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          // Don't set Content-Type header - browser will set it automatically with boundary for FormData
-        },
+        // Don't set Content-Type header - browser will set it automatically with boundary for FormData
         body: formData,
       });
       
@@ -306,10 +303,9 @@ const SettingsPage: React.FC = () => {
       }
       
       // Update profile
-      const response = await fetch(`${apiBaseUrl}/api/v1/user/profile`, {
+      const response = await fetchWithAutoRefresh(`${apiBaseUrl}/api/v1/user/profile`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

@@ -213,6 +213,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
       localStorage.setItem('jwt_token', registerResult.token);
+      if (registerResult.refresh_token) {
+        localStorage.setItem('refresh_token', registerResult.refresh_token);
+        console.log('✅ Refresh token stored');
+      }
       
       console.log('✅ Registration successful for user:', newUser.email);
       console.log('✅ Wallet address:', walletAddress);
@@ -271,8 +275,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(loginResult.message || 'Login failed');
       }
       
-      // Store JWT token
+      // Store JWT token and refresh token
       localStorage.setItem('jwt_token', loginResult.token);
+      if (loginResult.refresh_token) {
+        localStorage.setItem('refresh_token', loginResult.refresh_token);
+        console.log('✅ Refresh token stored');
+      }
       
       // ✅ Get wallet address from JWT token or registration response
       // The backend should return wallet_address in the login/register response
@@ -364,6 +372,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('jwt_token');
+    localStorage.removeItem('refresh_token'); // ✅ Clear refresh token
     clearWallet(); // Clear wallet data
     navigate('/explore');
   };

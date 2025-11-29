@@ -6,7 +6,7 @@ import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
 import { useAuth } from '../auth/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getApiBaseUrl } from '../utils/apiConfig';
-import { handleAuthError, getValidToken } from '../utils/authHelpers';
+import { handleAuthError, getValidToken, fetchWithAutoRefresh } from '../utils/authHelpers';
 
 interface UploadFormData {
   title: string;
@@ -154,12 +154,9 @@ const UploadPage: React.FC = () => {
       const uploadUrl = `${apiBaseUrl}/api/v1/upload/content`;
       console.log('📤 Sending request to:', uploadUrl);
       
-      const response = await fetch(uploadUrl, {
+      const response = await fetchWithAutoRefresh(uploadUrl, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-          // Don't set Content-Type header - browser will set it automatically with boundary for FormData
-        },
+        // Don't set Content-Type header - browser will set it automatically with boundary for FormData
         body: uploadData
       });
       

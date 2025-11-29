@@ -1076,6 +1076,7 @@ pub fn create_router(state: AppState) -> Router {
         .route("/ws", get(websocket_handler))
         .route("/login", post(login_handler))
         .route("/register", post(crate::auth::register_handler))
+        .route("/api/v1/auth/refresh", post(crate::auth::refresh_token_handler)) // ✅ Refresh token endpoint
         .route("/api/v1/auth/google", post(crate::routes::oauth::google_oauth_handler))
         .route("/api/v1/auth/apple", post(crate::routes::oauth::apple_oauth_handler))
         .route("/api/wallet/connect", post(connect_wallet))
