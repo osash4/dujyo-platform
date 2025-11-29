@@ -1069,17 +1069,27 @@ const ProfilePage: React.FC = () => {
                   <div className="space-y-4">
                     {stakingHistory
                       .filter((tx): tx is StakingHistory => {
-                        if (!tx || typeof tx !== 'object') return false;
-                        if (!('id' in tx) || !tx.id) return false;
-                        if (!('type' in tx) || typeof tx.type !== 'string') return false;
-                        return true;
+                        try {
+                          if (!tx || typeof tx !== 'object') return false;
+                          if (!('id' in tx) || !tx.id) return false;
+                          if (!('type' in tx)) return false;
+                          const typeValue = tx.type;
+                          if (typeof typeValue !== 'string' || !typeValue) return false;
+                          return true;
+                        } catch (e) {
+                          console.error('Error filtering stakingHistory:', e, tx);
+                          return false;
+                        }
                       })
                       .map((tx, index) => {
-                        // Validación adicional antes de renderizar - doble verificación
-                        if (!tx || typeof tx !== 'object') return null;
-                        if (!('type' in tx) || typeof tx.type !== 'string' || !tx.type) return null;
-                        if (!('id' in tx) || !tx.id) return null;
-                        const txType: string = tx.type;
+                        // Validación adicional antes de renderizar - triple verificación con try-catch
+                        try {
+                          if (!tx || typeof tx !== 'object') return null;
+                          if (!('type' in tx)) return null;
+                          const typeValue = tx.type;
+                          if (typeof typeValue !== 'string' || !typeValue) return null;
+                          if (!('id' in tx) || !tx.id) return null;
+                          const txType: string = typeValue;
                         return (
                         <motion.div
                           key={tx.id}
