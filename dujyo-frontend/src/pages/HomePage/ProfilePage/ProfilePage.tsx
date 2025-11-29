@@ -1065,9 +1065,11 @@ const ProfilePage: React.FC = () => {
                         return true;
                       })
                       .map((tx, index) => {
-                        // Validación adicional antes de renderizar
-                        if (!tx || !tx.type || !tx.id) return null;
-                        const txType = tx.type || 'unknown';
+                        // Validación adicional antes de renderizar - doble verificación
+                        if (!tx || typeof tx !== 'object') return null;
+                        if (!('type' in tx) || typeof tx.type !== 'string' || !tx.type) return null;
+                        if (!('id' in tx) || !tx.id) return null;
+                        const txType: string = tx.type;
                         return (
                         <motion.div
                           key={tx.id}
