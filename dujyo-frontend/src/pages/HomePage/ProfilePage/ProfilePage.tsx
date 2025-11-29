@@ -1069,17 +1069,12 @@ const ProfilePage: React.FC = () => {
                   <div className="space-y-4">
                     {stakingHistory
                       .filter((tx): tx is StakingHistory => {
-                        try {
-                          if (!tx || typeof tx !== 'object') return false;
-                          if (!('id' in tx) || !tx.id) return false;
-                          if (!('type' in tx)) return false;
-                          const typeValue = tx.type;
-                          if (typeof typeValue !== 'string' || !typeValue) return false;
-                          return true;
-                        } catch (e) {
-                          console.error('Error filtering stakingHistory:', e, tx);
-                          return false;
-                        }
+                        if (!tx || typeof tx !== 'object') return false;
+                        if (!('id' in tx) || !tx.id) return false;
+                        if (!('type' in tx)) return false;
+                        const typeValue = tx.type;
+                        if (typeof typeValue !== 'string' || !typeValue) return false;
+                        return true;
                       })
                       .map((tx, index) => {
                         // El filter ya garantiza que tx tiene type e id válidos
