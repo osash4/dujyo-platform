@@ -2241,22 +2241,6 @@ const translations: Translations = {
     en: 'Discover and stream your favorite tracks. Listen to the latest releases and explore new artists.',
     es: 'Descubre y transmite tus canciones favoritas. Escucha los últimos lanzamientos y explora nuevos artistas.',
   },
-  'music.poweredBy': {
-    en: 'Powered by DUJYO • Stream-to-Earn',
-    es: 'Impulsado por DUJYO • Transmite para Ganar',
-  },
-  'music.dyoPerStream': {
-    en: '$DYO per Stream',
-    es: '$DYO por Transmisión',
-  },
-  'music.earnWhileListen': {
-    en: 'Earn while you listen',
-    es: 'Gana mientras escuchas',
-  },
-  'music.totalStreams': {
-    en: 'Total Streams',
-    es: 'Transmisiones Totales',
-  },
   'music.avgListenTime': {
     en: 'Avg Listen Time',
     es: 'Tiempo Promedio de Escucha',
@@ -2277,14 +2261,6 @@ const translations: Translations = {
     en: 'Share',
     es: 'Compartir',
   },
-  'music.download': {
-    en: 'Download',
-    es: 'Descargar',
-  },
-  'music.artist': {
-    en: 'Artist',
-    es: 'Artista',
-  },
   'music.album': {
     en: 'Album',
     es: 'Álbum',
@@ -2298,11 +2274,7 @@ const translations: Translations = {
     es: 'Lanzado',
   },
   
-  // DEX - Additional
-  'dex.dashboard': {
-    en: 'DEX Dashboard',
-    es: 'Panel DEX',
-  },
+  // DEX - Additional (duplicate removed - already defined above)
   'dex.totalLiquidity': {
     en: 'Total Liquidity',
     es: 'Liquidez Total',
@@ -2397,18 +2369,7 @@ const translations: Translations = {
     en: 'Platform Earnings',
     es: 'Ganancias por Plataforma',
   },
-  'wallet.music': {
-    en: 'Music',
-    es: 'Música',
-  },
-  'wallet.video': {
-    en: 'Video',
-    es: 'Video',
-  },
-  'wallet.gaming': {
-    en: 'Gaming',
-    es: 'Gaming',
-  },
+  // wallet.music, wallet.video, wallet.gaming already defined above
   'wallet.streams': {
     en: 'Streams',
     es: 'Transmisiones',
@@ -2913,30 +2874,9 @@ const translations: Translations = {
     en: 'Wallet not connected',
     es: 'Billetera no conectada',
   },
-  'profile.pleaseConnectWallet': {
-    en: 'Please connect your native blockchain wallet',
-    es: 'Por favor conecta tu billetera de blockchain nativa',
-  },
-  'profile.enterValidAmount': {
-    en: 'Please enter a valid amount',
-    es: 'Por favor ingresa una cantidad válida',
-  },
-  'profile.insufficientBalance': {
-    en: 'Insufficient DYO balance',
-    es: 'Balance DYO insuficiente',
-  },
-  'profile.selectStakingPosition': {
-    en: 'Please select a staking position to unstake',
-    es: 'Por favor selecciona una posición de apuesta para desapostar',
-  },
-  'profile.noRewardsAvailable': {
-    en: 'No rewards available to claim',
-    es: 'No hay recompensas disponibles para reclamar',
-  },
-  'profile.successfullyStaked': {
-    en: 'Successfully staked',
-    es: 'Apostado exitosamente',
-  },
+  // profile.pleaseConnectWallet, profile.enterValidAmount, profile.insufficientBalance, 
+  // profile.selectStakingPosition, profile.noRewardsAvailable, profile.successfullyStaked, 
+  // profile.successfullyClaimed already defined above
   'profile.successfullyUnstaked': {
     en: 'Successfully unstaked position!',
     es: '¡Posición desapostada exitosamente!',
@@ -2944,10 +2884,6 @@ const translations: Translations = {
   'profile.received': {
     en: 'Received',
     es: 'Recibido',
-  },
-  'profile.successfullyClaimed': {
-    en: 'Successfully claimed',
-    es: 'Reclamado exitosamente',
   },
   'profile.dyoRewards': {
     en: 'DYO Rewards',

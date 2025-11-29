@@ -971,11 +971,20 @@ const ProfilePage: React.FC = () => {
                   </button>
                   
                   {/* ✅ UNSTAKE SECTION */}
-                  {nativeStakingInfo.activePositions.length > 0 && (
+                  {nativeStakingInfo.activePositions && Array.isArray(nativeStakingInfo.activePositions) && nativeStakingInfo.activePositions.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="text-lg font-semibold text-white">{t('profile.activePositions')}</h4>
-                      {nativeStakingInfo.activePositions.map((position) => (
-                        <div key={position.id} className="bg-gray-700/30 rounded-lg p-4">
+                      {nativeStakingInfo.activePositions
+                        .filter((position): position is StakingPosition => {
+                          return position != null && 
+                                 typeof position === 'object' && 
+                                 'id' in position && 
+                                 position.id != null;
+                        })
+                        .map((position, index) => {
+                          if (!position || !position.id) return null;
+                          return (
+                          <div key={position.id || `position-${index}`} className="bg-gray-700/30 rounded-lg p-4">
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-white font-medium">{(position.amount || 0).toFixed(2)} DYO</span>
                             <span className="text-gray-400 text-sm">{t('profile.lock')}: {position.lockPeriod || 0} days</span>
@@ -1007,7 +1016,8 @@ const ProfilePage: React.FC = () => {
                             )}
                           </button>
                         </div>
-                      ))}
+                          );
+                        })}
                     </div>
                   )}
                   
