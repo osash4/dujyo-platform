@@ -302,12 +302,28 @@ const SettingsPage: React.FC = () => {
   };
 
   const saveProfile = async () => {
+    console.log('🚀 [saveProfile] Starting profile save...');
+    console.log('🚀 [saveProfile] Current state:', {
+      displayName,
+      bio,
+      avatarUrl,
+      hasAvatarFile: !!avatarFile,
+      avatarFileName: avatarFile?.name,
+      userPhotoURL: user?.photoURL
+    });
+    
     setLoading(true);
     setSaveStatus('saving');
     
     try {
       const apiBaseUrl = getApiBaseUrl();
       const token = getValidToken();
+      
+      console.log('🔐 [saveProfile] Auth check:', {
+        apiBaseUrl,
+        hasToken: !!token,
+        tokenLength: token?.length
+      });
       
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
@@ -317,22 +333,37 @@ const SettingsPage: React.FC = () => {
       let finalAvatarUrl = avatarUrl;
       if (avatarFile) {
         try {
-          console.log('📤 Uploading avatar file...');
+          console.log('📤 [saveProfile] Uploading avatar file...', {
+            fileName: avatarFile.name,
+            fileSize: avatarFile.size,
+            fileType: avatarFile.type
+          });
           const uploadedUrl = await uploadAvatar();
+          console.log('📥 [saveProfile] Upload avatar response:', uploadedUrl);
           if (uploadedUrl) {
             finalAvatarUrl = uploadedUrl;
-            console.log('✅ Avatar uploaded successfully, URL:', finalAvatarUrl);
+            console.log('✅ [saveProfile] Avatar uploaded successfully, URL:', finalAvatarUrl);
           } else {
-            console.warn('⚠️ Avatar upload returned null, using existing avatarUrl');
+            console.warn('⚠️ [saveProfile] Avatar upload returned null, using existing avatarUrl:', avatarUrl);
           }
         } catch (uploadError) {
           // If avatar upload fails, continue with profile update but show warning
-          console.error('❌ Avatar upload failed, continuing with profile update:', uploadError);
+          console.error('❌ [saveProfile] Avatar upload failed, continuing with profile update:', uploadError);
           // Don't throw - allow profile to be saved even if avatar upload fails
         }
+      } else {
+        console.log('ℹ️ [saveProfile] No avatar file to upload, using existing avatarUrl:', avatarUrl);
       }
       
+      console.log('📤 [saveProfile] Final avatar URL before profile update:', finalAvatarUrl);
+      
       // Update profile
+      console.log('📤 [saveProfile] Sending profile update request:', {
+        display_name: displayName,
+        bio: bio,
+        avatar_url: finalAvatarUrl
+      });
+      
       const response = await fetchWithAutoRefresh(`${apiBaseUrl}/api/v1/user/profile`, {
         method: 'PUT',
         headers: {
@@ -345,8 +376,15 @@ const SettingsPage: React.FC = () => {
         }),
       });
       
+      console.log('📥 [saveProfile] Profile update response status:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+      
       // Check for auth errors first
       const isAuthError = await handleAuthError(response, () => {
+        console.error('❌ [saveProfile] Auth error detected');
         setSaveStatus('error');
         setTimeout(() => {
           window.location.href = '/login';
@@ -360,28 +398,42 @@ const SettingsPage: React.FC = () => {
       if (response.ok) {
         // Get updated profile data from response
         const profileData = await response.json();
-        console.log('✅ Profile update response:', profileData);
+        console.log('✅ [saveProfile] Profile update response:', profileData);
         
         // Build full URL if avatar_url is a relative path
         let newAvatarUrl = profileData.avatar_url || finalAvatarUrl;
+        console.log('🔍 [saveProfile] Avatar URL from response:', {
+          profileDataAvatarUrl: profileData.avatar_url,
+          finalAvatarUrl,
+          newAvatarUrl
+        });
+        
         if (newAvatarUrl && !newAvatarUrl.startsWith('http')) {
           newAvatarUrl = `${apiBaseUrl}${newAvatarUrl.startsWith('/') ? '' : '/'}${newAvatarUrl}`;
+          console.log('🔧 [saveProfile] Built full URL:', newAvatarUrl);
         }
-        console.log('✅ Final avatar URL:', newAvatarUrl);
+        console.log('✅ [saveProfile] Final avatar URL:', newAvatarUrl);
         
         // Update local state FIRST with the new avatar URL
+        console.log('💾 [saveProfile] Updating local state with avatar URL:', newAvatarUrl);
         setAvatarUrl(newAvatarUrl);
         setAvatarFile(null);
         setAvatarPreview(null);
         
         // Update AuthContext with new data (this will update all components using user)
+        console.log('💾 [saveProfile] Updating AuthContext with:', {
+          displayName: profileData.display_name || displayName,
+          photoURL: newAvatarUrl
+        });
         updateUser({
           displayName: profileData.display_name || displayName,
           photoURL: newAvatarUrl,
         });
         
         // Also refresh from backend to ensure we have the latest data
+        console.log('🔄 [saveProfile] Refreshing user from backend...');
         await refreshUser();
+        console.log('✅ [saveProfile] User refreshed, current user.photoURL:', user?.photoURL);
         
         setSaveStatus('success');
         setTimeout(() => setSaveStatus('idle'), 2000);
