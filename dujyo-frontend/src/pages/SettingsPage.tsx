@@ -200,13 +200,20 @@ const SettingsPage: React.FC = () => {
   };
 
   const uploadAvatar = async (): Promise<string | null> => {
-    if (!avatarFile) return avatarUrl;
+    console.log('🚀 [uploadAvatar] Function called');
+    console.log('🚀 [uploadAvatar] avatarFile:', avatarFile);
+    console.log('🚀 [uploadAvatar] avatarUrl:', avatarUrl);
+    
+    if (!avatarFile) {
+      console.log('⚠️ [uploadAvatar] No avatarFile, returning existing avatarUrl:', avatarUrl);
+      return avatarUrl;
+    }
     
     try {
       const apiBaseUrl = getApiBaseUrl();
       const token = getValidToken();
       
-      console.log('📤 Starting avatar upload...', {
+      console.log('📤 [uploadAvatar] Starting avatar upload...', {
         apiBaseUrl,
         hasToken: !!token,
         fileName: avatarFile.name,
@@ -319,6 +326,7 @@ const SettingsPage: React.FC = () => {
   };
 
   const saveProfile = async () => {
+    console.log('🚀🚀🚀 [saveProfile] FUNCTION CALLED 🚀🚀🚀');
     console.log('🚀 [saveProfile] Starting profile save...');
     console.log('🚀 [saveProfile] Current state:', {
       displayName,
@@ -331,6 +339,7 @@ const SettingsPage: React.FC = () => {
     
     setLoading(true);
     setSaveStatus('saving');
+    console.log('✅ [saveProfile] State updated: loading=true, saveStatus=saving');
     
     try {
       const apiBaseUrl = getApiBaseUrl();
