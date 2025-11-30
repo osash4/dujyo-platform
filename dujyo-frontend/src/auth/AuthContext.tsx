@@ -407,10 +407,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (response.ok) {
         const data = await response.json();
+        // Build full URL if avatar_url is a relative path
+        let avatarUrl = data.avatar_url || user.photoURL;
+        if (avatarUrl && !avatarUrl.startsWith('http')) {
+          avatarUrl = `${apiBaseUrl}${avatarUrl.startsWith('/') ? '' : '/'}${avatarUrl}`;
+        }
         const updatedUser: User = {
           ...user,
           displayName: data.display_name || user.displayName,
-          photoURL: data.avatar_url || user.photoURL,
+          photoURL: avatarUrl,
         };
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));

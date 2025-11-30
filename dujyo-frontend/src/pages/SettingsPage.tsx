@@ -107,7 +107,12 @@ const SettingsPage: React.FC = () => {
         const data = await response.json();
         setDisplayName(data.display_name || user.displayName || '');
         setBio(data.bio || '');
-        const newAvatarUrl = data.avatar_url || user.photoURL || '';
+        // Build full URL if avatar_url is a relative path
+        let newAvatarUrl = data.avatar_url || user.photoURL || '';
+        if (newAvatarUrl && !newAvatarUrl.startsWith('http')) {
+          const apiBaseUrl = getApiBaseUrl();
+          newAvatarUrl = `${apiBaseUrl}${newAvatarUrl.startsWith('/') ? '' : '/'}${newAvatarUrl}`;
+        }
         setAvatarUrl(newAvatarUrl);
         // Also update user context if avatar changed
         if (newAvatarUrl && newAvatarUrl !== user.photoURL) {
@@ -250,7 +255,14 @@ const SettingsPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('✅ Avatar upload success:', data);
-        return data.avatar_url || null;
+        // Build full URL if avatar_url is a relative path
+        let avatarUrl = data.avatar_url || null;
+        if (avatarUrl && !avatarUrl.startsWith('http')) {
+          // If it's a relative path, prepend the API base URL
+          avatarUrl = `${apiBaseUrl}${avatarUrl.startsWith('/') ? '' : '/'}${avatarUrl}`;
+        }
+        console.log('✅ Avatar URL (full):', avatarUrl);
+        return avatarUrl;
       } else {
         // Get more detailed error message
         let errorMessage = 'Failed to upload avatar';
@@ -356,7 +368,12 @@ const SettingsPage: React.FC = () => {
         
         // Update local state with the new avatar URL from the response
         if (profileData.avatar_url) {
-          setAvatarUrl(profileData.avatar_url);
+          // Build full URL if avatar_url is a relative path
+          let newAvatarUrl = profileData.avatar_url;
+          if (!newAvatarUrl.startsWith('http')) {
+            newAvatarUrl = `${apiBaseUrl}${newAvatarUrl.startsWith('/') ? '' : '/'}${newAvatarUrl}`;
+          }
+          setAvatarUrl(newAvatarUrl);
         }
         
         setSaveStatus('success');
