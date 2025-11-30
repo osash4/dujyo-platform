@@ -80,14 +80,14 @@ const SettingsPage: React.FC = () => {
     loadPrivacySettings();
   }, [user]);
 
-  // Update avatarUrl when user photoURL changes
+  // Update avatarUrl when user photoURL changes (but only if we don't have a preview or file)
   useEffect(() => {
-    if (user?.photoURL && user.photoURL !== avatarUrl) {
+    // Only sync if we don't have a pending upload (avatarFile or avatarPreview)
+    if (user?.photoURL && user.photoURL !== avatarUrl && !avatarFile && !avatarPreview) {
+      console.log('🔄 Syncing avatarUrl from user.photoURL:', user.photoURL);
       setAvatarUrl(user.photoURL);
-      setAvatarPreview(null);
-      setAvatarFile(null);
     }
-  }, [user?.photoURL]);
+  }, [user?.photoURL, avatarFile, avatarPreview]);
 
   const loadUserProfile = async () => {
     if (!user) return;
@@ -317,13 +317,17 @@ const SettingsPage: React.FC = () => {
       let finalAvatarUrl = avatarUrl;
       if (avatarFile) {
         try {
-          finalAvatarUrl = await uploadAvatar() || avatarUrl;
-          setAvatarUrl(finalAvatarUrl);
-          setAvatarFile(null);
-          setAvatarPreview(null);
+          console.log('📤 Uploading avatar file...');
+          const uploadedUrl = await uploadAvatar();
+          if (uploadedUrl) {
+            finalAvatarUrl = uploadedUrl;
+            console.log('✅ Avatar uploaded successfully, URL:', finalAvatarUrl);
+          } else {
+            console.warn('⚠️ Avatar upload returned null, using existing avatarUrl');
+          }
         } catch (uploadError) {
           // If avatar upload fails, continue with profile update but show warning
-          console.warn('Avatar upload failed, continuing with profile update:', uploadError);
+          console.error('❌ Avatar upload failed, continuing with profile update:', uploadError);
           // Don't throw - allow profile to be saved even if avatar upload fails
         }
       }
@@ -356,25 +360,28 @@ const SettingsPage: React.FC = () => {
       if (response.ok) {
         // Get updated profile data from response
         const profileData = await response.json();
+        console.log('✅ Profile update response:', profileData);
+        
+        // Build full URL if avatar_url is a relative path
+        let newAvatarUrl = profileData.avatar_url || finalAvatarUrl;
+        if (newAvatarUrl && !newAvatarUrl.startsWith('http')) {
+          newAvatarUrl = `${apiBaseUrl}${newAvatarUrl.startsWith('/') ? '' : '/'}${newAvatarUrl}`;
+        }
+        console.log('✅ Final avatar URL:', newAvatarUrl);
+        
+        // Update local state FIRST with the new avatar URL
+        setAvatarUrl(newAvatarUrl);
+        setAvatarFile(null);
+        setAvatarPreview(null);
         
         // Update AuthContext with new data (this will update all components using user)
         updateUser({
           displayName: profileData.display_name || displayName,
-          photoURL: profileData.avatar_url || finalAvatarUrl,
+          photoURL: newAvatarUrl,
         });
         
         // Also refresh from backend to ensure we have the latest data
         await refreshUser();
-        
-        // Update local state with the new avatar URL from the response
-        if (profileData.avatar_url) {
-          // Build full URL if avatar_url is a relative path
-          let newAvatarUrl = profileData.avatar_url;
-          if (!newAvatarUrl.startsWith('http')) {
-            newAvatarUrl = `${apiBaseUrl}${newAvatarUrl.startsWith('/') ? '' : '/'}${newAvatarUrl}`;
-          }
-          setAvatarUrl(newAvatarUrl);
-        }
         
         setSaveStatus('success');
         setTimeout(() => setSaveStatus('idle'), 2000);
