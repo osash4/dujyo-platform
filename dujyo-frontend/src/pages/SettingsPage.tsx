@@ -221,17 +221,34 @@ const SettingsPage: React.FC = () => {
       const formData = new FormData();
       formData.append('avatar', avatarFile);
       
-      console.log('📤 Sending request to:', `${apiBaseUrl}/api/v1/user/avatar`);
-      console.log('📤 FormData entries:', Array.from(formData.entries()).map(([key, value]) => ({
+      const uploadUrl = `${apiBaseUrl}/api/v1/user/avatar`;
+      console.log('📤 [uploadAvatar] Sending request to:', uploadUrl);
+      console.log('📤 [uploadAvatar] FormData entries:', Array.from(formData.entries()).map(([key, value]) => ({
         key,
         value: value instanceof File ? `${value.name} (${value.size} bytes)` : value
       })));
-      
-      const response = await fetchWithAutoRefresh(`${apiBaseUrl}/api/v1/user/avatar`, {
+      console.log('📤 [uploadAvatar] Request config:', {
         method: 'POST',
-        // Don't set Content-Type header - browser will set it automatically with boundary for FormData
-        body: formData,
+        hasBody: !!formData,
+        tokenLength: token.length
       });
+      
+      let response: Response;
+      try {
+        response = await fetchWithAutoRefresh(uploadUrl, {
+          method: 'POST',
+          // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+          body: formData,
+        });
+      } catch (fetchError) {
+        console.error('❌ [uploadAvatar] Fetch error (network/CORS):', fetchError);
+        console.error('❌ [uploadAvatar] Error details:', {
+          message: fetchError instanceof Error ? fetchError.message : String(fetchError),
+          name: fetchError instanceof Error ? fetchError.name : 'Unknown',
+          stack: fetchError instanceof Error ? fetchError.stack : undefined
+        });
+        throw new Error(`Network error: ${fetchError instanceof Error ? fetchError.message : 'Failed to connect to server. Please check your internet connection and try again.'}`);
+      }
       
       console.log('📥 Avatar upload response:', {
         status: response.status,

@@ -178,10 +178,17 @@ export async function fetchWithAutoRefresh(
     headers.set('Authorization', `Bearer ${token}`);
   }
   
-  let response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch (fetchError) {
+    // Network error (CORS, connection failed, etc.)
+    console.error('❌ [fetchWithAutoRefresh] Network error:', fetchError);
+    throw fetchError;
+  }
   
   // If 401, try to refresh token and retry once
   if (response.status === 401) {
