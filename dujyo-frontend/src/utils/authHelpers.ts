@@ -172,10 +172,17 @@ export async function fetchWithAutoRefresh(
 ): Promise<Response> {
   let token = getValidToken();
   
-  // Add Authorization header if token exists
+  // ✅ CRITICAL: For FormData, don't set Content-Type - browser will set it with boundary
+  // Only add Authorization header, preserve existing headers
   const headers = new Headers(options.headers);
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
+  }
+  
+  // ✅ CRITICAL: If body is FormData, remove Content-Type header if it exists
+  // The browser will automatically set it with the correct boundary
+  if (options.body instanceof FormData) {
+    headers.delete('Content-Type'); // Let browser set it automatically
   }
   
   let response: Response;

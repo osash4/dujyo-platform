@@ -21,6 +21,7 @@ interface UploadFormData {
 
 const UploadPage: React.FC = () => {
   const { user, getUserRole, hasRole } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'audio' | 'video' | 'gaming'>('audio');
   
@@ -109,14 +110,18 @@ const UploadPage: React.FC = () => {
         throw new Error('No authentication token found. Please log in again.');
       }
       
-      console.log('📤 Starting content upload...', {
+      console.log('🚀🚀🚀 [UploadPage] Starting content upload...', {
         title: formData.title,
         type: formData.type,
         fileName: formData.file?.name,
         fileSize: formData.file?.size,
         fileType: formData.file?.type,
         hasThumbnail: !!formData.thumbnail,
-        user: user?.uid
+        thumbnailName: formData.thumbnail?.name,
+        thumbnailSize: formData.thumbnail?.size,
+        user: user?.uid,
+        userRole: getUserRole(),
+        isArtist: hasRole('artist')
       });
       
       // Create form data
@@ -152,18 +157,35 @@ const UploadPage: React.FC = () => {
       // Upload to backend
       const apiBaseUrl = getApiBaseUrl();
       const uploadUrl = `${apiBaseUrl}/api/v1/upload/content`;
-      console.log('📤 Sending request to:', uploadUrl);
-      
-      const response = await fetchWithAutoRefresh(uploadUrl, {
+      console.log('📤 [UploadPage] Sending request to:', uploadUrl);
+      console.log('📤 [UploadPage] Request config:', {
         method: 'POST',
-        // Don't set Content-Type header - browser will set it automatically with boundary for FormData
-        body: uploadData
+        hasBody: !!uploadData,
+        tokenLength: token.length,
+        formDataSize: uploadData.toString().length
       });
+      
+      let response: Response;
+      try {
+        response = await fetchWithAutoRefresh(uploadUrl, {
+          method: 'POST',
+          // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+          body: uploadData
+        });
+      } catch (fetchError) {
+        console.error('❌ [UploadPage] Fetch error (network/CORS):', fetchError);
+        console.error('❌ [UploadPage] Error details:', {
+          message: fetchError instanceof Error ? fetchError.message : String(fetchError),
+          name: fetchError instanceof Error ? fetchError.name : 'Unknown',
+          stack: fetchError instanceof Error ? fetchError.stack : undefined
+        });
+        throw new Error(`Network error: ${fetchError instanceof Error ? fetchError.message : 'Failed to connect to server. Please check your internet connection and try again.'}`);
+      }
       
       clearInterval(progressInterval);
       setUploadProgress(100);
       
-      console.log('📥 Content upload response:', {
+      console.log('📥 [UploadPage] Content upload response:', {
         status: response.status,
         statusText: response.statusText,
         ok: response.ok,
@@ -209,7 +231,14 @@ const UploadPage: React.FC = () => {
       }
       
       const result = await response.json();
-      console.log('✅ Content upload success:', result);
+      console.log('✅ [UploadPage] Content upload success:', result);
+      console.log('✅ [UploadPage] Uploaded content details:', {
+        contentId: result.content_id,
+        fileUrl: result.file_url,
+        thumbnailUrl: result.thumbnail_url,
+        ipfsHash: result.ipfs_hash,
+        message: result.message
+      });
       
       // ✅ Success message with better feedback
       setMessage(`✅ Successfully uploaded "${formData.title}"! Redirecting to content manager...`);

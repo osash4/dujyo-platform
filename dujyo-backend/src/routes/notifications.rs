@@ -38,6 +38,21 @@ pub struct NotificationPreferences {
     pub push_enabled: bool,
 }
 
+/// Register FCM token for push notifications
+/// POST /api/v1/notifications/register-token
+#[derive(Deserialize)]
+pub struct RegisterTokenRequest {
+    pub token: String,
+    pub platform: String,
+    pub device_id: String,
+}
+
+#[derive(Serialize)]
+pub struct RegisterTokenResponse {
+    pub success: bool,
+    pub message: String,
+}
+
 /// GET /api/v1/notifications
 pub async fn get_notifications(
     Extension(claims): Extension<Claims>,
@@ -216,8 +231,48 @@ pub async fn update_notification_preferences(
     })))
 }
 
+/// Register FCM token for push notifications
+/// POST /api/v1/notifications/register-token
+pub async fn register_token_handler(
+    Extension(claims): Extension<Claims>,
+    State(state): State<AppState>,
+    Json(request): Json<RegisterTokenRequest>,
+) -> Result<Json<RegisterTokenResponse>, StatusCode> {
+    // Get user wallet address from authenticated user
+    let user_address = &claims.sub; // JWT subject contains wallet address
+
+    // Insert or update token in database
+    match sqlx::query(
+        r#"
+        INSERT INTO notification_tokens (user_address, token, platform, device_id, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, NOW(), NOW())
+        ON CONFLICT (user_address, device_id) 
+        DO UPDATE SET 
+            token = EXCLUDED.token,
+            platform = EXCLUDED.platform,
+            updated_at = NOW()
+        "#
+    )
+    .bind(user_address)
+    .bind(&request.token)
+    .bind(&request.platform)
+    .bind(&request.device_id)
+    .execute(&state.storage.pool)
+    .await
+    {
+        Ok(_) => Ok(Json(RegisterTokenResponse {
+            success: true,
+            message: "Token registered successfully".to_string(),
+        })),
+        Err(e) => {
+            eprintln!("Error registering notification token: {}", e);
+            Err(StatusCode::INTERNAL_SERVER_ERROR)
+        }
+    }
+}
+
 pub fn notification_routes() -> axum::Router<AppState> {
-    use axum::routing::{get, put};
+    use axum::routing::{get, put, post};
     use axum::extract::Path;
     axum::Router::new()
         .route("/", get(get_notifications))
@@ -225,5 +280,6 @@ pub fn notification_routes() -> axum::Router<AppState> {
         .route("/read-all", put(mark_all_notifications_read))
         .route("/preferences", get(get_notification_preferences))
         .route("/preferences", put(update_notification_preferences))
+        .route("/register-token", post(register_token_handler))
 }
 

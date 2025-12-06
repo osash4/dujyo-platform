@@ -13,8 +13,7 @@ CREATE TABLE IF NOT EXISTS playlists (
     track_count INTEGER NOT NULL DEFAULT 0,
     total_duration_seconds INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT playlists_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Playlist tracks (junction table)
@@ -25,9 +24,7 @@ CREATE TABLE IF NOT EXISTS playlist_tracks (
     position INTEGER NOT NULL DEFAULT 0,
     added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     added_by VARCHAR(255) REFERENCES users(wallet_address),
-    CONSTRAINT playlist_tracks_playlist_content_unique UNIQUE (playlist_id, content_id),
-    CONSTRAINT playlist_tracks_playlist_id_fkey FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE,
-    CONSTRAINT playlist_tracks_content_id_fkey FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE
+    CONSTRAINT playlist_tracks_playlist_content_unique UNIQUE (playlist_id, content_id)
 );
 
 -- Playlist collaborators (for collaborative playlists)
@@ -38,9 +35,7 @@ CREATE TABLE IF NOT EXISTS playlist_collaborators (
     can_add_tracks BOOLEAN NOT NULL DEFAULT true,
     can_remove_tracks BOOLEAN NOT NULL DEFAULT true,
     added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (playlist_id, user_id),
-    CONSTRAINT playlist_collaborators_playlist_id_fkey FOREIGN KEY (playlist_id) REFERENCES playlists(playlist_id) ON DELETE CASCADE,
-    CONSTRAINT playlist_collaborators_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    PRIMARY KEY (playlist_id, user_id)
 );
 
 -- User listening history (for recommendations)
@@ -50,9 +45,7 @@ CREATE TABLE IF NOT EXISTS listening_history (
     content_id VARCHAR(255) NOT NULL REFERENCES content(content_id) ON DELETE CASCADE,
     listened_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     duration_seconds INTEGER NOT NULL DEFAULT 0,
-    completed BOOLEAN NOT NULL DEFAULT false,
-    CONSTRAINT listening_history_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE,
-    CONSTRAINT listening_history_content_id_fkey FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE
+    completed BOOLEAN NOT NULL DEFAULT false
 );
 
 -- Indexes for performance
@@ -93,6 +86,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to auto-update playlist stats
+DROP TRIGGER IF EXISTS trigger_update_playlist_stats ON playlist_tracks;
 CREATE TRIGGER trigger_update_playlist_stats
     AFTER INSERT OR DELETE ON playlist_tracks
     FOR EACH ROW

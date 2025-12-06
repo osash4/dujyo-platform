@@ -11,9 +11,7 @@ CREATE TABLE IF NOT EXISTS user_follows (
     following_id VARCHAR(255) NOT NULL REFERENCES users(wallet_address) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT user_follows_unique UNIQUE (follower_id, following_id),
-    CONSTRAINT user_follows_no_self_follow CHECK (follower_id != following_id),
-    CONSTRAINT user_follows_follower_fkey FOREIGN KEY (follower_id) REFERENCES users(wallet_address) ON DELETE CASCADE,
-    CONSTRAINT user_follows_following_fkey FOREIGN KEY (following_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    CONSTRAINT user_follows_no_self_follow CHECK (follower_id != following_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_follows_follower ON user_follows(follower_id);
@@ -33,9 +31,7 @@ CREATE TABLE IF NOT EXISTS content_comments (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     is_edited BOOLEAN NOT NULL DEFAULT false,
-    is_deleted BOOLEAN NOT NULL DEFAULT false,
-    CONSTRAINT content_comments_content_id_fkey FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE,
-    CONSTRAINT content_comments_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    is_deleted BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE INDEX IF NOT EXISTS idx_content_comments_content_id ON content_comments(content_id);
@@ -56,9 +52,7 @@ CREATE TABLE IF NOT EXISTS content_reviews (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     is_edited BOOLEAN NOT NULL DEFAULT false,
-    CONSTRAINT content_reviews_unique UNIQUE (content_id, user_id),
-    CONSTRAINT content_reviews_content_id_fkey FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE,
-    CONSTRAINT content_reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    CONSTRAINT content_reviews_unique UNIQUE (content_id, user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_content_reviews_content_id ON content_reviews(content_id);
@@ -74,9 +68,7 @@ CREATE TABLE IF NOT EXISTS comment_likes (
     comment_id VARCHAR(255) NOT NULL REFERENCES content_comments(comment_id) ON DELETE CASCADE,
     user_id VARCHAR(255) NOT NULL REFERENCES users(wallet_address) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT comment_likes_unique UNIQUE (comment_id, user_id),
-    CONSTRAINT comment_likes_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES content_comments(comment_id) ON DELETE CASCADE,
-    CONSTRAINT comment_likes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    CONSTRAINT comment_likes_unique UNIQUE (comment_id, user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_comment_likes_comment_id ON comment_likes(comment_id);
@@ -91,9 +83,7 @@ CREATE TABLE IF NOT EXISTS review_helpful_votes (
     user_id VARCHAR(255) NOT NULL REFERENCES users(wallet_address) ON DELETE CASCADE,
     is_helpful BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT review_helpful_votes_unique UNIQUE (review_id, user_id),
-    CONSTRAINT review_helpful_votes_review_id_fkey FOREIGN KEY (review_id) REFERENCES content_reviews(review_id) ON DELETE CASCADE,
-    CONSTRAINT review_helpful_votes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    CONSTRAINT review_helpful_votes_unique UNIQUE (review_id, user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_review_helpful_votes_review_id ON review_helpful_votes(review_id);

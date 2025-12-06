@@ -1,65 +1,44 @@
 #!/bin/bash
-# ✅ P0.4: Database Backup Script
-# Backs up PostgreSQL database for XWave
-# Usage: ./backup-database.sh [backup_directory]
 
-set -e  # Exit on error
+# Backup automático diario de tablas S2E críticas
+# Ejecutar diariamente vía cron: 0 2 * * * /path/to/backup-database.sh
 
-# Configuration
-BACKUP_DIR="${1:-./backups}"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RETENTION_DAYS=30  # Keep backups for 30 days
+set -e
 
-# Load environment variables (safely)
-if [ -f .env ]; then
-    set -a
-    source <(cat .env | grep -v '^#' | grep -v '^$' | sed 's/^/export /')
-    set +a
-fi
+# Configuración
+BACKUP_DIR="${BACKUP_DIR:-./backups}"
+DATE=$(date +%Y%m%d_%H%M%S)
+DB_NAME="${DB_NAME:-dujyo}"
+DB_USER="${DB_USER:-postgres}"
+DB_HOST="${DB_HOST:-localhost}"
 
-# Database configuration from environment
-DB_NAME="${POSTGRES_DB:-xwave_blockchain}"
-DB_USER="${POSTGRES_USER:-postgres}"
-DB_HOST="${POSTGRES_HOST:-localhost}"
-DB_PORT="${POSTGRES_PORT:-5432}"
-
-# Create backup directory if it doesn't exist
+# Crear directorio de backups si no existe
 mkdir -p "$BACKUP_DIR"
 
-# Backup filename
-BACKUP_FILE="$BACKUP_DIR/xwave_db_${TIMESTAMP}.sql.gz"
+echo "🔄 Iniciando backup de tablas S2E críticas..."
 
-echo "🗄️  Starting database backup..."
-echo "   Database: $DB_NAME"
-echo "   Host: $DB_HOST:$DB_PORT"
-echo "   Backup file: $BACKUP_FILE"
+# Backup de tablas S2E críticas
+pg_dump -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" \
+  -t s2e_monthly_pools \
+  -t stream_logs \
+  -t beta_users \
+  -t beta_codes \
+  -t user_daily_usage \
+  -t content_stream_limits \
+  --data-only \
+  --format=custom \
+  -f "$BACKUP_DIR/s2e_critical_${DATE}.dump"
 
-# Perform backup
-PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump \
-    -h "$DB_HOST" \
-    -p "$DB_PORT" \
-    -U "$DB_USER" \
-    -d "$DB_NAME" \
-    --no-owner \
-    --no-acl \
-    --clean \
-    --if-exists \
-    | gzip > "$BACKUP_FILE"
-
-if [ $? -eq 0 ]; then
-    BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
-    echo "✅ Backup completed successfully!"
-    echo "   Size: $BACKUP_SIZE"
-    echo "   File: $BACKUP_FILE"
-    
-    # Clean up old backups
-    echo "🧹 Cleaning up backups older than $RETENTION_DAYS days..."
-    find "$BACKUP_DIR" -name "xwave_db_*.sql.gz" -type f -mtime +$RETENTION_DAYS -delete
-    echo "✅ Cleanup completed"
-    
-    exit 0
-else
-    echo "❌ Backup failed!"
-    exit 1
+# Backup completo de seguridad (semanal, solo domingos)
+if [ $(date +%u) -eq 7 ]; then
+  echo "📦 Backup completo semanal..."
+  pg_dump -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" \
+    --format=custom \
+    -f "$BACKUP_DIR/full_backup_${DATE}.dump"
 fi
 
+# Limpiar backups antiguos (mantener últimos 30 días)
+find "$BACKUP_DIR" -name "s2e_critical_*.dump" -mtime +30 -delete
+find "$BACKUP_DIR" -name "full_backup_*.dump" -mtime +90 -delete
+
+echo "✅ Backup completado: $BACKUP_DIR/s2e_critical_${DATE}.dump"

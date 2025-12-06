@@ -83,14 +83,42 @@ export const useUnifiedBalance = () => {
   // ✅ Escuchar evento personalizado de actualización de balance
   // Stream-earn, swap, stake disparan este evento cuando hay cambios
   useEffect(() => {
-    const handleBalanceUpdate = () => {
+    const handleBalanceUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const earned = customEvent.detail?.earned || 0;
+      const force = customEvent.detail?.force || false;
+      
+      // ✅ OPTIMISTIC UPDATE: If we know the earned amount, update immediately
+      if (earned > 0 && customEvent.detail?.optimistic) {
+        setBalance(prev => ({
+          ...prev,
+          available_dyo: prev.available_dyo + earned,
+          total: prev.total + earned,
+          lastUpdate: Date.now()
+        }));
+        console.log(`💰 [Optimistic] Balance updated: +${earned} DYO`);
+      }
+      
+      // Always fetch from backend to sync (with small delay to allow DB update)
+      if (force) {
+        // Immediate refresh for forced updates
+        setTimeout(() => fetchBalance(), 500);
+      } else {
+        // Normal refresh with slight delay
+        setTimeout(() => fetchBalance(), 1000);
+      }
+    };
+    
+    const handleForceRefresh = () => {
       fetchBalance();
     };
     
     window.addEventListener('dujyo:balance-updated', handleBalanceUpdate);
+    window.addEventListener('dujyo:force-balance-refresh', handleForceRefresh);
     
     return () => {
       window.removeEventListener('dujyo:balance-updated', handleBalanceUpdate);
+      window.removeEventListener('dujyo:force-balance-refresh', handleForceRefresh);
     };
   }, [fetchBalance]);
 

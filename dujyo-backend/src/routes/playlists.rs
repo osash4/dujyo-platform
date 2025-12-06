@@ -651,13 +651,10 @@ async fn reorder_tracks(
 /// GET /api/v1/playlists/:playlist_id/collaborators
 /// Get playlist collaborators
 async fn get_collaborators(
-    Extension(claims): Extension<Claims>,
-    PathExtractor(playlist_id): PathExtractor<String>,
-    State(state): State<AppState>,
+    Extension(_claims): Extension<Claims>,
+    PathExtractor(_playlist_id): PathExtractor<String>,
+    State(_state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
-    let _user_id = &claims.sub;
-    let pool = &state.storage.pool;
-    
     // TODO: Implement
     Ok(Json(serde_json::json!({"success": true, "collaborators": []})))
 }

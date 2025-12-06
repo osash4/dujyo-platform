@@ -90,7 +90,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   // Get blockchain context for real-time updates
   const blockchainContext = useBlockchain();
   const emitEvent = useEventEmitter();
-  const { getUserRole } = useAuth();
+  const { getUserRole, user } = useAuth();
   
   // Initialize state from localStorage to persist across page changes
   const [currentTrack, setCurrentTrack] = useState<Track | null>(() => {
@@ -180,173 +180,6 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     localStorage.setItem('dujyo_repeat_mode', repeatMode);
   }, [repeatMode]);
 
-  // Stream-to-Earn functions
-  const startStreamEarn = useCallback(() => {
-    if (!currentTrack) {
-      console.log('❌ No current track for stream-earn');
-      return;
-    }
-
-    const userRole = getUserRole();
-    console.log(`🎵 Starting stream-earn for ${userRole}`);
-    
-    // Force balance refresh every 5 seconds
-    balanceRefreshRef.current = setInterval(() => {
-      if (blockchainContext?.refreshBalance) {
-        blockchainContext.refreshBalance().catch(() => {});
-      }
-      window.dispatchEvent(new CustomEvent('dujyo:balance-updated'));
-    }, 5000);
-    
-    // Check daily limit
-    const today = new Date().toDateString();
-    const lastEarnDate = new Date(streamEarnData.lastEarnTime).toDateString();
-    
-    if (today !== lastEarnDate) {
-      // Reset daily counter for new day
-      setStreamEarnData(prev => ({
-        ...prev,
-        dailyEarned: 0,
-        lastEarnTime: Date.now()
-      }));
-    }
-
-    // Solo ejecutar el timer del rol del usuario (artist O listener, no ambos)
-    const streamEarnTimerRef = userRole === 'artist' ? artistTimerRef : listenerTimerRef;
-    
-    streamEarnTimerRef.current = setInterval(async () => {
-      try {
-        // Call REAL stream-earn endpoint
-        const token = localStorage.getItem('jwt_token');
-        if (!token) {
-          console.error('No authentication token for stream-earn');
-          return;
-        }
-
-        const requestBody = {
-          type_: userRole, // 'artist' o 'listener'
-          duration_seconds: 10, // 10 segundos por tick
-          track_id: currentTrack.id,
-          track_title: currentTrack.title,
-          track_genre: currentTrack.genre || 'pop', // Default genre
-          artist_followers: currentTrack.artistFollowers || 1000, // Default followers
-        };
-        
-        console.log('📤 Stream-earn request:', requestBody);
-        
-        const apiBaseUrl = getApiBaseUrl();
-        const response = await fetch(`${apiBaseUrl}/api/stream-earn`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestBody)
-        });
-
-        console.log('📥 Stream-earn response:', response.status, response.statusText);
-
-        if (!response.ok) {
-          // Intentar leer el body del error
-          const errorText = await response.text();
-          console.error(`❌ Stream-earn error ${response.status}:`, errorText);
-          
-          if (response.status === 401) {
-            console.error('❌ Token expirado. Por favor recarga la página y vuelve a iniciar sesión.');
-            // Limpiar timer para evitar spam
-            if (streamEarnTimerRef.current) {
-              clearInterval(streamEarnTimerRef.current);
-              streamEarnTimerRef.current = null;
-            }
-          }
-          return;
-        }
-
-        const result = await response.json();
-        
-        // Usar earned_amount del backend (incluye bonus)
-        const earnedAmount = result.earned_amount || 0;
-        
-        // Actualizar el estado según el rol
-        if (userRole === 'artist') {
-          setStreamEarnData(prev => ({
-            ...prev,
-            artistTokens: prev.artistTokens + earnedAmount,
-            totalStreamTime: prev.totalStreamTime + 10,
-            dailyEarned: prev.dailyEarned + (10/60) // 10 seconds = 0.167 minutes
-          }));
-        } else {
-          setStreamEarnData(prev => ({
-            ...prev,
-            listenerTokens: prev.listenerTokens + earnedAmount,
-            totalStreamTime: prev.totalStreamTime + 10,
-            dailyEarned: prev.dailyEarned + (10/60)
-          }));
-        }
-
-        // Show notification con bonus info
-        const bonusText = result.bonus_applied?.length > 0 
-          ? ` (${result.bonus_applied.length} bonus activos!)` 
-          : '';
-        showEarnNotification(userRole === 'artist' ? 'Artist' : 'Listener', earnedAmount, 'DYO' + bonusText);
-        
-        // ✅ Trigger balance update - dispara evento para que los hooks se actualicen
-        if (blockchainContext?.refreshBalance) {
-          await blockchainContext.refreshBalance().catch(() => {});
-        }
-        
-        // También disparar evento personalizado para GlobalPlayer y otros componentes
-        window.dispatchEvent(new CustomEvent('dujyo:balance-updated', {
-          detail: {
-            earned: earnedAmount,
-            bonus_count: result.bonus_applied?.length || 0,
-            new_balance: result.balance
-          }
-        }));
-        
-      } catch (error) {
-        console.error('Error earning artist tokens:', error);
-      }
-    }, 10000); // ✅ 10 segundos
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTrack]);
-
-  const stopStreamEarn = useCallback(() => {
-    console.log('⏹️ Stopping Stream-to-Earn');
-    
-    if (artistTimerRef.current) {
-      clearInterval(artistTimerRef.current);
-      artistTimerRef.current = null;
-    }
-    
-    if (listenerTimerRef.current) {
-      clearInterval(listenerTimerRef.current);
-      listenerTimerRef.current = null;
-    }
-    
-    if (balanceRefreshRef.current) {
-      clearInterval(balanceRefreshRef.current);
-      balanceRefreshRef.current = null;
-    }
-  }, []);
-
-  // Auto start/stop stream-earn when playing
-  useEffect(() => {
-    if (isPlaying && currentTrack && currentTrack.playerMode === 'music') {
-      console.log('🎵 Starting stream-earn automatically');
-      startStreamEarn();
-    } else if (!isPlaying) {
-      console.log('⏹️ Stopping stream-earn automatically');
-      stopStreamEarn();
-    }
-    
-    return () => {
-      stopStreamEarn();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, currentTrack?.id, currentTrack?.playerMode]);
-
   // Enhanced notification function with real-time updates
   // ✅ NOTIFICACIONES REDUCIDAS: Solo emitir eventos, no crear notificaciones visuales
   // Las notificaciones visuales son manejadas por StreamEarnDisplay y GlobalPlayer
@@ -387,14 +220,199 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
         blockchainContext.refreshBalance();
       }
     }, 1000);
-    
-    // ❌ ELIMINADO: Notificaciones visuales redundantes
-    // StreamEarnDisplay y GlobalPlayer ya muestran estas notificaciones
-    // Browser notifications también eliminadas para reducir ruido
   }, [blockchainContext, emitEvent, currentTrack]);
+
+  // Stream-to-Earn functions
+  const sendStreamEarnTick = useCallback(async (track: Track) => {
+    // ⚠️ CRITICAL: Only use /listener endpoint - artists earn when FANS listen
+    const role = 'listener';
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      console.warn('[StreamEarn] Missing auth token - user needs to login to earn DYO');
+      // Don't attempt stream-earn without authentication
+      return;
+    }
+    
+    try {
+      const requestBody = {
+        duration_seconds: 10,
+        track_id: track.id,
+        track_title: track.title,
+        content_id: track.id,
+        genre: track.genre || 'pop',
+      };
+      const apiBaseUrl = getApiBaseUrl();
+      const endpoint = `${apiBaseUrl}/api/v1/stream-earn/${role}`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[StreamEarn] ${role} tick failed ${response.status}:`, errorText);
+        
+        // 🆕 Check if beta access is required - redirect to onboarding
+        if (response.status === 403) {
+          try {
+            const errorData = JSON.parse(errorText);
+            if (errorData.error === 'Beta Access Required' || errorData.message?.includes('Beta access')) {
+              // Emit event to redirect to onboarding
+              window.dispatchEvent(new CustomEvent('dujyo:beta-access-required'));
+            }
+          } catch (e) {
+            // If parsing fails, check message text
+            if (errorText.includes('Beta access') || errorText.includes('beta')) {
+              window.dispatchEvent(new CustomEvent('dujyo:beta-access-required'));
+            }
+          }
+        }
+        return;
+      }
+      const result = await response.json();
+      console.log('[StreamEarn] Response:', result);
+      const earnedAmount = (result.earned_amount ?? result.tokens_earned) || 0;
+      console.log('[StreamEarn] Earned amount:', earnedAmount);
+      
+      // ✅ OPTIMISTIC UPDATE: Update UI immediately before backend confirmation
+      if (earnedAmount > 0) {
+        // Update listener counters
+        setStreamEarnData(prev => ({
+          ...prev,
+          listenerTokens: prev.listenerTokens + earnedAmount,
+          totalStreamTime: prev.totalStreamTime + 10,
+          dailyEarned: prev.dailyEarned + (10/60)
+        }));
+        
+        // ✅ CRITICAL: Force immediate balance refresh with optimistic update
+        // Dispatch event with earned amount for optimistic UI update
+        window.dispatchEvent(new CustomEvent('dujyo:balance-updated', {
+          detail: { 
+            earned: earnedAmount,
+            optimistic: true,
+            force: true // Force immediate refresh
+          }
+        }));
+        
+        // Also trigger blockchain context refresh
+        if (blockchainContext?.refreshBalance) {
+          blockchainContext.refreshBalance().catch(() => {});
+        }
+        
+        // Show notification
+        showEarnNotification('Listener', earnedAmount, 'DYO');
+        
+        // ✅ ADDITIONAL: Trigger unified balance refresh
+        window.dispatchEvent(new CustomEvent('dujyo:force-balance-refresh'));
+      }
+    } catch (e) {
+      console.error('[StreamEarn] tick error:', e);
+    }
+  }, [blockchainContext, showEarnNotification]);
+
+  const startStreamEarn = useCallback(() => {
+    if (!currentTrack) {
+      console.log('❌ No current track for stream-earn');
+      return;
+    }
+
+    // ⚠️ CRITICAL: Always use listener role - artists earn when FANS listen
+    console.log(`🎵 Starting stream-earn as listener`);
+    
+    // ✅ IMPROVED: Force balance refresh every 10 seconds (aligned with tick frequency)
+    // This ensures balance stays in sync even if events fail
+    balanceRefreshRef.current = setInterval(() => {
+      if (blockchainContext?.refreshBalance) {
+        blockchainContext.refreshBalance().catch(() => {});
+      }
+      // Trigger unified balance refresh
+      window.dispatchEvent(new CustomEvent('dujyo:force-balance-refresh'));
+      window.dispatchEvent(new CustomEvent('dujyo:balance-updated', {
+        detail: { force: true }
+      }));
+    }, 10000); // ✅ Changed to 10 seconds to match tick frequency
+    
+    // Check daily limit
+    const today = new Date().toDateString();
+    const lastEarnDate = new Date(streamEarnData.lastEarnTime).toDateString();
+    
+    if (today !== lastEarnDate) {
+      // Reset daily counter for new day
+      setStreamEarnData(prev => ({
+        ...prev,
+        dailyEarned: 0,
+        lastEarnTime: Date.now()
+      }));
+    }
+
+    // Solo ejecutar el timer del rol del usuario (artist O listener, no ambos)
+    // ⚠️ CRITICAL: Only use listener timer - artists earn when FANS listen
+    const streamEarnTimerRef = listenerTimerRef;
+    
+    // Get user role safely
+    const userRole = user?.role || getUserRole?.() || 'listener';
+    
+    // Immediate tick on play (no esperar 10s)
+    // ⚠️ CRITICAL: Always use listener role - artists earn when FANS listen
+    sendStreamEarnTick(currentTrack);
+
+    streamEarnTimerRef.current = setInterval(() => {
+      sendStreamEarnTick(currentTrack);
+    }, 10000); // ✅ 10 segundos
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTrack, sendStreamEarnTick]);
+
+  const stopStreamEarn = useCallback(() => {
+    console.log('⏹️ Stopping Stream-to-Earn');
+    
+    if (artistTimerRef.current) {
+      clearInterval(artistTimerRef.current);
+      artistTimerRef.current = null;
+    }
+    
+    if (listenerTimerRef.current) {
+      clearInterval(listenerTimerRef.current);
+      listenerTimerRef.current = null;
+    }
+    
+    if (balanceRefreshRef.current) {
+      clearInterval(balanceRefreshRef.current);
+      balanceRefreshRef.current = null;
+    }
+  }, []);
+
+  // Auto start/stop stream-earn when playing
+  useEffect(() => {
+    if (isPlaying && currentTrack && currentTrack.playerMode === 'music') {
+      console.log('🎵 Starting stream-earn automatically');
+      startStreamEarn();
+    } else if (!isPlaying) {
+      console.log('⏹️ Stopping stream-earn automatically');
+      stopStreamEarn();
+    }
+    
+    return () => {
+      stopStreamEarn();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, currentTrack?.id, currentTrack?.playerMode]);
+
+  // (moved showEarnNotification earlier – duplicate removed)
 
   const playTrack = useCallback((track: Track) => {
     console.log('🎵 PlayerContext: playTrack called with:', track);
+    // If same track (same id and url), just resume without resetting
+    if (currentTrack && currentTrack.id === track.id && currentTrack.url === track.url) {
+      setIsPlaying(true);
+      startStreamEarn();
+      return;
+    }
     setCurrentTrack(track);
     setIsPlaying(true);
     console.log('🎵 PlayerContext: Track set, isPlaying set to true');
@@ -410,7 +428,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     
     // Start Stream-to-Earn when playing any content
     startStreamEarn();
-  }, [startStreamEarn]);
+  }, [currentTrack, startStreamEarn]);
 
   const pauseTrack = useCallback(() => {
     console.log('⏸️ PlayerContext: pauseTrack called');
@@ -521,42 +539,47 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   }, [currentPlaylist, currentPlaylistIndex, isShuffled, repeatMode, playTrack, stopTrack]);
 
   const previousTrack = useCallback(() => {
-    if (currentPlaylist.length === 0) return;
-
-    let prevIndex: number;
-    
-    if (isShuffled) {
-      // Random track from playlist
-      prevIndex = Math.floor(Math.random() * currentPlaylist.length);
-    } else {
-      if (repeatMode === 'all') {
-        // Loop playlist backwards
-        prevIndex = currentPlaylistIndex - 1;
-        if (prevIndex < 0) prevIndex = currentPlaylist.length - 1;
+    // Si hay playlist, usar la lógica de playlist
+    if (currentPlaylist.length > 0) {
+      let prevIndex: number;
+      
+      if (isShuffled) {
+        // Random track from playlist
+        prevIndex = Math.floor(Math.random() * currentPlaylist.length);
       } else {
-        // Normal previous
-        prevIndex = currentPlaylistIndex - 1;
-        if (prevIndex < 0) {
-          // Start of playlist
-          prevIndex = 0;
+        if (repeatMode === 'all') {
+          // Loop playlist backwards
+          prevIndex = currentPlaylistIndex - 1;
+          if (prevIndex < 0) prevIndex = currentPlaylist.length - 1;
+        } else {
+          // Normal previous
+          prevIndex = currentPlaylistIndex - 1;
+          if (prevIndex < 0) {
+            // Start of playlist
+            prevIndex = 0;
+          }
         }
       }
-    }
 
-    setCurrentPlaylistIndex(prevIndex);
-    const track = currentPlaylist[prevIndex];
-    playTrack({
-      id: track.id,
-      title: track.title,
-      url: track.url,
-      playerMode: track.playerMode,
-      artist: track.artist,
-      cover: track.cover,
-      duration: track.duration,
-      genre: track.genre,
-      artistFollowers: track.artistFollowers,
-    });
-  }, [currentPlaylist, currentPlaylistIndex, isShuffled, repeatMode, playTrack]);
+      setCurrentPlaylistIndex(prevIndex);
+      const track = currentPlaylist[prevIndex];
+      playTrack({
+        id: track.id,
+        title: track.title,
+        url: track.url,
+        playerMode: track.playerMode,
+        artist: track.artist,
+        cover: track.cover,
+        duration: track.duration,
+        genre: track.genre,
+        artistFollowers: track.artistFollowers,
+      });
+    } else if (currentTrack) {
+      // Si no hay playlist pero hay un track actual, intentar buscar el anterior desde localStorage o contexto
+      // Por ahora, simplemente no hacer nada si no hay playlist
+      console.log('⚠️ No playlist loaded, cannot go to previous track');
+    }
+  }, [currentPlaylist, currentPlaylistIndex, isShuffled, repeatMode, playTrack, currentTrack]);
 
   const toggleShuffle = useCallback(() => {
     setIsShuffled(prev => !prev);

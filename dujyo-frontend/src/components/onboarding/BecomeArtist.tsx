@@ -36,10 +36,20 @@ const BecomeArtist: React.FC = () => {
     setIsLoading(true);
     setError('');
     try {
+      // ✅ Check if user is logged in first
+      if (!user) {
+        setError('Please log in first to become an artist.');
+        setIsLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem('jwt_token');
       if (!token) {
+        // ✅ Try to get token from AuthContext or redirect to login
         setError('No authentication token found. Please log in again.');
         setIsLoading(false);
+        // Optionally redirect to login
+        // navigate('/login');
         return;
       }
 

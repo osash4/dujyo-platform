@@ -5,6 +5,7 @@ import { useBlockchain } from '../../contexts/BlockchainContext';
 import { useAuth } from '../../auth/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { useUnifiedBalance } from '../../hooks/useUnifiedBalance'; // ✅ FIX: Import unified balance hook
 import { WalletBalance } from './WalletBalance';
 import { NFTGallery } from '../nft/NFTGalery';
 import { TransactionHistory } from './TransactionHistory';
@@ -130,13 +131,24 @@ export function WalletDashboard() {
   const [earningHistory, setEarningHistory] = useState<any[]>([]);
   const [isLoadingEarnings, setIsLoadingEarnings] = useState(false);
 
-  // Sync local balance with real-time balance from context
+  // ✅ FIX: Use unified balance hook for real-time updates
+  const { available_dyo, refreshBalance: refreshUnifiedBalance } = useUnifiedBalance();
+  
+  // Sync local balance with unified balance (source of truth)
   useEffect(() => {
-    if (currentBalance !== balance) {
-      console.log(`🔄 WalletDashboard: Balance updated from ${balance} to ${currentBalance} DYO`);
-      setBalance(currentBalance);
+    if (available_dyo > 0 && available_dyo !== balance) {
+      console.log(`🔄 WalletDashboard: Balance updated from ${balance} to ${available_dyo} DYO (from unified balance)`);
+      setBalance(available_dyo);
     }
-  }, [currentBalance, lastBalanceUpdate]);
+  }, [available_dyo]);
+  
+  // Also sync with blockchain context as fallback
+  useEffect(() => {
+    if (currentBalance > 0 && currentBalance !== balance && available_dyo === 0) {
+      console.log(`🔄 WalletDashboard: Balance updated from ${balance} to ${currentBalance} DYO (from blockchain context)`);
+      setBalance(currentBalance / 100.0); // Convert centavos to DYO
+    }
+  }, [currentBalance, lastBalanceUpdate, available_dyo, balance]);
 
   // Get wallet address from multiple sources if account is not set
   useEffect(() => {
@@ -406,7 +418,8 @@ export function WalletDashboard() {
       if (token) {
         try {
           const apiBaseUrl = getApiBaseUrl();
-          const balanceResponse = await fetch(`${apiBaseUrl}/balance/${walletAddress}`, {
+          // ✅ FIX: Use /balance-detail endpoint which returns DYO directly (not centavos)
+          const balanceResponse = await fetch(`${apiBaseUrl}/balance-detail/${walletAddress}`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -414,25 +427,47 @@ export function WalletDashboard() {
           
           if (balanceResponse.ok) {
             const balanceData = await balanceResponse.json();
-            userBalance = balanceData.balance;
-            console.log('Wallet balance loaded from backend:', userBalance);
+            // ✅ balance-detail returns dyo, dys, staked in DYO (not centavos)
+            const totalBalance = balanceData.total || balanceData.dyo || 0;
+            userBalance = totalBalance * 100; // Convert to centavos for compatibility with balancesPallet
+            console.log('✅ Wallet balance loaded from backend (balance-detail):', {
+              dyo: balanceData.dyo,
+              dys: balanceData.dys,
+              staked: balanceData.staked,
+              total: balanceData.total,
+              available_dyo: balanceData.available_dyo
+            });
+            // Set balance in DYO for display
+            setBalance(totalBalance);
           } else {
-            throw new Error('Backend balance fetch failed');
+            // Fallback to /balance endpoint
+            const fallbackResponse = await fetch(`${apiBaseUrl}/balance/${walletAddress}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            if (fallbackResponse.ok) {
+              const balanceData = await fallbackResponse.json();
+              userBalance = balanceData.balance; // In centavos
+              setBalance(userBalance / 100.0); // Convert to DYO
+            } else {
+              throw new Error('Backend balance fetch failed');
+            }
           }
         } catch (backendError) {
           console.warn('Backend balance fetch failed, falling back to balancesPallet:', backendError);
           userBalance = await balancesPallet.getBalance(walletAddress);
+          setBalance(userBalance / 100.0); // Convert centavos to DYO
         }
       } else {
         userBalance = await balancesPallet.getBalance(walletAddress);
+        setBalance(userBalance / 100.0); // Convert centavos to DYO
       }
 
       const [userNFTs, txHistory] = await Promise.all([
         nftPallet.getTokensByOwner(walletAddress),
         balancesPallet.getTransactionHistory(walletAddress),
       ]);
-
-      setBalance(userBalance);
       setNfts(userNFTs);
       // Filtrar transacciones inválidas antes de establecerlas
       const validTransactions = (txHistory || []).filter((tx: Transaction) => 

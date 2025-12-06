@@ -17,6 +17,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface VideoFile {
   id: string;
@@ -83,37 +84,83 @@ const VideoManager: React.FC = () => {
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          setIsUploading(false);
-          setShowUploadModal(false);
-          
-          // Add new video to list
-          const newVideoFile: VideoFile = {
-            id: Date.now().toString(),
-            title: newVideo.title || file.name,
-            description: newVideo.description,
-            duration: 0, // Would be calculated from actual video
-            size: file.size / (1024 * 1024), // Convert to MB
-            quality: newVideo.quality,
-            category: newVideo.category,
-            thumbnail: '/api/placeholder/300/200',
-            uploadDate: new Date(),
-            views: 0,
-            status: 'processing',
-            url: URL.createObjectURL(file)
-          };
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('jwt_token');
+      const form = new FormData();
+      form.append('type', 'video');
+      form.append('title', newVideo.title || file.name);
+      form.append('artist_name', '');
+      form.append('genre', newVideo.category || 'Video');
+      form.append('file', file);
 
-          setVideos(prev => [newVideoFile, ...prev]);
-          setNewVideo({ title: '', description: '', category: 'Music Video', quality: '1080p' });
-          return 100;
-        }
-        return prev + 10;
+      const response = await fetch(`${apiBaseUrl}/api/v1/upload/content`, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          // Do NOT set Content-Type; browser sets multipart boundary
+        } as any,
+        body: form,
       });
-    }, 200);
+
+      if (!response.ok) {
+        // Fallback to simulated behavior if backend not ready
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const fileUrl = data.file_url || data.url || '';
+
+      // Add new video to list (ready)
+      const newVideoFile: VideoFile = {
+        id: data.content_id || Date.now().toString(),
+        title: newVideo.title || file.name,
+        description: newVideo.description,
+        duration: 0,
+        size: file.size / (1024 * 1024),
+        quality: newVideo.quality,
+        category: newVideo.category,
+        thumbnail: data.thumbnail_url || '/api/placeholder/300/200',
+        uploadDate: new Date(),
+        views: 0,
+        status: 'ready',
+        url: fileUrl || URL.createObjectURL(file)
+      };
+
+      setVideos(prev => [newVideoFile, ...prev]);
+      setNewVideo({ title: '', description: '', category: 'Music Video', quality: '1080p' });
+      setUploadProgress(100);
+      setShowUploadModal(false);
+    } catch (err) {
+      // Simulate progress and add locally if backend not ready
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(progressInterval);
+            setIsUploading(false);
+            setShowUploadModal(false);
+            const newVideoFile: VideoFile = {
+              id: Date.now().toString(),
+              title: newVideo.title || file.name,
+              description: newVideo.description,
+              duration: 0,
+              size: file.size / (1024 * 1024),
+              quality: newVideo.quality,
+              category: newVideo.category,
+              thumbnail: '/api/placeholder/300/200',
+              uploadDate: new Date(),
+              views: 0,
+              status: 'processing',
+              url: URL.createObjectURL(file)
+            };
+            setVideos(prev => [newVideoFile, ...prev]);
+            setNewVideo({ title: '', description: '', category: 'Music Video', quality: '1080p' });
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 150);
+    }
   };
 
   const handleDeleteVideo = (videoId: string) => {

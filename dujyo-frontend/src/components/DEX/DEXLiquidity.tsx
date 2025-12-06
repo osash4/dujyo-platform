@@ -54,7 +54,8 @@ const LiquidityPosition: React.FC<{
   value: string;
   apy: number;
   onRemove: () => void;
-}> = ({ pair, share, value, apy, onRemove }) => (
+  t: (key: string) => string; // ✅ FIX: Add t function as prop
+}> = ({ pair, share, value, apy, onRemove, t }) => (
   <motion.div
     className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-pink-400/30 hover:border-pink-400/50 transition-all duration-300"
     initial={{ opacity: 0, y: 20 }}
@@ -353,6 +354,7 @@ const DEXLiquidity: React.FC = () => {
                 value={position.value}
                 apy={position.apy}
                 onRemove={handleRemoveLiquidity}
+                t={t} // ✅ FIX: Pass t function to component
               />
             ))}
           </div>

@@ -1,0 +1,13 @@
+{
+  "max_users": 50,
+  "is_closed_beta": true,
+  "beta_access_codes": [
+    "DUJYO-S2E-BETA-2024",
+    "DUJYO-S2E-INVITE"
+  ],
+  "pool_size": 2000000,
+  "listener_rate": 0.10,
+  "artist_rate": 0.50,
+  "beta_user_emails": []
+}
+

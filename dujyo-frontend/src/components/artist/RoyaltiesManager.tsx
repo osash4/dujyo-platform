@@ -22,7 +22,9 @@ import {
   ArrowDownRight,
   Copy,
   Check,
-  Loader
+  Loader,
+  Link as LinkIcon,
+  Banknote
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import { useBlockchain } from '../../contexts/BlockchainContext';
@@ -128,6 +130,8 @@ const RoyaltiesManager: React.FC = () => {
   const [autoPayoutEnabled, setAutoPayoutEnabled] = useState(true);
   const [payoutThreshold, setPayoutThreshold] = useState(10); // Minimum DYO to trigger auto payout
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
+  const [stripeConnected, setStripeConnected] = useState(false);
+  const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
   
   const wsRef = useRef<WebSocket | null>(null);
   const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -365,7 +369,7 @@ const RoyaltiesManager: React.FC = () => {
 
   // Process automatic payout
   const processAutomaticPayout = useCallback(async () => {
-    if (!autoPayoutEnabled || pendingEarnedDYO < payoutThreshold) return;
+    if (!autoPayoutEnabled || available_dyo < payoutThreshold) return;
 
     const walletAddress = getWalletAddress();
     if (!walletAddress) return;
@@ -375,105 +379,96 @@ const RoyaltiesManager: React.FC = () => {
       if (!token) return;
 
       const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/api/v1/blockchain/payout`, {
+      const response = await fetch(`${apiBaseUrl}/api/v1/payments/payout`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          wallet: walletAddress,
-          amount: pendingEarnedDYO,
-          type: 'royalty'
+          // Usar el umbral configurado para el payout automático
+          amount: Math.min(available_dyo, payoutThreshold)
         })
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
+          const paid = Math.min(available_dyo, payoutThreshold);
+          try { alert(`Payout processed: ${paid.toFixed(2)} $DYO\nTX: ${data.tx_hash || 'n/a'}`); } catch {}
+          showNotification(`Payout processed: ${paid.toFixed(2)} $DYO`);
           // Refresh all data
           fetchStreamEarnings();
           fetchPaymentQueue();
           refreshBalance();
+          fetchRoyaltyData();
+        } else {
+          try { alert(data.message || 'Payout failed'); } catch {}
         }
+      } else {
+        const txt = await response.text().catch(() => '');
+        console.error('Payout response error:', response.status, txt);
+        try { alert(`Payout failed (${response.status}) ${txt || ''}`); } catch {}
       }
     } catch (error) {
       console.error('Error processing automatic payout:', error);
+      try { alert('Payout failed. Check console for details.'); } catch {}
     }
-  }, [autoPayoutEnabled, pendingEarnedDYO, payoutThreshold, getWalletAddress, fetchStreamEarnings, fetchPaymentQueue, refreshBalance]);
+  }, [autoPayoutEnabled, available_dyo, payoutThreshold, getWalletAddress, fetchStreamEarnings, fetchPaymentQueue, refreshBalance, fetchRoyaltyData]);
 
-  // Setup WebSocket for real-time updates
-  useEffect(() => {
-    const walletAddress = getWalletAddress();
-    if (!walletAddress) return;
-
+  // Manual payout action (prompt amount)
+  const handlePayout = useCallback(async () => {
     try {
-      const wsUrl = getApiBaseUrl().replace(/^http/, 'ws') + `/ws/royalties?wallet=${walletAddress}`;
-      const ws = new WebSocket(wsUrl);
-      
-      ws.onopen = () => {
-        console.log('Royalties WebSocket connected');
-        setWsConnected(true);
-      };
-      
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          
-          if (data.type === 'stream_earning') {
-            const newEarning: StreamEarning = {
-              id: data.id || Date.now().toString(),
-              timestamp: new Date(data.timestamp || Date.now()),
-              streams: data.streams || 0,
-              dyoTokens: data.dyoTokens || 0,
-              platform: data.platform || 'Unknown',
-              songId: data.songId || '',
-              songTitle: data.songTitle || 'Unknown',
-              status: 'pending' as const,
-            };
-            
-            setStreamEarnings(prev => [newEarning, ...prev]);
-            setPendingEarnedDYO(prev => prev + newEarning.dyoTokens);
-            setRealTimeCounter(prev => prev + newEarning.dyoTokens);
-            
-            // Show notification
-            showNotification(`+${newEarning.dyoTokens.toFixed(3)} $DYO from ${newEarning.songTitle}`);
-          } else if (data.type === 'payment_update') {
-            fetchPaymentQueue();
-            fetchStreamEarnings();
-          } else if (data.type === 'balance_update') {
-            refreshBalance();
-          }
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
-      
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        setWsConnected(false);
-      };
-      
-      ws.onclose = () => {
-        console.log('Royalties WebSocket disconnected');
-        setWsConnected(false);
-        // Reconnect after 5 seconds
-        setTimeout(() => {
-          if (getWalletAddress()) {
-            // Reconnect logic handled by useEffect
-          }
-        }, 5000);
-      };
-      
-      wsRef.current = ws;
-      
-      return () => {
-        ws.close();
-      };
-    } catch (error) {
-      console.error('Error setting up WebSocket:', error);
+      const token = localStorage.getItem('jwt_token');
+      if (!token) return;
+      const apiBaseUrl = getApiBaseUrl();
+      const minPayout = 10.0;
+      if (available_dyo < minPayout) {
+        showNotification(`Minimum payout is ${minPayout} $DYO`);
+        return;
+      }
+      const input = window.prompt(`Enter payout amount (min ${minPayout}, max ${available_dyo.toFixed(2)})`, Math.min(available_dyo, minPayout).toFixed(2));
+      if (!input) return;
+      const amount = Math.max(0, parseFloat(input));
+      if (isNaN(amount) || amount < minPayout) {
+        showNotification(`Amount must be at least ${minPayout} $DYO`);
+        return;
+      }
+      if (amount > available_dyo) {
+        showNotification(`Amount exceeds available balance (${available_dyo.toFixed(2)} $DYO)`);
+        return;
+      }
+      const resp = await fetch(`${apiBaseUrl}/api/v1/payments/payout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount })
+      });
+      const data = await resp.json();
+      if (resp.ok && data.success) {
+        showNotification(`Payout processed: ${amount.toFixed(2)} $DYO`);
+        refreshBalance();
+        fetchRoyaltyData();
+      } else {
+        showNotification(data.message || 'Payout failed');
+      }
+    } catch (e) {
+      console.error('Error processing payout:', e);
+      showNotification('Payout failed');
     }
-  }, [getWalletAddress, refreshBalance]);
+  }, [available_dyo, refreshBalance, fetchRoyaltyData]);
+
+  // Disable WebSocket for MVP (avoid console noise); rely on polling
+  useEffect(() => {
+    setWsConnected(false);
+    return () => {
+      if (wsRef.current) {
+        try { wsRef.current.close(); } catch {}
+      }
+    };
+  }, []);
 
   // Setup polling for updates
   useEffect(() => {
@@ -482,6 +477,7 @@ const RoyaltiesManager: React.FC = () => {
     fetchRoyaltySplits();
     fetchPaymentQueue();
     fetchRoyaltyData();
+    fetchStripeStatus();
 
     // Update every 30 seconds
     updateIntervalRef.current = setInterval(() => {
@@ -490,6 +486,7 @@ const RoyaltiesManager: React.FC = () => {
       fetchRoyaltySplits();
       fetchPaymentQueue();
       fetchRoyaltyData();
+      fetchStripeStatus();
     }, 30000);
 
     return () => {
@@ -498,6 +495,93 @@ const RoyaltiesManager: React.FC = () => {
       }
     };
   }, [fetchTokenPrices, fetchStreamEarnings, fetchRoyaltySplits, fetchPaymentQueue, fetchRoyaltyData]);
+
+  const fetchStripeStatus = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (!token) return;
+      const apiBaseUrl = getApiBaseUrl();
+      const res = await fetch(`${apiBaseUrl}/api/v1/stripe/connect/status`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setStripeConnected(!!data.connected);
+      setStripeAccountId(data.stripe_account_id || null);
+    } catch {}
+  }, []);
+
+  const connectStripe = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (!token) return;
+      const apiBaseUrl = getApiBaseUrl();
+      const res = await fetch(`${apiBaseUrl}/api/v1/stripe/connect/start`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        try { alert(data.message || 'Stripe connect failed'); } catch {}
+        return;
+      }
+      setStripeConnected(true);
+      setStripeAccountId(data.stripe_account_id);
+      // Abrir onboarding (test)
+      window.open(data.onboarding_url, '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      console.error('Stripe connect error:', e);
+      try { alert('Stripe connect failed'); } catch {}
+    }
+  }, []);
+
+  const withdrawToStripe = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      if (!token) return;
+      if (!stripeConnected) {
+        try { alert('Connect Stripe first (Test)'); } catch {}
+        return;
+      }
+      const minPayout = 10.0;
+      if (available_dyo < minPayout) {
+        showNotification(`Minimum payout is ${minPayout} $DYO`);
+        return;
+      }
+      const input = window.prompt(`Withdraw to Stripe (Test) - amount in $DYO (min ${minPayout}, max ${available_dyo.toFixed(2)})`, Math.min(available_dyo, minPayout).toFixed(2));
+      if (!input) return;
+      const amount = parseFloat(input);
+      if (isNaN(amount) || amount < minPayout) {
+        showNotification(`Amount must be at least ${minPayout} $DYO`);
+        return;
+      }
+      if (amount > available_dyo) {
+        showNotification(`Amount exceeds available balance (${available_dyo.toFixed(2)} $DYO)`);
+        return;
+      }
+      const apiBaseUrl = getApiBaseUrl();
+      const res = await fetch(`${apiBaseUrl}/api/v1/stripe/payouts`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount_dyo: amount })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        try { alert(`Stripe test payout processed: ${amount.toFixed(2)} $DYO\nTX: ${data.stripe_tx_id || 'n/a'}`); } catch {}
+        showNotification(`Stripe test payout processed: ${amount.toFixed(2)} $DYO`);
+        refreshBalance();
+        fetchRoyaltyData();
+      } else {
+        showNotification(data.message || 'Stripe payout failed');
+      }
+    } catch (e) {
+      console.error('Stripe payout error:', e);
+      showNotification('Stripe payout failed');
+    }
+  }, [stripeConnected, available_dyo, refreshBalance, fetchRoyaltyData]);
 
   // Real-time counter animation
   useEffect(() => {
@@ -605,35 +689,6 @@ const RoyaltiesManager: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Stream-to-Earn Royalties Manager</h1>
-          <p className="text-gray-400 mt-1">Automatic $DYO payments and real-time earnings tracking</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center gap-2 bg-gray-800 px-3 py-2 rounded-lg">
-            <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-sm text-gray-300">{wsConnected ? 'Live' : 'Offline'}</span>
-          </div>
-          <button 
-            onClick={() => {
-              fetchStreamEarnings();
-              fetchPaymentQueue();
-              fetchRoyaltyData();
-              refreshBalance();
-            }}
-            className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Refresh</span>
-          </button>
-          <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-            <Download className="w-4 h-4" />
-            <span>Export Report</span>
-          </button>
-        </div>
-      </div>
 
       {/* Real-Time Earnings Counter */}
       {realTimeCounter > 0 && (
@@ -656,6 +711,25 @@ const RoyaltiesManager: React.FC = () => {
           </div>
         </motion.div>
       )}
+
+      {/* Stripe Connect (Test) Actions */}
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          onClick={connectStripe}
+          className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${stripeConnected ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700'} text-white`}
+          title={stripeConnected ? `Connected: ${stripeAccountId || ''}` : 'Connect Stripe (Test)'}
+        >
+          <LinkIcon className="w-4 h-4" />
+          {stripeConnected ? 'Stripe Connected (Test)' : 'Connect Stripe (Test)'}
+        </button>
+        <button
+          onClick={withdrawToStripe}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+        >
+          <Banknote className="w-4 h-4" />
+          Withdraw to Stripe (Test)
+        </button>
+      </div>
 
       {/* Summary Cards with Multi-Currency */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -705,6 +779,14 @@ const RoyaltiesManager: React.FC = () => {
             </div>
             <Wallet className="w-12 h-12 text-green-200" />
           </div>
+          <button
+            onClick={handlePayout}
+            disabled={available_dyo < 10}
+            className="mt-4 w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:text-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
+            title={available_dyo < 10 ? 'Minimum payout is 10 $DYO' : 'Request payout'}
+          >
+            Request Payout
+          </button>
         </motion.div>
 
         <motion.div
@@ -769,9 +851,9 @@ const RoyaltiesManager: React.FC = () => {
             </div>
             <div className="flex items-end">
               <div className="w-full">
-                <p className="text-sm text-gray-400 mb-2">Current Pending</p>
-                <p className="text-xl font-bold text-amber-400">{formatDYO(pendingEarnedDYO)}</p>
-                {pendingEarnedDYO >= payoutThreshold && (
+                <p className="text-sm text-gray-400 mb-2">Current Available</p>
+                <p className="text-xl font-bold text-amber-400">{formatDYO(available_dyo)}</p>
+                {available_dyo >= payoutThreshold && (
                   <p className="text-xs text-green-400 mt-1">Ready for payout</p>
                 )}
               </div>
@@ -779,7 +861,7 @@ const RoyaltiesManager: React.FC = () => {
             <div className="flex items-end">
               <button
                 onClick={processAutomaticPayout}
-                disabled={pendingEarnedDYO < payoutThreshold}
+                disabled={available_dyo < payoutThreshold}
                 className="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-gray-700 disabled:text-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Process Payout Now

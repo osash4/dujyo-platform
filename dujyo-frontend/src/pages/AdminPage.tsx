@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
-import { Settings, Coins, Users, BarChart3, Shield, Zap } from 'lucide-react';
+import { Settings, Coins, Users, BarChart3, Shield, Zap, Music } from 'lucide-react';
+import S2EAdminPanel from './admin/S2EAdminPanel';
 
 const AdminPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'token' | 'consensus' | 'users'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'token' | 'consensus' | 'users' | 's2e'>('overview');
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'token', label: 'Token Management', icon: Coins },
     { id: 'consensus', label: 'Consensus', icon: Shield },
     { id: 'users', label: 'User Management', icon: Users },
+    { id: 's2e', label: 'S2E Admin', icon: Music },
   ];
 
   return (
@@ -61,6 +63,7 @@ const AdminPage: React.FC = () => {
               {activeTab === 'token' && <TokenManagement />}
               {activeTab === 'consensus' && <ConsensusManagement />}
               {activeTab === 'users' && <UserManagement />}
+              {activeTab === 's2e' && <S2EAdminPanel />}
             </motion.div>
           </div>
         </motion.div>

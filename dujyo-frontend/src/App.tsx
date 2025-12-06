@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
 
@@ -37,7 +37,6 @@ import DiscoveryLeaderboard from './components/discovery/DiscoveryLeaderboard';
 import UserDiscoveryStats from './components/discovery/UserDiscoveryStats';
 
 import ExploreNow from './pages/ExploreNow/ExploreNow';
-import ExploreMusic from './components/Music/ExploreMusic';
 import ExploreVideo from './components/Video/ExploreVideos';
 import ExploreGaming from './components/Gaming/ExploreGaming';
 import ExploreEducation from './components/Education/ExploreEducation';
@@ -75,6 +74,9 @@ import AdminContentPage from './pages/AdminContentPage';
 import AdminBlockchainPage from './pages/AdminBlockchainPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import MerchComingSoon from './pages/MerchComingSoon';
+import S2EHistoryPage from './pages/S2EHistoryPage';
+import TipLeaderboardPage from './pages/TipLeaderboardPage';
 
 import GlobalStyle from './styles/GlobalStyle';
 import './styles/dujyo-components.css';
@@ -114,12 +116,24 @@ const AppRoutes: React.FC = () => {
   const { currentTrack, playerPosition } = usePlayerContext();
   const [showHelpCenter, setShowHelpCenter] = React.useState(false);
   const [showTour, setShowTour] = React.useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Expose help center toggle globally
   React.useEffect(() => {
     (window as any).openHelpCenter = () => setShowHelpCenter(true);
     (window as any).startTour = () => setShowTour(true);
   }, []);
+
+  // Listen for beta access required event - redirect to onboarding
+  React.useEffect(() => {
+    const handleBetaAccessRequired = () => {
+      const returnTo = encodeURIComponent(location.pathname);
+      navigate(`/onboarding?step=beta&returnTo=${returnTo}`);
+    };
+    window.addEventListener('dujyo:beta-access-required', handleBetaAccessRequired);
+    return () => window.removeEventListener('dujyo:beta-access-required', handleBetaAccessRequired);
+  }, [navigate, location.pathname]);
 
   // Only show loading/error for protected routes, not for login page
   const currentPath = window.location.pathname;
@@ -167,7 +181,6 @@ const AppRoutes: React.FC = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/explore" element={<ExploreNow />} />
-        <Route path="/explore/music" element={<ExploreMusic />} />
         <Route path="/explore/video" element={<ExploreVideo />} />
         <Route path="/explore/gaming" element={<ExploreGaming />} />
         <Route path="/explore/education" element={<ExploreEducation />} />
@@ -189,7 +202,14 @@ const AppRoutes: React.FC = () => {
         <Route path="/marketplace" element={<ProtectedRoute><ContentMarketplace /></ProtectedRoute>} />
         <Route path="/dex" element={<ProtectedRoute><DEXPage /></ProtectedRoute>} />
         <Route path="/staking" element={<ProtectedRoute><StakingPage /></ProtectedRoute>} />
-        <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
+        <Route path="/merch" element={<ProtectedRoute><MerchComingSoon /></ProtectedRoute>} />
+        <Route path="/upload" element={
+          <ProtectedRoute>
+            <ArtistLayout>
+              <UploadMusic />
+            </ArtistLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/consensus" element={<ProtectedRoute><ConsensusPage /></ProtectedRoute>} />
         <Route path="/validator" element={<ProtectedRoute><ValidatorPage /></ProtectedRoute>} />
         <Route path="/validator/rewards" element={<ProtectedRoute><ValidatorRewardsPage /></ProtectedRoute>} />
@@ -200,6 +220,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/admin/blockchain" element={<ProtectedRoute><AdminBlockchainPage /></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalyticsPage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><SimpleAppLayout><SettingsPage /></SimpleAppLayout></ProtectedRoute>} />
+        <Route path="/s2e/history" element={<ProtectedRoute><S2EHistoryPage /></ProtectedRoute>} />
+        <Route path="/tips/leaderboard" element={<ProtectedRoute><SimpleAppLayout><TipLeaderboardPage /></SimpleAppLayout></ProtectedRoute>} />
         <Route path="/blockchain-info" element={<ProtectedRoute><BlockchainInfo /></ProtectedRoute>} />
         <Route path="/add-transaction" element={<ProtectedRoute><TransactionForm /></ProtectedRoute>} />
         <Route path="/view-blockchain" element={<ProtectedRoute><BlockchainView /></ProtectedRoute>} />
@@ -220,27 +242,7 @@ const AppRoutes: React.FC = () => {
             </ArtistLayout>
           </ProtectedRoute>
         } />
-        <Route path="/artist/upload" element={
-          <ProtectedRoute>
-            <ArtistLayout>
-              <UploadMusic />
-            </ArtistLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/artist/video" element={
-          <ProtectedRoute>
-            <ArtistLayout>
-              <VideoManager />
-            </ArtistLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/artist/gaming" element={
-          <ProtectedRoute>
-            <ArtistLayout>
-              <GamingManager />
-            </ArtistLayout>
-          </ProtectedRoute>
-        } />
+        
         <Route path="/artist/analytics" element={
           <ProtectedRoute>
             <ArtistLayout>

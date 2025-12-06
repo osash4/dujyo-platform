@@ -45,6 +45,21 @@ interface Content {
   liveStreamCount?: number;
 }
 
+// Marketplace Listing interface
+interface MarketplaceListing {
+  listing_id: string;
+  content_id: string;
+  seller_address: string;
+  price: number;
+  currency: string;
+  license_type: string;
+  status: string;
+  created_at: string;
+  content_title?: string;
+  content_artist?: string;
+  thumbnail_url?: string;
+}
+
 interface NFT {
   id: number;
   name: string;
@@ -108,6 +123,13 @@ export function ContentMarketplace(): JSX.Element {
   const [earningProjection, setEarningProjection] = useState<EarningProjection | null>(null);
   const [licenseTiers, setLicenseTiers] = useState<LicenseTier[]>([]);
   const [selectedLicenseTier, setSelectedLicenseTier] = useState<string | null>(null);
+  // Marketplace listings state
+  const [marketplaceListings, setMarketplaceListings] = useState<MarketplaceListing[]>([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
+  const [showCreateListingModal, setShowCreateListingModal] = useState(false);
+  const [selectedContentForListing, setSelectedContentForListing] = useState<Content | null>(null);
+  const [listingPrice, setListingPrice] = useState<string>('');
+  const [listingLicenseType, setListingLicenseType] = useState<string>('personal');
 
   // Initialize license tiers - use useMemo to ensure t is available
   const licenseTiersData = React.useMemo(() => [
@@ -148,6 +170,7 @@ export function ContentMarketplace(): JSX.Element {
   useEffect(() => {
     loadMarketplaceData();
     loadTopCreators();
+    loadMarketplaceListings(); // Load real marketplace listings
   }, []);
 
   // Real-time earnings updates
@@ -323,6 +346,109 @@ export function ContentMarketplace(): JSX.Element {
       }
     } catch (error) {
       console.error('Error loading top creators:', error);
+    }
+  }
+
+  // Load marketplace listings from backend
+  async function loadMarketplaceListings() {
+    try {
+      setListingsLoading(true);
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/v1/content/listings`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMarketplaceListings(Array.isArray(data) ? data : []);
+      } else {
+        console.error('Failed to load listings:', response.statusText);
+        setMarketplaceListings([]);
+      }
+    } catch (error) {
+      console.error('Error loading marketplace listings:', error);
+      setMarketplaceListings([]);
+    } finally {
+      setListingsLoading(false);
+    }
+  }
+
+  // Create a new listing
+  async function handleCreateListing(contentId: string, price: number, licenseType: string) {
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/v1/content/listings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+        },
+        body: JSON.stringify({
+          content_id: contentId,
+          price: price,
+          currency: 'DYO',
+          license_type: licenseType
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert('Listing created successfully!');
+        setShowCreateListingModal(false);
+        setSelectedContentForListing(null);
+        setListingPrice('');
+        loadMarketplaceListings(); // Refresh listings
+        return data;
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to create listing' }));
+        throw new Error(errorData.error || 'Failed to create listing');
+      }
+    } catch (error: any) {
+      console.error('Error creating listing:', error);
+      alert(error.message || 'Failed to create listing');
+      throw error;
+    }
+  }
+
+  // Purchase a listing
+  async function handlePurchaseListing(listingId: string, price: number) {
+    if (!confirm(`Purchase this listing for ${price} DYO?`)) {
+      return;
+    }
+
+    try {
+      setIsPurchasing(true);
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/v1/content/purchase`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+        },
+        body: JSON.stringify({
+          listing_id: listingId,
+          amount: price
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Purchase successful! License Key: ${data.license_key}`);
+        setPurchaseMessage(`Purchase successful! License: ${data.license_key}`);
+        loadMarketplaceListings(); // Refresh listings
+        loadMarketplaceData(); // Refresh content
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Purchase failed' }));
+        throw new Error(errorData.error || 'Purchase failed');
+      }
+    } catch (error: any) {
+      console.error('Purchase error:', error);
+      alert(error.message || 'Purchase failed. Please check your balance.');
+      setPurchaseMessage(error.message || 'Purchase failed');
+    } finally {
+      setIsPurchasing(false);
     }
   }
 
@@ -664,6 +790,111 @@ export function ContentMarketplace(): JSX.Element {
                       </div>
                     </motion.div>
                   )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Create Listing Modal */}
+          <AnimatePresence>
+            {showCreateListingModal && (
+              <motion.div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => {
+                  setShowCreateListingModal(false);
+                  setSelectedContentForListing(null);
+                }}
+              >
+                <motion.div
+                  className="bg-gray-800 rounded-xl p-8 max-w-md w-full border border-amber-400/30"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-2xl font-bold text-white">Create Listing</h3>
+                    <button
+                      onClick={() => {
+                        setShowCreateListingModal(false);
+                        setSelectedContentForListing(null);
+                      }}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">Select Content</label>
+                      <select
+                        value={selectedContentForListing?.id || ''}
+                        onChange={(e) => {
+                          const content = contents.find(c => c.id.toString() === e.target.value);
+                          setSelectedContentForListing(content || null);
+                        }}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-400"
+                      >
+                        <option value="">Select content...</option>
+                        {contents.map((content) => (
+                          <option key={content.id} value={content.id}>
+                            {content.title} - {content.creator}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">Price (DYO)</label>
+                      <input
+                        type="number"
+                        value={listingPrice}
+                        onChange={(e) => setListingPrice(e.target.value)}
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">License Type</label>
+                      <select
+                        value={listingLicenseType}
+                        onChange={(e) => setListingLicenseType(e.target.value)}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-400"
+                      >
+                        <option value="personal">Personal</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="exclusive">Exclusive</option>
+                      </select>
+                    </div>
+                    
+                    <button
+                      onClick={async () => {
+                        if (!selectedContentForListing || !listingPrice) {
+                          alert('Please select content and enter a price');
+                          return;
+                        }
+                        try {
+                          await handleCreateListing(
+                            selectedContentForListing.id.toString(),
+                            parseFloat(listingPrice),
+                            listingLicenseType
+                          );
+                        } catch (error) {
+                          // Error already handled in handleCreateListing
+                        }
+                      }}
+                      className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-400 hover:to-orange-500 transition-all"
+                    >
+                      Create Listing
+                    </button>
+                  </div>
                 </motion.div>
               </motion.div>
             )}

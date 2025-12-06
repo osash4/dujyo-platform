@@ -123,5 +123,6 @@ pub async fn get_artist_royalties(
 pub fn royalties_routes() -> Router<AppState> {
     Router::new()
         .route("/artist/{id}", get(get_artist_royalties))
+        .route("/artist/:id", get(get_artist_royalties)) // Support both path styles
 }
 

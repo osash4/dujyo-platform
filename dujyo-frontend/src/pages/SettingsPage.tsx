@@ -38,7 +38,7 @@ interface PrivacySettings {
 }
 
 const SettingsPage: React.FC = () => {
-  const { user, signOut, updateUser, refreshUser } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
@@ -83,11 +83,14 @@ const SettingsPage: React.FC = () => {
   // Update avatarUrl when user photoURL changes (but only if we don't have a preview or file)
   useEffect(() => {
     // Only sync if we don't have a pending upload (avatarFile or avatarPreview)
+    // AND if the user.photoURL is different from current avatarUrl
+    // AND if avatarUrl is empty or different (to avoid unnecessary updates)
     if (user?.photoURL && user.photoURL !== avatarUrl && !avatarFile && !avatarPreview) {
       console.log('🔄 Syncing avatarUrl from user.photoURL:', user.photoURL);
+      console.log('🔄 Current avatarUrl:', avatarUrl);
       setAvatarUrl(user.photoURL);
     }
-  }, [user?.photoURL, avatarFile, avatarPreview]);
+  }, [user?.photoURL, avatarFile, avatarPreview, avatarUrl]);
 
   const loadUserProfile = async () => {
     if (!user) return;
@@ -442,9 +445,12 @@ const SettingsPage: React.FC = () => {
         
         // Update local state FIRST with the new avatar URL
         console.log('💾 [saveProfile] Updating local state with avatar URL:', newAvatarUrl);
-        setAvatarUrl(newAvatarUrl);
         setAvatarFile(null);
         setAvatarPreview(null);
+        // Use setTimeout to ensure state updates happen in correct order
+        setTimeout(() => {
+          setAvatarUrl(newAvatarUrl);
+        }, 0);
         
         // Update AuthContext with new data (this will update all components using user)
         console.log('💾 [saveProfile] Updating AuthContext with:', {
@@ -456,10 +462,19 @@ const SettingsPage: React.FC = () => {
           photoURL: newAvatarUrl,
         });
         
-        // Also refresh from backend to ensure we have the latest data
-        console.log('🔄 [saveProfile] Refreshing user from backend...');
-        await refreshUser();
-        console.log('✅ [saveProfile] User refreshed, current user.photoURL:', user?.photoURL);
+        // Force a re-render by updating avatarUrl after a short delay
+        // This ensures the image src is updated even if there's a cache issue
+        setTimeout(() => {
+          console.log('🔄 [saveProfile] Force updating avatarUrl to:', newAvatarUrl);
+          setAvatarUrl(newAvatarUrl);
+        }, 100);
+        
+        // Don't refresh from backend immediately - we already have the latest data from the response
+        // The refresh would overwrite our just-updated values if the backend hasn't fully propagated yet
+        console.log('✅ [saveProfile] Profile saved successfully. Using data from response:', {
+          displayName: profileData.display_name || displayName,
+          photoURL: newAvatarUrl
+        });
         
         setSaveStatus('success');
         setTimeout(() => setSaveStatus('idle'), 2000);
@@ -703,18 +718,63 @@ const SettingsPage: React.FC = () => {
                       </label>
                       <div className="flex items-center gap-4">
                         <div className="relative">
-                          <img
-                            src={avatarPreview || avatarUrl || user?.photoURL || `https://ui-avatars.com/api/?name=${displayName || user?.email || 'User'}&background=F59E0B&color=fff&size=128`}
-                            alt="Avatar"
-                            className="w-24 h-24 rounded-full object-cover border-2 border-purple-500"
-                            onError={(e) => {
-                              // Fallback to generated avatar if image fails to load
-                              const target = e.target as HTMLImageElement;
-                              if (!target.src.includes('ui-avatars.com')) {
-                                target.src = `https://ui-avatars.com/api/?name=${displayName || user?.email || 'User'}&background=F59E0B&color=fff&size=128`;
-                              }
-                            }}
-                          />
+                          {(() => {
+                            // Get valid avatar URL - skip empty strings and example.com
+                            const validPhotoUrl = (avatarPreview || avatarUrl || user?.photoURL || '').trim();
+                            const hasValidUrl = validPhotoUrl && 
+                                              !validPhotoUrl.includes('example.com') && 
+                                              validPhotoUrl.length > 0 &&
+                                              (validPhotoUrl.startsWith('http') || validPhotoUrl.startsWith('/'));
+                            
+                            // If we have a valid URL, try to show it
+                            if (hasValidUrl) {
+                              const imageUrl = validPhotoUrl.includes('localhost:8083') 
+                                ? validPhotoUrl.split('?')[0] // Remove query params for local images
+                                : validPhotoUrl;
+                              
+                              return (
+                                <img
+                                  key={`avatar-${imageUrl}`}
+                                  src={imageUrl}
+                                  alt="Avatar"
+                                  className="w-24 h-24 rounded-full object-cover border-2 border-purple-500"
+                                  crossOrigin="anonymous"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    console.error('❌ [SettingsPage] Avatar image failed to load:', target.src);
+                                    // Hide image and show icon instead
+                                    target.style.display = 'none';
+                                    // Trigger re-render to show icon
+                                    const parent = target.parentElement;
+                                    if (parent && !parent.querySelector('.avatar-icon-fallback')) {
+                                      const icon = document.createElement('div');
+                                      icon.className = 'avatar-icon-fallback w-24 h-24 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center border-2 border-purple-500';
+                                      icon.innerHTML = `<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>`;
+                                      parent.appendChild(icon);
+                                    }
+                                  }}
+                                  onLoad={() => {
+                                    console.log('✅ [SettingsPage] Avatar image loaded successfully:', imageUrl);
+                                    // Remove any fallback icon if image loads
+                                    const parent = (e.target as HTMLImageElement).parentElement;
+                                    const fallback = parent?.querySelector('.avatar-icon-fallback');
+                                    if (fallback) {
+                                      fallback.remove();
+                                    }
+                                  }}
+                                />
+                              );
+                            }
+                            
+                            // No valid URL - show icon directly (no image attempt)
+                            return (
+                              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center border-2 border-purple-500">
+                                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                              </div>
+                            );
+                          })()}
                           {avatarPreview && (
                             <button
                               onClick={() => {

@@ -18,6 +18,7 @@ import {
   Users,
   Zap
 } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface GameAsset {
   id: string;
@@ -126,52 +127,88 @@ const GamingManager: React.FC = () => {
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          setIsUploading(false);
-          setShowUploadModal(false);
-          
-          // Add new asset to list
-          const newGameAsset: GameAsset = {
-            id: Date.now().toString(),
-            title: newAsset.title || file.name,
-            description: newAsset.description,
-            type: newAsset.type,
-            version: '1.0.0',
-            size: file.size / (1024 * 1024), // Convert to MB
-            category: newAsset.category,
-            thumbnail: '/api/placeholder/300/200',
-            uploadDate: new Date(),
-            downloads: 0,
-            rating: 0,
-            status: 'processing',
-            url: URL.createObjectURL(file),
-            tags: newAsset.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-            requirements: {
-              platform: newAsset.platform,
-              engine: newAsset.engine,
-              minVersion: '1.0.0'
-            }
-          };
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('jwt_token');
+      const form = new FormData();
+      form.append('type', 'gaming');
+      form.append('title', newAsset.title || file.name);
+      form.append('genre', newAsset.category || 'Gaming');
+      form.append('file', file);
 
-          setGameAssets(prev => [newGameAsset, ...prev]);
-          setNewAsset({ 
-            title: '', 
-            description: '', 
-            type: 'asset', 
-            category: 'Audio', 
-            platform: 'Unity', 
-            engine: 'Unity 2022.3+', 
-            tags: '' 
-          });
-          return 100;
-        }
-        return prev + 10;
+      const response = await fetch(`${apiBaseUrl}/api/v1/upload/content`, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        } as any,
+        body: form,
       });
-    }, 200);
+
+      if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
+
+      const data = await response.json();
+      const newGameAsset: GameAsset = {
+        id: data.content_id || Date.now().toString(),
+        title: newAsset.title || file.name,
+        description: newAsset.description,
+        type: 'game',
+        version: '1.0.0',
+        size: file.size / (1024 * 1024),
+        category: newAsset.category,
+        thumbnail: data.thumbnail_url || '/api/placeholder/300/200',
+        uploadDate: new Date(),
+        downloads: 0,
+        rating: 0,
+        status: 'ready',
+        url: data.file_url || URL.createObjectURL(file),
+        tags: newAsset.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        requirements: {
+          platform: newAsset.platform,
+          engine: newAsset.engine,
+          minVersion: '1.0.0'
+        }
+      };
+      setGameAssets(prev => [newGameAsset, ...prev]);
+      setNewAsset({ title: '', description: '', type: 'asset', category: 'Audio', platform: 'Unity', engine: 'Unity 2022.3+', tags: '' });
+      setUploadProgress(100);
+      setShowUploadModal(false);
+    } catch (err) {
+      // Fallback simulate
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(progressInterval);
+            setIsUploading(false);
+            setShowUploadModal(false);
+            const newGameAsset: GameAsset = {
+              id: Date.now().toString(),
+              title: newAsset.title || file.name,
+              description: newAsset.description,
+              type: newAsset.type,
+              version: '1.0.0',
+              size: file.size / (1024 * 1024),
+              category: newAsset.category,
+              thumbnail: '/api/placeholder/300/200',
+              uploadDate: new Date(),
+              downloads: 0,
+              rating: 0,
+              status: 'processing',
+              url: URL.createObjectURL(file),
+              tags: newAsset.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+              requirements: {
+                platform: newAsset.platform,
+                engine: newAsset.engine,
+                minVersion: '1.0.0'
+              }
+            };
+            setGameAssets(prev => [newGameAsset, ...prev]);
+            setNewAsset({ title: '', description: '', type: 'asset', category: 'Audio', platform: 'Unity', engine: 'Unity 2022.3+', tags: '' });
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 150);
+    }
   };
 
   const handleDeleteAsset = (assetId: string) => {

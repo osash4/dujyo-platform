@@ -1,17 +1,23 @@
 {
-    "name": "dujyo-platform",
-    "private": true,
-    "version": "1.0.0",
-    "scripts": {
-        "start:frontend": "npm run dev --prefix dujyo-frontend",
-        "start:backend": "npm run dev --prefix dujyo-backend",
-        "install:all": "npm install --prefix dujyo-frontend && npm install --prefix dujyo-backend"
-    },
-    "dependencies": {
-        "cors": "^2.8.5",
-        "crypto-js": "^4.2.0",
-        "express": "^5.1.0",
-        "playwright": "^1.55.1",
-        "ws": "^8.18.3"
-    }
+  "name": "dujyo-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DUJYO - Web3 Entertainment Platform Monorepo",
+  "workspaces": [
+    "dujyo-frontend",
+    "DujyoMobile"
+  ],
+  "scripts": {
+    "web:dev": "cd dujyo-frontend && npm run dev",
+    "web:build": "cd dujyo-frontend && npm run build",
+    "mobile:ios": "cd DujyoMobile && npx react-native run-ios",
+    "mobile:android": "cd DujyoMobile && npx react-native run-android",
+    "mobile:start": "cd DujyoMobile && npx react-native start",
+    "backend:dev": "cd dujyo-backend && cargo run",
+    "backend:build": "cd dujyo-backend && cargo build --release"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
 }

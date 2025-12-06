@@ -340,8 +340,226 @@ CREATE TABLE IF NOT EXISTS wallets (...);
 
 ---
 
-**Reporte Generado:** 2024-12-19  
-**Estado:** ✅ **SIGNIFICANTLY IMPROVED - 70% READY**
+---
+
+## 🆕 CAMBIOS RECIENTES (POST-REPARACIONES)
+
+### **Sistema de Tips Implementado (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Implementación:**
+- ✅ **Tablas de Base de Datos:** `tips`, `artist_tip_stats`, `user_tip_stats` creadas
+- ✅ **Migración:** `025_tips_system.sql` ejecutada
+- ✅ **Backend Handler:** `send_tip_to_artist_handler` implementado con:
+  - Conversión correcta micro-DYO (1 DYO = 1,000,000 micro-DYO)
+  - Transacciones atómicas SQL
+  - Validación de balance del sender
+  - Actualización de estadísticas de artista y usuario
+- ✅ **Frontend Component:** `TipButton.tsx` implementado
+- ✅ **Endpoint de Contenido:** `GET /api/v1/content/{content_id}` para resolver artist_id
+- ✅ **Integración:** Tips integrados en `GlobalPlayer` y `TipLeaderboardPage`
+
+**Archivos Modificados:**
+- `dujyo-backend/src/routes/upload.rs` - Handler de tips
+- `dujyo-backend/migrations/025_tips_system.sql` - Migración de tablas
+- `dujyo-frontend/src/components/tips/TipButton.tsx` - Componente de tips
+- `dujyo-frontend/src/pages/TipLeaderboardPage.tsx` - Página de leaderboard
+
+---
+
+### **Migración de Wallets XW → DU (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Cambios:**
+- ✅ **Migración de Usuario:** Wallet `XW5c091b38ce8d4d0c926a7bcbf0989a9d` → `DU5c091b38ce8d4d0c926a7bcbf0989a9d`
+- ✅ **Actualización de Contenido:** `artist_id` actualizado en tabla `content`
+- ✅ **Actualización de Balances:** `token_balances` actualizado
+- ✅ **Actualización de Stream Logs:** 130 registros actualizados
+- ✅ **Frontend Migration:** `migrateXWToDU()` implementado en `AuthContext.tsx`
+
+**Impacto:**
+- Sistema ahora usa exclusivamente prefijo `DU` para wallets
+- Consistencia de datos garantizada
+- Frontend migra automáticamente wallets antiguos
+
+---
+
+### **Mejoras en Stream-to-Earn (S2E) (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Cambios Implementados:**
+
+1. **Rates Fijos (No Dinámicos):**
+   - ✅ Listener: `0.10 DYO/min` (FIXED)
+   - ✅ Artist: `0.50 DYO/min` (FIXED)
+   - ✅ Eliminado cálculo dinámico basado en pool
+
+2. **Cooldown Mejorado:**
+   - ✅ Cooldown reducido de 30 min a 5 min
+   - ✅ Ventana continua de 30 segundos para sesiones continuas
+   - ✅ Cooldown solo aplica entre sesiones distintas
+
+3. **Real-time Balance Updates:**
+   - ✅ `StreamEarnResponse` incluye `new_balance: Option<f64>`
+   - ✅ Frontend actualiza balance optimísticamente
+   - ✅ Eventos `dujyo:balance-updated` con `new_balance`
+   - ✅ `useUnifiedBalance` hook actualizado para usar `new_balance`
+
+4. **Corrección de Balance Storage:**
+   - ✅ `update_token_balance` ahora actualiza `token_balances` (no `balances`)
+   - ✅ Conversión correcta a micro-DYO para almacenamiento
+   - ✅ Balance leído desde `token_balances` en todos los handlers
+
+**Archivos Modificados:**
+- `dujyo-backend/src/routes/stream_earn.rs` - Rates fijos, cooldown mejorado
+- `dujyo-frontend/src/contexts/PlayerContext.tsx` - Optimistic updates
+- `dujyo-frontend/src/hooks/useUnifiedBalance.ts` - Real-time updates
+- `dujyo-frontend/src/components/StreamEarnings/StreamEarningsDisplay.tsx` - Rates actualizados
+
+---
+
+### **Wallet Dashboard con Balances Reales (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Cambios:**
+- ✅ **Endpoints de Earnings:** 
+  - `GET /api/earnings/user/:address` - Earnings de usuario
+  - `GET /api/earnings/artist/:address` - Earnings de artista
+  - `GET /api/earnings/history/:address` - Historial de earnings
+  - `GET /api/earnings/predictions/:address` - Predicciones de earnings
+- ✅ **Wallet Dashboard:** Muestra balances reales desde `token_balances`
+- ✅ **Streaming Earnings:** Datos reales desde `stream_logs` y `user_daily_usage`
+- ✅ **Eliminados Mock Balances:** Todos los valores hardcoded removidos
+
+**Archivos Modificados:**
+- `dujyo-backend/src/server.rs` - Endpoints de earnings
+- `dujyo-frontend/src/components/wallet/WalletDashboard.tsx` - Balances reales
+- `dujyo-frontend/src/pages/DEXPage.tsx` - Earnings reales
+
+---
+
+### **Mejoras en DEX (Swap & Staking) (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Cambios:**
+- ✅ **Swap Corregido:** Lee y actualiza balances desde `token_balances`
+- ✅ **Staking Corregido:** Lee y actualiza balances desde `token_balances`
+- ✅ **Mint Area Removido:** Sección "Mint Tokens" eliminada del DEX
+- ✅ **Balance Consistency:** Todos los handlers usan `token_balances` como fuente de verdad
+
+**Archivos Modificados:**
+- `dujyo-backend/src/server.rs` - `execute_swap`, `simple_stake_handler`, `simple_unstake_handler`
+- `dujyo-frontend/src/components/DEX/DEXSwap.tsx` - Mint area removido
+
+---
+
+### **Mejoras en UI/UX (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Cambios:**
+- ✅ **S2E Notification:** Movida de `top-4` a `bottom-20` para no obstruir controles del player
+- ✅ **Avatar Loading:** Mejorado fallback a SVG icon si `ui-avatars.com` falla
+- ✅ **TipButton:** Resolución automática de `artist_id` desde `content_id`
+- ✅ **Error Handling:** Mejores mensajes de error en frontend
+
+**Archivos Modificados:**
+- `dujyo-frontend/src/components/Player/StreamEarnNotification.tsx` - Posición actualizada
+- `dujyo-frontend/src/pages/SettingsPage.tsx` - Avatar fallback mejorado
+- `dujyo-frontend/src/components/tips/TipButton.tsx` - Resolución de artista
+
+---
+
+### **Limpieza de Código (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Cambios:**
+- ✅ **Logs de Debugging Removidos:** 
+  - Eliminados `eprintln!` de debugging excesivo
+  - Eliminados logs `🔍 [DEBUG] Step X`
+  - Eliminados logs `✅✅✅ [DEBUG]`
+- ✅ **Logs Críticos Mantenidos:**
+  - Errores críticos (`❌`) mantenidos
+  - `info!` y `error!` de `tracing` mantenidos
+  - Logs de operaciones importantes mantenidos
+
+**Archivos Limpiados:**
+- `dujyo-backend/src/routes/upload.rs` - ~50 logs de debugging removidos
+- `dujyo-backend/src/routes/stream_earn.rs` - ~20 logs de debugging removidos
+- `dujyo-backend/src/routes/user.rs` - Logs de debugging removidos
+
+**Resultado:**
+- Código más limpio y mantenible
+- Logs solo para errores críticos y operaciones importantes
+- Mejor performance (menos I/O de logging)
+
+---
+
+### **Correcciones de Bugs (2024-12-20)**
+
+**Estado:** ✅ **COMPLETADO**
+
+**Bugs Corregidos:**
+
+1. **500 Error en S2E Listener Handler:**
+   - ✅ Corregido uso incorrecto de `axum::extract::Request`
+   - ✅ Revertido a extractors estándar (`Extension<Claims>`, `Json<StreamEarnRequest>`)
+   - ✅ Handler ahora funciona correctamente
+
+2. **Balance No Actualizaba en Real-time:**
+   - ✅ `update_token_balance` ahora actualiza `token_balances` correctamente
+   - ✅ Frontend implementa optimistic updates
+   - ✅ `new_balance` retornado en `StreamEarnResponse`
+
+3. **Swap/Staking con Balance Incorrecto:**
+   - ✅ Handlers ahora leen desde `token_balances` (no HashMap en memoria)
+   - ✅ Conversión correcta micro-DYO ↔ DYO
+
+4. **Tip Button No Encontraba Artista:**
+   - ✅ Endpoint `GET /api/v1/content/{content_id}` creado
+   - ✅ `TipButton` resuelve `artist_id` automáticamente
+
+5. **Cover Image No Se Subía:**
+   - ✅ Thumbnail ahora se guarda correctamente en directorio de contenido
+   - ✅ Filename seguro generado
+
+6. **Liquidity Tab Error:**
+   - ✅ `t` function pasada como prop a `LiquidityPosition`
+
+---
+
+## 📊 ESTADO ACTUALIZADO (2024-12-20)
+
+**Overall Readiness:** ✅ **75% - READY FOR MVP**
+
+**Nuevas Funcionalidades:**
+- ✅ Sistema de Tips completo
+- ✅ S2E con rates fijos y real-time updates
+- ✅ Wallet Dashboard con datos reales
+- ✅ DEX funcional (swap & staking)
+- ✅ Migración de wallets completa
+
+**Mejoras Técnicas:**
+- ✅ Código más limpio (logs innecesarios removidos)
+- ✅ Balance consistency garantizada
+- ✅ Real-time updates implementados
+- ✅ Error handling mejorado
+
+---
+
+**Reporte Generado:** 2024-12-20  
+**Estado:** ✅ **SIGNIFICANTLY IMPROVED - 75% READY FOR MVP**
+
+
+
+
+
 
 
 

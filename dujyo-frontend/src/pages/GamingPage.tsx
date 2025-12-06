@@ -59,7 +59,7 @@ const gamingCarouselItems = [
   }
 ];
 
-const gamingContent = [
+const gamingContent: Array<any> = [
   {
     id: '1',
     title: 'Cyberpunk Arena',
@@ -304,17 +304,41 @@ const GamingPage: React.FC = () => {
   }, [t]);
   const [winStreak, setWinStreak] = useState(0);
   
-  // Calculate total metrics
+  // ✅ Fetch real gaming content
   useEffect(() => {
-    const totalPlayers = gamingContent.reduce((sum, game) => sum + game.players, 0);
-    const avgEarnings = gamingContent.reduce((sum, game) => sum + game.avgEarnings, 0) / gamingContent.length;
-    const totalEarned = totalPlayers * avgEarnings * 0.1; // Estimate
-    
-    setMetrics({
-      avgEarnPerGame: avgEarnings,
-      activeEarners: Math.floor(totalPlayers * 0.3),
-      totalEarnedToday: totalEarned
-    });
+    const fetchGames = async () => {
+      try {
+        const apiBaseUrl = getApiBaseUrl();
+        const res = await fetch(`${apiBaseUrl}/api/v1/content/public?type=gaming&limit=50`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success && Array.isArray(data.content)) {
+          const mapped = data.content.map((item: any) => {
+            const fileUrl = item.file_url || '';
+            const thumbUrl = item.thumbnail_url || '';
+            const fullFileUrl = fileUrl.startsWith('http') ? fileUrl : `${apiBaseUrl}${fileUrl}`;
+            const fullThumbUrl = thumbUrl ? (thumbUrl.startsWith('http') ? thumbUrl : `${apiBaseUrl}${thumbUrl}`) : undefined;
+            return {
+              id: item.content_id,
+              title: item.title || 'Untitled',
+              description: item.description || '',
+              image: fullThumbUrl || 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop',
+              category: item.genre || 'Gaming',
+              rating: 4.8,
+              players: 0,
+              price: 0,
+              avgEarnings: 0,
+              hourlyRate: 0,
+              potentialEarnings: 0,
+              url: fullFileUrl,
+            };
+          });
+          setFilteredContent(mapped);
+          setMetrics({ avgEarnPerGame: 0, activeEarners: 0, totalEarnedToday: 0 });
+        }
+      } catch {}
+    };
+    fetchGames();
   }, []);
 
   // Fetch user earnings if wallet connected
@@ -846,7 +870,7 @@ const GamingPage: React.FC = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredContent.map((game, index) => (
+                  {filteredContent.map((game: any, index) => (
                     <motion.div
                       key={game.id}
                       initial={{ opacity: 0, y: 20 }}

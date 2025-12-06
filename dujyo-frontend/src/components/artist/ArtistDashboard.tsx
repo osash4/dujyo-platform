@@ -127,6 +127,25 @@ interface StakingInfo {
   benefits: string[];
 }
 
+// Tips interfaces
+interface Tip {
+  tip_id: string;
+  sender_address: string;
+  receiver_address: string;
+  amount: number;
+  currency: string;
+  message?: string;
+  content_id?: string;
+  created_at: string;
+}
+
+interface TipLeaderboardEntry {
+  artist_address: string;
+  tip_count: number;
+  total_received: number;
+  last_tip: string;
+}
+
 interface AudienceMetric {
   earningsPerFan: number;
   topFans: Array<{
@@ -152,10 +171,18 @@ const ArtistDashboard: React.FC = () => {
   const [stakingInfo, setStakingInfo] = useState<StakingInfo | null>(null);
   const [realTimeEarnings, setRealTimeEarnings] = useState<RealTimeEarning[]>([]);
   const [audienceMetrics, setAudienceMetrics] = useState<AudienceMetric | null>(null);
+  const [recentContent, setRecentContent] = useState<Array<{ id: string; title: string; type: string; file_url?: string; thumbnail_url?: string; artist_name?: string }>>([]);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [newGoalTarget, setNewGoalTarget] = useState('');
   const [newGoalLabel, setNewGoalLabel] = useState('');
   const wsRef = useRef<WebSocket | null>(null);
+  // Tips state
+  const [tipsReceived, setTipsReceived] = useState<Tip[]>([]);
+  const [totalTipsReceived, setTotalTipsReceived] = useState(0);
+  const [showTipModal, setShowTipModal] = useState(false);
+  const [tipAmount, setTipAmount] = useState<string>('');
+  const [tipMessage, setTipMessage] = useState<string>('');
+  const [tipLeaderboard, setTipLeaderboard] = useState<TipLeaderboardEntry[]>([]);
 
   useEffect(() => {
     if (user?.uid) {
@@ -164,6 +191,8 @@ const ArtistDashboard: React.FC = () => {
       fetchOptimizationTips();
       fetchAudienceMetrics();
       setupWebSocket();
+      loadTipsReceived();
+      loadTipLeaderboard();
     }
     return () => {
       if (wsRef.current) {
@@ -180,37 +209,208 @@ const ArtistDashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [metrics]);
 
+  // ✅ Fetch recent content uploads for this artist
+  useEffect(() => {
+    const fetchRecentContent = async () => {
+      try {
+        const apiBaseUrl = getApiBaseUrl();
+        const walletAddress = account || user?.uid;
+        if (!walletAddress) return;
+        const resp = await fetch(`${apiBaseUrl}/api/v1/content/artist/${walletAddress}`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.success && Array.isArray(data.content)) {
+          const mapped = data.content.slice(0, 8).map((c: any) => ({
+            id: c.content_id,
+            title: c.title,
+            type: c.content_type,
+            file_url: c.file_url,
+            thumbnail_url: c.thumbnail_url,
+            artist_name: c.artist_name,
+          }));
+          setRecentContent(mapped);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchRecentContent();
+  }, [account, user?.uid]);
+
   const setupWebSocket = () => {
     try {
-      const wsUrl = getApiBaseUrl().replace('http', 'ws') + '/ws/earnings';
+      // Close existing connection if any
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+
+      const apiBaseUrl = getApiBaseUrl();
+      // Only setup WebSocket if we have a valid URL
+      if (!apiBaseUrl || !apiBaseUrl.startsWith('http')) {
+        console.warn('Invalid API base URL for WebSocket');
+        return;
+      }
+
+      const wsUrl = apiBaseUrl.replace('http', 'ws') + '/ws/earnings';
       const ws = new WebSocket(wsUrl);
       
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+      };
+      
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'earning_update') {
-          const newEarning: RealTimeEarning = {
-            id: Date.now().toString(),
-            contentTitle: data.contentTitle || 'Unknown',
-            amount: data.amount || 0,
-            timestamp: new Date(),
-            type: data.contentType || 'music'
-          };
-          setRealTimeEarnings(prev => [newEarning, ...prev.slice(0, 9)]);
-          
-          // Show notification
-          if (data.amount > 0) {
-            showNotification(`+${data.amount.toFixed(3)} $DYO from ${data.contentTitle}`);
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'earning_update') {
+            const newEarning: RealTimeEarning = {
+              id: Date.now().toString(),
+              contentTitle: data.contentTitle || 'Unknown',
+              amount: data.amount || 0,
+              timestamp: new Date(),
+              type: data.contentType || 'music'
+            };
+            setRealTimeEarnings(prev => [newEarning, ...prev.slice(0, 9)]);
+            
+            // Show notification
+            if (data.amount > 0) {
+              showNotification(`+${data.amount.toFixed(3)} $DYO from ${data.contentTitle}`);
+            }
           }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
         }
       };
       
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
+        // Don't show error to user, just log it
+      };
+      
+      ws.onclose = () => {
+        console.log('WebSocket closed');
+        wsRef.current = null;
       };
       
       wsRef.current = ws;
     } catch (error) {
       console.error('Error setting up WebSocket:', error);
+      // Don't throw, just log the error
+    }
+  };
+
+  // Load tips received by artist
+  const loadTipsReceived = async () => {
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const walletAddress = account || user?.uid;
+      
+      if (!walletAddress) {
+        console.warn('No wallet address available for loading tips');
+        // Use mock data as fallback
+        setTipsReceived([]);
+        setTotalTipsReceived(0);
+        return;
+      }
+
+      const token = localStorage.getItem('jwt_token');
+      if (!token) {
+        console.warn('No authentication token for loading tips');
+        // Use mock data as fallback
+        setTipsReceived([]);
+        setTotalTipsReceived(0);
+        return;
+      }
+
+      // Try new endpoint first: /api/tips/artist/:artistId/stats
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/tips/artist/${walletAddress}/stats`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setTipsReceived(Array.isArray(data.recent_tips) ? data.recent_tips : []);
+            setTotalTipsReceived(data.total_received || 0);
+            return;
+          }
+        }
+      } catch (newEndpointError) {
+        console.warn('New tips endpoint failed, trying fallback:', newEndpointError);
+      }
+
+      // Fallback to old endpoint: /api/v1/content/tips/received/:address
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/v1/content/tips/received/${walletAddress}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            setTipsReceived(data);
+            setTotalTipsReceived(data.reduce((sum: number, tip: any) => sum + (tip.amount || 0), 0));
+            return;
+          } else if (data.success && data.tips) {
+            setTipsReceived(Array.isArray(data.tips) ? data.tips : []);
+            setTotalTipsReceived(data.total_received || 0);
+            return;
+          }
+        }
+      } catch (fallbackError) {
+        console.warn('Fallback tips endpoint failed:', fallbackError);
+      }
+
+      // Use mock data if all endpoints fail
+      console.warn('All tips endpoints failed, using mock data');
+      setTipsReceived([]);
+      setTotalTipsReceived(0);
+    } catch (error) {
+      console.error('Error loading tips received:', error);
+      // Use mock data on error
+      setTipsReceived([]);
+      setTotalTipsReceived(0);
+    }
+  };
+
+  // Load tip leaderboard
+  const loadTipLeaderboard = async () => {
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('jwt_token');
+      
+      if (!token) {
+        console.warn('No authentication token for loading tip leaderboard');
+        return;
+      }
+
+      const response = await fetch(`${apiBaseUrl}/api/v1/content/tips/leaderboard`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('Failed to load tip leaderboard:', response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      if (data.success && data.leaderboard) {
+        setTipLeaderboard(Array.isArray(data.leaderboard) ? data.leaderboard : []);
+      }
+    } catch (error) {
+      console.error('Error loading tip leaderboard:', error);
     }
   };
 
@@ -266,20 +466,51 @@ const ArtistDashboard: React.FC = () => {
       };
       const apiBaseUrl = getApiBaseUrl();
       
-      const [analyticsResponse, royaltiesResponse] = await Promise.all([
+      const [analyticsResponse, balanceResponse] = await Promise.all([
         fetch(`${apiBaseUrl}/api/v1/analytics/artist/${walletAddress}`, { headers }),
-        fetch(`${apiBaseUrl}/api/v1/royalties/artist/${walletAddress}`, { headers })
+        fetch(`${apiBaseUrl}/balance-detail/${walletAddress}`, { headers })
       ]);
 
-      if (!analyticsResponse.ok || !royaltiesResponse.ok) {
-        throw new Error('Failed to fetch metrics');
+      // Fallbacks if analytics fails
+      let analyticsData: any = null;
+      if (analyticsResponse.ok) {
+        analyticsData = await analyticsResponse.json();
+      } else {
+        // Build analytics from stream history
+        const histResp = await fetch(`${apiBaseUrl}/api/v1/stream-earn/history`, { headers });
+        const hist = histResp.ok ? await histResp.json() : { records: [] };
+        const records: any[] = hist.records || [];
+        const artistRecords = records.filter(r => r.stream_type === 'artist');
+        const total_streams_fallback = artistRecords.length;
+        // Group by track
+        const revenueByTrack = new Map<string, { name: string; revenue: number; streams: number }>();
+        artistRecords.forEach(r => {
+          const id = r.track_id;
+          const name = r.track_title || 'Unknown';
+          const entry = revenueByTrack.get(id) || { name, revenue: 0, streams: 0 };
+          entry.revenue += (r.tokens_earned || 0);
+          entry.streams += 1;
+          revenueByTrack.set(id, entry);
+        });
+        const top_tracks_fallback = Array.from(revenueByTrack.entries())
+          .map(([track_id, v]) => ({ track_id, track_name: v.name, streams: v.streams, revenue: v.revenue, release_date: '2025-01-01', growth_rate: 0 }))
+          .sort((a, b) => b.streams - a.streams)
+          .slice(0, 5);
+        analyticsData = {
+          total_streams: total_streams_fallback,
+          total_revenue: Array.from(revenueByTrack.values()).reduce((s, v) => s + v.revenue, 0),
+          total_tracks: revenueByTrack.size,
+          top_tracks: top_tracks_fallback,
+          revenue_by_period: [],
+          audience_demographics: { top_countries: [], age_distribution: {}, gender_distribution: {} },
+          cross_platform_stats: { spotify_streams: 0, apple_music_streams: 0, youtube_views: 0, dujyo_streams: total_streams_fallback, total_cross_platform: total_streams_fallback }
+        };
       }
 
-      const analyticsData = await analyticsResponse.json();
-      const royaltiesData = await royaltiesResponse.json();
+      const balanceData = await balanceResponse.json();
 
-      const totalEarnings = royaltiesData.total_earned || 0;
-      const pendingPayout = royaltiesData.pending_payout || 0;
+      const totalEarnings = balanceData.available_dyo || 0;
+      const pendingPayout = totalEarnings; // MVP: todo el balance disponible es retirables
       const totalStreams = analyticsData.total_streams || 0;
       const uniqueListeners = analyticsData.audience_demographics?.total_listeners || Math.floor(totalStreams / 100) || 0;
       
@@ -313,13 +544,8 @@ const ArtistDashboard: React.FC = () => {
         percentage: country.percentage || 0
       }));
 
-      const recentPayments = (royaltiesData.payment_history || []).slice(0, 4).map((payment: any) => ({
-        id: payment.payment_id || '',
-        type: payment.source === 'streaming' ? 'stream' : 'royalty' as const,
-        amount: payment.amount || 0,
-        description: `${payment.source} payment`,
-        timestamp: new Date(payment.date || Date.now())
-      }));
+      const recentPayments: any[] = [];
+      const recentActivity: { id: string; type: 'stream' | 'purchase' | 'royalty'; amount?: number; description: string; timestamp: Date; }[] = [];
 
       const earningsGrowth = totalEarnings > 0 ? 0 : 0;
       const streamsGrowth = totalStreams > 0 ? 0 : 0;
@@ -367,10 +593,8 @@ const ArtistDashboard: React.FC = () => {
         monthlyListeners: Math.floor(uniqueListeners * 0.3),
         catalogSize: catalogSize,
         topSongs: topSongs.length > 0 ? topSongs : [],
-        recentActivity: recentPayments.length > 0 ? recentPayments : [],
-        nextPayout: royaltiesData.last_payout_date 
-          ? new Date(new Date(royaltiesData.last_payout_date).getTime() + 30 * 24 * 60 * 60 * 1000)
-          : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        recentActivity: recentActivity.length > 0 ? recentActivity : [],
+        nextPayout: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         payoutAmount: pendingPayout,
         topLocations: topLocations.length > 0 ? topLocations : [],
         earningsGrowth: earningsGrowth,
@@ -608,6 +832,50 @@ const ArtistDashboard: React.FC = () => {
     return `${formatNumber(amount)} $DYO`;
   };
 
+  // Payout action (MVP): solicita retiro por monto ingresado (no todo el disponible)
+  const requestPayout = async () => {
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('jwt_token');
+      if (!token || !account) return;
+      const minPayout = 10.0;
+      if (available_dyo < minPayout) {
+        showNotification(`Minimum payout is ${minPayout} $DYO`);
+        return;
+      }
+      // Prompt simple para MVP
+      const input = window.prompt(`Enter payout amount (min ${minPayout}, max ${available_dyo.toFixed(2)})`, Math.min(available_dyo, minPayout).toFixed(2));
+      if (!input) return;
+      const amount = Math.max(0, parseFloat(input));
+      if (isNaN(amount) || amount < minPayout) {
+        showNotification(`Amount must be at least ${minPayout} $DYO`);
+        return;
+      }
+      if (amount > available_dyo) {
+        showNotification(`Amount exceeds available balance (${available_dyo.toFixed(2)} $DYO)`);
+        return;
+      }
+      const resp = await fetch(`${apiBaseUrl}/api/v1/payments/payout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount })
+      });
+      const data = await resp.json();
+      if (resp.ok && data.success) {
+        showNotification(`Payout processed: ${amount.toFixed(2)} $DYO`);
+        await fetchArtistMetrics();
+      } else {
+        showNotification(data.message || 'Payout failed');
+      }
+    } catch (e) {
+      console.error('Payout error:', e);
+      showNotification('Payout failed');
+    }
+  };
+
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'royalty': return <DollarSign className="w-4 h-4 text-green-500" />;
@@ -650,25 +918,7 @@ const ArtistDashboard: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6" data-tour="dashboard">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">{t('artist.artistDashboard')}</h1>
-          <p className="text-gray-400 mt-1">{t('artist.welcomeBack').replace('{{name}}', user?.displayName || '')}</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <select
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value as any)}
-            className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:border-amber-500 focus:outline-none"
-          >
-            <option value="7d">{t('artist.last7Days')}</option>
-            <option value="30d">{t('artist.last30Days')}</option>
-            <option value="90d">{t('artist.last90Days')}</option>
-            <option value="1y">{t('artist.lastYear')}</option>
-          </select>
-        </div>
-      </div>
+      {/* Header removed per request */}
 
       {/* DYO Token Economy Dashboard */}
       <motion.div
@@ -711,6 +961,14 @@ const ArtistDashboard: React.FC = () => {
               <TrendingUp className="w-3 h-3 text-green-400" />
               <span className="text-xs text-green-400">+{metrics.earningsGrowth}%</span>
             </div>
+            <button
+              onClick={requestPayout}
+              className="mt-3 w-full py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-400 hover:to-orange-500 transition-all disabled:opacity-50"
+              disabled={available_dyo < 10}
+              title={available_dyo < 10 ? 'Minimum payout is 10 $DYO' : 'Request payout'}
+            >
+              Request Payout
+            </button>
           </div>
         </div>
       </motion.div>

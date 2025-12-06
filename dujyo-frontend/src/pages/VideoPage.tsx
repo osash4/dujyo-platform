@@ -60,7 +60,7 @@ const videoCarouselItems = [
   }
 ];
 
-const videoContent = [
+const videoContent: Array<any> = [
   {
     id: '1',
     title: 'Cyberpunk Chronicles',
@@ -225,15 +225,47 @@ const VideoPage: React.FC = () => {
   const [userTier, setUserTier] = useState<'Bronze' | 'Silver' | 'Gold'>('Bronze');
   const [engagementPoints, setEngagementPoints] = useState(0);
   
-  // Calculate total metrics
+  // ✅ Fetch real video content
   useEffect(() => {
-    const totalViews = videoContent.reduce((sum, video) => sum + video.views, 0);
-    const avgCompletion = videoContent.reduce((sum, video) => sum + video.watchCompletion, 0) / videoContent.length;
-    setMetrics({
-      dyoPerView: 0.02,
-      totalViews,
-      avgWatchCompletion: avgCompletion
-    });
+    const fetchVideos = async () => {
+      try {
+        const apiBaseUrl = getApiBaseUrl();
+        const res = await fetch(`${apiBaseUrl}/api/v1/content/public?type=video&limit=50`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success && Array.isArray(data.content)) {
+          const mapped = data.content.map((item: any) => {
+            const fileUrl = item.file_url || '';
+            const thumbUrl = item.thumbnail_url || '';
+            const fullFileUrl = fileUrl.startsWith('http') ? fileUrl : `${apiBaseUrl}${fileUrl}`;
+            const fullThumbUrl = thumbUrl ? (thumbUrl.startsWith('http') ? thumbUrl : `${apiBaseUrl}${thumbUrl}`) : undefined;
+            return {
+              id: item.content_id,
+              title: item.title || 'Untitled',
+              description: item.description || '',
+              image: fullThumbUrl || 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop',
+              duration: '00:00',
+              views: 0,
+              likes: 0,
+              comments: 0,
+              shares: 0,
+              category: item.genre || 'Video',
+              rating: 4.8,
+              earnings: 0,
+              watchCompletion: 0,
+              earnPerView: 0.02,
+              creator: item.artist_name || 'Unknown',
+              engagementMultiplier: 1.0,
+              url: fullFileUrl,
+            };
+          });
+          setFilteredContent(mapped);
+          // metrics
+          setMetrics({ dyoPerView: 0.02, totalViews: 0, avgWatchCompletion: 0 });
+        }
+      } catch {}
+    };
+    fetchVideos();
   }, []);
 
   // Fetch creator earnings function - defined before useEffect to avoid dependency issues
@@ -811,7 +843,7 @@ const VideoPage: React.FC = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredContent.map((video, index) => (
+                {filteredContent.map((video: any, index) => (
                   <motion.div
                     key={video.id}
                     initial={{ opacity: 0, y: 20 }}

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SimpleAppLayout from '../components/Layout/SimpleAppLayout';
+import { usePlayerContext } from '../contexts/PlayerContext';
+import { useNavigate } from 'react-router-dom';
+import { getApiBaseUrl } from '../utils/apiConfig';
 import { Search, Music, Video, Gamepad, User, TrendingUp } from 'lucide-react';
 import { searchContent, SearchResult } from '../services/searchService';
 
@@ -19,6 +22,8 @@ interface SearchResult {
 
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const { playTrack } = usePlayerContext();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,6 +82,62 @@ const SearchPage: React.FC = () => {
   const filteredResults = activeFilter === 'all' 
     ? results 
     : results.filter(result => result.type === activeFilter);
+
+  const buildFullUrl = (url?: string) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    const apiBaseUrl = getApiBaseUrl();
+    return url.startsWith('/') ? `${apiBaseUrl}${url}` : `${apiBaseUrl}/${url}`;
+  };
+
+  const isLikelyFileUrl = (u: string) => {
+    const lower = u.toLowerCase();
+    return lower.includes('/uploads/') || lower.endsWith('.mp3') || lower.endsWith('.wav') || lower.endsWith('.m4a') || lower.endsWith('.ogg');
+  };
+
+  const handleResultClick = async (result: SearchResult) => {
+    console.log('[SearchPage] Clicked result:', result);
+    if (result.type === 'music') {
+      let url = buildFullUrl(result.url);
+      // If url is missing OR points to a content details path (not a file), resolve the real file_url
+      if (!url || url.includes('/content/') || !isLikelyFileUrl(url)) {
+        try {
+          const apiBaseUrl = getApiBaseUrl();
+          const res = await fetch(`${apiBaseUrl}/api/v1/content/public?type=audio&limit=100`);
+          const data = await res.json();
+          const match = (data.content || []).find((c: any) => c.content_id === result.id || c.title === result.title);
+          if (match && match.file_url) {
+            url = match.file_url.startsWith('http') ? match.file_url : `${apiBaseUrl}${match.file_url}`;
+          }
+        } catch (e) {
+          console.error('[SearchPage] resolve fallback failed:', e);
+        }
+      }
+      if (!url) return;
+      console.log('[SearchPage] Playing URL:', url);
+      playTrack({
+        id: result.id,
+        title: result.title,
+        url,
+        playerMode: 'music',
+        artist: result.artist,
+        cover: result.image,
+      });
+      return;
+    }
+    if (result.type === 'video') {
+      // Navigate to /video and let the page handle playback
+      navigate('/video', { state: { autoplay: true, item: result } });
+      return;
+    }
+    if (result.type === 'gaming') {
+      navigate('/gaming', { state: { autoplay: true, item: result } });
+      return;
+    }
+    if (result.url) {
+      window.open(buildFullUrl(result.url), '_blank');
+    }
+  };
 
   return (
     <SimpleAppLayout>
@@ -146,6 +207,7 @@ const SearchPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-700/50 hover:border-gray-600 transition-all duration-300 cursor-pointer group"
+                  onClick={() => handleResultClick(result)}
                 >
                   <div className="relative mb-4">
                     <img
@@ -153,6 +215,21 @@ const SearchPage: React.FC = () => {
                       alt={result.title}
                       className="w-full h-48 object-cover rounded-lg"
                     />
+                    {/* ✅ Play overlay for playable types */}
+                    {(result.type === 'music' || result.type === 'video' || result.type === 'gaming') && (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); handleResultClick(result); }}
+                          className="bg-black/60 hover:bg-black/70 rounded-full p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          aria-label="Play"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 2 }}>
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
                     <div className="absolute top-2 left-2 flex items-center space-x-1 bg-black/70 rounded-full px-2 py-1">
                       <span className={getTypeColor(result.type)}>
                         {getTypeIcon(result.type)}

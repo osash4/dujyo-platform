@@ -218,6 +218,34 @@ const WithdrawalConfirmationModal: React.FC<{
 WithdrawalConfirmationModal.displayName = 'WithdrawalConfirmationModal';
 
 const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
+  // ✅ Placeholder mode to avoid 404s until backend endpoints are ready
+  const PAYMENTS_ENABLED = true;
+  if (!PAYMENTS_ENABLED) {
+    return (
+      <div className="min-h-screen text-white p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-6">
+            <h1 className="text-2xl font-bold mb-2">Payments Dashboard</h1>
+            <p className="text-gray-400 mb-4">This section is coming soon. Your earnings and withdrawals will appear here.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <p className="text-gray-400 text-sm">Total Withdrawn</p>
+                <p className="text-2xl font-bold text-purple-400">0.00 $DYO</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <p className="text-gray-400 text-sm">Pending</p>
+                <p className="text-2xl font-bold text-yellow-400">0</p>
+              </div>
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <p className="text-gray-400 text-sm">Next Payout</p>
+                <p className="text-2xl font-bold text-green-400">N/A</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const { user } = useAuth();
   const { available_dyo, dys, refreshBalance } = useUnifiedBalance();
   
@@ -245,17 +273,16 @@ const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
   const cache = useCache<any>(5 * 60 * 1000); // 5-minute cache
   const debouncedPeriod = useDebounce(selectedPeriod, 500);
 
-  // Retry wrapper for API calls
-  const fetchWithRetry = useRetry(
-    async (url: string, options: RequestInit = {}) => {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      return response.json();
-    },
-    { maxAttempts: 3, initialDelay: 1000 }
-  );
+  // Simple fetch helper (single attempt)
+  const fetchJson = useCallback(async (url: string, options: RequestInit = {}) => {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      const statusText = response.statusText || text || 'Error';
+      throw new Error(`HTTP ${response.status}: ${statusText}`);
+    }
+    return response.json();
+  }, []);
 
   // Fetch withdrawal history with caching and retry
   const fetchWithdrawalHistory = useCallback(async (forceRefresh: boolean = false) => {
@@ -277,14 +304,9 @@ const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
 
       const apiBaseUrl = getApiBaseUrl();
       const userId = artistId || user?.uid;
-      const data = await fetchWithRetry(
-        `${apiBaseUrl}/api/v1/payments/withdrawals?period=${selectedPeriod}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
+      const data = await fetchJson(`${apiBaseUrl}/api/v1/payments/withdrawals?period=${selectedPeriod}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
 
       setWithdrawalHistory(data);
       cache.set(cacheKey, data);
@@ -302,7 +324,7 @@ const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
         setOfflineMode(true);
       }
     }
-  }, [user?.uid, artistId, selectedPeriod, cache, fetchWithRetry]);
+  }, [user?.uid, artistId, selectedPeriod, cache, fetchJson]);
 
   // Fetch limits with caching
   const fetchLimits = useCallback(async (forceRefresh: boolean = false) => {
@@ -318,7 +340,10 @@ const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
 
     try {
       const apiBaseUrl = getApiBaseUrl();
-      const data = await fetchWithRetry(`${apiBaseUrl}/api/v1/payments/limits`, {});
+      const token = localStorage.getItem('jwt_token');
+      const data = await fetchWithRetry(`${apiBaseUrl}/api/v1/payments/limits`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+      });
       
       setLimits(data);
       cache.set(cacheKey, data);
@@ -355,14 +380,9 @@ const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
 
       const apiBaseUrl = getApiBaseUrl();
       const userId = artistId || user?.uid;
-      const response = await fetch(
-        `${apiBaseUrl}/api/v1/payments/analytics`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${apiBaseUrl}/api/v1/payments/analytics`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -481,11 +501,15 @@ const PaymentDashboard: React.FC<PaymentDashboardProps> = ({ artistId }) => {
     }
   }, [user?.uid, artistId]);
 
-  // Refresh when period changes (debounced)
+  // Refresh when period changes (debounced) - avoid double call on first mount
+  const firstPeriodChangeRef = useRef(true);
   useEffect(() => {
-    if (user?.uid || artistId) {
-      fetchWithdrawalHistory(true);
+    if (!user?.uid && !artistId) return;
+    if (firstPeriodChangeRef.current) {
+      firstPeriodChangeRef.current = false;
+      return; // skip initial to prevent duplicate with initial fetch
     }
+    fetchWithdrawalHistory(true);
   }, [debouncedPeriod, user?.uid, artistId, fetchWithdrawalHistory]);
 
   // Update pending withdrawals count

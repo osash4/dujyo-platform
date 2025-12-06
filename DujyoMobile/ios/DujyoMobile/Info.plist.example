@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Background Modes for Audio Playback -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>remote-notification</string>
+	</array>
+	
+	<!-- Music Library Access -->
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Dujyo needs access to play music in the background</string>
+	
+	<!-- Network Security (for development) -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	
+	<!-- Other required keys -->
+	<key>CFBundleDisplayName</key>
+	<string>DUJYO</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.dujyo</string>
+</dict>
+</plist>
+

@@ -115,7 +115,8 @@ const StreamEarningsDisplay: React.FC = () => {
   };
 
   const getEarningsRate = () => {
-    return userRole === 'artist' ? '2.5 DYO/min' : '0.6 DYO/min';
+    // ✅ FIXED RATES: 0.10 DYO/min (listener), 0.50 DYO/min (artist)
+    return userRole === 'artist' ? '0.50 DYO/min' : '0.10 DYO/min';
   };
 
   const getDailyProgress = () => {
@@ -302,8 +303,8 @@ const StreamEarningsDisplay: React.FC = () => {
                 }`} />
                 <span className="text-gray-400">
                   {userRole === 'artist' 
-                    ? 'Earning as Artist (2.5 DYO/min, max 180min/day)' 
-                    : 'Earning as Listener (0.6 DYO/min, max 120min/day)'
+                    ? 'Earning as Artist (0.50 DYO/min, max 120min/day)' 
+                    : 'Earning as Listener (0.10 DYO/min, max 120min/day)'
                   }
                 </span>
               </div>

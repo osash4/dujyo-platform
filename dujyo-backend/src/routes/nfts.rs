@@ -22,6 +22,23 @@ pub struct NFT {
     pub updated_at: String,
 }
 
+#[derive(Deserialize)]
+pub struct MockBuyRequest {
+    pub price_dyo: Option<f64>,        // default 5.0
+    pub name: Option<String>,          // e.g., "Genesis Pass"
+    pub image: Option<String>,         // optional image url
+    pub description: Option<String>,   // optional description
+}
+
+#[derive(Serialize)]
+pub struct MockBuyResponse {
+    pub success: bool,
+    pub message: String,
+    pub nft_id: Option<String>,
+    pub price_dyo: f64,
+    pub new_balance_dyo: f64,
+}
+
 #[derive(Serialize)]
 pub struct NFTsResponse {
     pub nfts: Vec<NFT>,
@@ -265,10 +282,115 @@ pub async fn transfer_nft(
     }
 }
 
+/// POST /api/v1/nfts/mock-buy
+/// Deducts DYO from storage and mints a mock NFT to the buyer
+pub async fn mock_buy_nft(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+    Json(request): Json<MockBuyRequest>,
+) -> Result<Json<MockBuyResponse>, StatusCode> {
+    let pool = &state.storage.pool;
+    let buyer = &claims.sub;
+    let price_dyo = request.price_dyo.unwrap_or(5.0).max(0.0);
+    if price_dyo <= 0.0 {
+        return Ok(Json(MockBuyResponse {
+            success: false,
+            message: "Price must be > 0".to_string(),
+            nft_id: None,
+            price_dyo,
+            new_balance_dyo: 0.0,
+        }));
+    }
+    let price_cents = (price_dyo * 100.0).round() as u64;
+
+    // Check and deduct from legacy storage balance (source of truth for wallet UI)
+    let current_cents = state.storage.get_balance(buyer).await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    if current_cents < price_cents {
+        return Ok(Json(MockBuyResponse {
+            success: false,
+            message: format!("Insufficient balance. Required: {:.2} DYO", price_dyo),
+            nft_id: None,
+            price_dyo,
+            new_balance_dyo: (current_cents as f64) / 100.0,
+        }));
+    }
+    let updated_cents = current_cents.saturating_sub(price_cents);
+    state.storage.update_balance(buyer, updated_cents).await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Mint NFT record (DB best-effort; if table missing, still succeed)
+    let nft_id = Uuid::new_v4().to_string();
+    let metadata = serde_json::json!({
+        "name": request.name.clone().unwrap_or_else(|| "DUJYO Genesis NFT".to_string()),
+        "description": request.description.clone().unwrap_or_else(|| "Mock NFT purchase for MVP".to_string()),
+        "image": request.image.clone().unwrap_or_else(|| "".to_string()),
+        "attributes": [
+            { "trait_type": "Edition", "value": "Genesis" },
+            { "trait_type": "Platform", "value": "DUJYO" }
+        ]
+    });
+    let insert_res = sqlx::query(
+        r#"
+        INSERT INTO nfts (nft_id, owner_address, token_uri, metadata, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, NOW(), NOW())
+        ON CONFLICT (nft_id) DO NOTHING
+        "#
+    )
+    .bind(&nft_id)
+    .bind(buyer)
+    .bind(&request.image)
+    .bind(&metadata)
+    .execute(pool)
+    .await;
+    if let Err(e) = insert_res {
+        eprintln!("⚠️  NFTs table not ready or insert failed: {}", e);
+    }
+
+    // Record purchase transaction (best-effort)
+    let _ = sqlx::query(
+        r#"
+        INSERT INTO transactions (tx_hash, from_address, to_address, amount, status, created_at)
+        VALUES ($1, $2, $3, $4, 'success', NOW())
+        "#
+    )
+    .bind(&Uuid::new_v4().to_string())
+    .bind(buyer)
+    .bind("NFT_MARKETPLACE")
+    .bind(price_cents as i64)
+    .execute(pool)
+    .await;
+
+    // Add blockchain tx with nft_id for visibility in chain explorer (best-effort)
+    {
+        use crate::blockchain::blockchain::Transaction;
+        if let Ok(mut chain) = state.blockchain.lock() {
+            let tx = Transaction {
+                from: "NFT_MARKETPLACE".to_string(),
+                to: buyer.clone(),
+                amount: 0, // NFT mint has no DYO transfer here (price already deducted from storage)
+                nft_id: Some(nft_id.clone()),
+            };
+            if let Err(e) = chain.add_transaction(tx) {
+                eprintln!("⚠️  Could not add NFT mint tx to blockchain: {}", e);
+            }
+        }
+    }
+
+    Ok(Json(MockBuyResponse {
+        success: true,
+        message: "NFT purchased successfully".to_string(),
+        nft_id: Some(nft_id),
+        price_dyo,
+        new_balance_dyo: (updated_cents as f64) / 100.0,
+    }))
+}
+
 pub fn nft_routes() -> Router<AppState> {
     Router::new()
         .route("/:address", get(get_nfts_by_owner))
         .route("/mint", post(mint_nft))
         .route("/transfer", post(transfer_nft))
+        .route("/mock-buy", post(mock_buy_nft))
 }
 

@@ -33,12 +33,12 @@ CREATE INDEX IF NOT EXISTS idx_content_genre ON content(genre);
 
 CREATE TABLE IF NOT EXISTS stream_logs (
     log_id VARCHAR(255) PRIMARY KEY,
-    content_id VARCHAR(255) REFERENCES content(content_id),
+    content_id VARCHAR(255),
     artist_id VARCHAR(255) NOT NULL,
     user_address VARCHAR(255) NOT NULL,
-    stream_type VARCHAR(50) NOT NULL, -- "artist" or "listener"
+    stream_type VARCHAR(50) NOT NULL,
     duration_seconds INTEGER NOT NULL,
-    tokens_earned DECIMAL(20, 6) DEFAULT 0.0,
+    tokens_earned DECIMAL(18, 8) NOT NULL DEFAULT 0.0,
     track_id VARCHAR(255),
     track_title VARCHAR(500),
     track_genre VARCHAR(100),

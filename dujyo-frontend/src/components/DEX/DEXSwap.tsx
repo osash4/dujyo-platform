@@ -83,9 +83,7 @@ const DEXSwap: React.FC = () => {
   const [isStaking, setIsStaking] = useState(false);
   const [stakeAmount, setStakeAmount] = useState('');
   const [stakingMessage, setStakingMessage] = useState('');
-  const [isMinting, setIsMinting] = useState(false);
-  const [mintAmount, setMintAmount] = useState('');
-  const [mintMessage, setMintMessage] = useState('');
+  // ✅ REMOVED: Mint functionality removed per user request
   const [showBalanceNotification, setShowBalanceNotification] = useState(false);
   const [previousBalance, setPreviousBalance] = useState(0);
   
@@ -322,85 +320,7 @@ const DEXSwap: React.FC = () => {
     }
   };
 
-  // Handle minting tokens
-  const handleMint = async () => {
-    if (!user || !account) {
-      setMintMessage('Please connect your wallet first');
-      return;
-    }
-
-    if (!mintAmount || isNaN(parseFloat(mintAmount))) {
-      setMintMessage('Please enter a valid amount');
-      return;
-    }
-
-    const amount = parseFloat(mintAmount);
-    if (amount <= 0) {
-      setMintMessage('Amount must be greater than 0');
-      return;
-    }
-
-    if (amount > 10000) {
-      setMintMessage('Maximum mint amount is 10,000 DYO');
-      return;
-    }
-
-    const abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), 30000);
-
-    try {
-      setIsMinting(true);
-      setMintMessage('');
-
-      // Get JWT token from localStorage
-      const token = localStorage.getItem('jwt_token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      // Call the mint endpoint
-      const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/mint`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          account: user.uid,
-          amount: amount
-        }),
-        signal: abortController.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to mint tokens');
-      }
-
-      const result = await response.json();
-      console.log('Mint result:', result);
-      setMintMessage(`Successfully minted ${amount} DYO tokens!`);
-      setMintAmount('');
-      
-      // ✅ ACTUALIZAR BALANCES DESPUÉS DE MINT EXITOSO
-      await updateBalancesAfterTransaction();
-      
-    } catch (error) {
-      clearTimeout(timeoutId);
-      console.error('Minting error:', error);
-      
-      if (error instanceof Error && error.name === 'AbortError') {
-        setMintMessage('Request was cancelled or timed out. Please try again.');
-      } else {
-        setMintMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      }
-    } finally {
-      setIsMinting(false);
-    }
-  };
+  // ✅ REMOVED: handleMint function removed per user request
 
   const handleConfirmSwap = async () => {
     if (!user || !account) {
@@ -770,65 +690,7 @@ const DEXSwap: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Mint Tokens Section */}
-      <motion.div
-        className="mt-8 p-6 bg-gray-800/30 backdrop-blur-lg rounded-xl border border-gray-600/30"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <Zap className="w-5 h-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">{t('dex.mintTokens')}</h3>
-        </div>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-300 mb-2">{t('dex.amountToMint')}</label>
-            <input
-              type="number"
-              value={mintAmount}
-              onChange={(e) => setMintAmount(e.target.value)}
-              placeholder="0.0"
-              max="10000"
-              className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
-            />
-            <div className="flex justify-between items-center mt-2">
-              <span className="text-xs text-gray-400">{t('dex.maxPerMint')}</span>
-              <button
-                onClick={() => setMintAmount('1000')}
-                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                {t('dex.quick')}: 1000
-              </button>
-            </div>
-          </div>
-          
-          <motion.button
-            onClick={handleMint}
-            disabled={isMinting || !mintAmount}
-            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-3 rounded-lg hover:from-blue-400 hover:to-purple-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {isMinting ? t('dex.minting') : t('dex.mintDyoTokens')}
-          </motion.button>
-          
-          {mintMessage && (
-            <motion.div
-              className={`p-3 rounded-lg text-sm font-medium ${
-                mintMessage.includes('Success') 
-                  ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
-                  : 'bg-red-500/20 text-red-400 border border-red-500/50'
-              }`}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {mintMessage}
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
+      {/* ✅ REMOVED: Mint Tokens Section removed per user request */}
 
       {/* Additional Actions */}
       <div className="flex justify-center mt-6 space-x-4">

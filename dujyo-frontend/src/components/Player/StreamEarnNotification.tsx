@@ -64,11 +64,11 @@ const StreamEarnNotification: React.FC<StreamEarnNotificationProps> = ({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: -100, scale: 0.8 }}
+          initial={{ opacity: 0, y: 100, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -100, scale: 0.8 }}
+          exit={{ opacity: 0, y: 100, scale: 0.8 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className={`fixed top-4 right-4 z-50 bg-gradient-to-r ${getColor()} backdrop-blur-lg rounded-xl p-4 border shadow-2xl max-w-sm`}
+          className={`fixed bottom-20 right-4 z-50 bg-gradient-to-r ${getColor()} backdrop-blur-lg rounded-xl p-4 border shadow-2xl max-w-sm`}
         >
           <div className="flex items-center gap-3">
             <motion.div

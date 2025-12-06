@@ -28,20 +28,108 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// ✅ MIGRATION: Convert XW wallets to DU wallets in localStorage
+const migrateXWToDU = () => {
+  try {
+    // Migrate dujyo_wallet_account
+    const walletAccount = localStorage.getItem('dujyo_wallet_account');
+    if (walletAccount && walletAccount.startsWith('XW')) {
+      const newWallet = 'DU' + walletAccount.substring(2);
+      localStorage.setItem('dujyo_wallet_account', newWallet);
+      console.log('🔄 [MIGRATION] Updated dujyo_wallet_account:', walletAccount, '->', newWallet);
+    }
+    
+    // Migrate dujyo_wallet
+    const dujyoWallet = localStorage.getItem('dujyo_wallet');
+    if (dujyoWallet) {
+      try {
+        const walletObj = JSON.parse(dujyoWallet);
+        if (walletObj.address && walletObj.address.startsWith('XW')) {
+          walletObj.address = 'DU' + walletObj.address.substring(2);
+          localStorage.setItem('dujyo_wallet', JSON.stringify(walletObj));
+          console.log('🔄 [MIGRATION] Updated dujyo_wallet:', walletObj.address);
+        }
+      } catch (e) {
+        console.warn('⚠️ [MIGRATION] Could not parse dujyo_wallet:', e);
+      }
+    }
+    
+    // Migrate user object
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        if (userObj.uid && userObj.uid.startsWith('XW')) {
+          userObj.uid = 'DU' + userObj.uid.substring(2);
+          localStorage.setItem('user', JSON.stringify(userObj));
+          console.log('🔄 [MIGRATION] Updated user.uid:', userObj.uid);
+        }
+      } catch (e) {
+        console.warn('⚠️ [MIGRATION] Could not parse user:', e);
+      }
+    }
+    
+    // Migrate xwave_wallet
+    const xwaveWallet = localStorage.getItem('xwave_wallet');
+    if (xwaveWallet) {
+      try {
+        const walletObj = JSON.parse(xwaveWallet);
+        if (walletObj.address && walletObj.address.startsWith('XW')) {
+          walletObj.address = 'DU' + walletObj.address.substring(2);
+          localStorage.setItem('xwave_wallet', JSON.stringify(walletObj));
+          console.log('🔄 [MIGRATION] Updated xwave_wallet:', walletObj.address);
+        }
+      } catch (e) {
+        console.warn('⚠️ [MIGRATION] Could not parse xwave_wallet:', e);
+      }
+    }
+    
+    // Migrate walletAddress
+    const walletAddress = localStorage.getItem('walletAddress');
+    if (walletAddress && walletAddress.startsWith('XW')) {
+      const newWallet = 'DU' + walletAddress.substring(2);
+      localStorage.setItem('walletAddress', newWallet);
+      console.log('🔄 [MIGRATION] Updated walletAddress:', walletAddress, '->', newWallet);
+    }
+    
+    console.log('✅ [MIGRATION] Wallet migration completed');
+  } catch (error) {
+    console.error('❌ [MIGRATION] Error during wallet migration:', error);
+  }
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // ✅ Run migration on mount
+  useEffect(() => {
+    migrateXWToDU();
+  }, []);
+  
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // ✅ Run migration first before loading user
+    migrateXWToDU();
+    
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      console.log('✅ Loaded user from localStorage:', {
-        email: parsedUser.email,
-        uid: parsedUser.uid,
-        role: parsedUser.role
-      });
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        // ✅ Double-check migration: if uid still starts with XW, migrate it
+        if (parsedUser.uid && parsedUser.uid.startsWith('XW')) {
+          parsedUser.uid = 'DU' + parsedUser.uid.substring(2);
+          localStorage.setItem('user', JSON.stringify(parsedUser));
+          console.log('🔄 [MIGRATION] Updated user.uid during load:', parsedUser.uid);
+        }
+        setUser(parsedUser);
+        console.log('✅ Loaded user from localStorage:', {
+          email: parsedUser.email,
+          uid: parsedUser.uid,
+          role: parsedUser.role
+        });
+      } catch (e) {
+        console.error('❌ Error parsing user from localStorage:', e);
+      }
     }
     
     // Check if there's a stored wallet in localStorage (simple check)
@@ -49,6 +137,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (storedWallet) {
       try {
         const wallet = JSON.parse(storedWallet);
+        // ✅ Double-check migration: if address still starts with XW, migrate it
+        if (wallet && wallet.address && wallet.address.startsWith('XW')) {
+          wallet.address = 'DU' + wallet.address.substring(2);
+          localStorage.setItem('dujyo_wallet', JSON.stringify(wallet));
+          console.log('🔄 [MIGRATION] Updated wallet.address during load:', wallet.address);
+        }
         if (wallet && wallet.address) {
           console.log('Loaded existing wallet:', wallet.address);
         }
@@ -177,7 +271,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const tokenParts = registerResult.token.split('.');
           if (tokenParts.length === 3) {
             const payload = JSON.parse(atob(tokenParts[1]));
-            if (payload.sub && payload.sub.startsWith('DU')) {
+            if (payload.sub && (payload.sub.startsWith('DU') || payload.sub.startsWith('XW'))) {
               walletAddress = payload.sub;
               console.log('✅ Wallet from JWT token:', walletAddress);
             }
@@ -187,8 +281,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       }
       
-      // Ensure walletAddress is valid (starts with "DU")
-      if (!walletAddress || !walletAddress.startsWith('DU')) {
+      // Ensure walletAddress is valid (starts with "DU" or "XW" during migration)
+      const isValidWallet = walletAddress && (
+        walletAddress.startsWith('DU') || 
+        walletAddress.startsWith('XW') ||
+        walletAddress.length >= 20
+      );
+      
+      if (!isValidWallet) {
         console.error('❌ No valid DUJYO wallet address received after registration.');
         throw new Error('Registration successful, but no valid DUJYO wallet address found.');
       }
@@ -207,7 +307,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const newUser: User = {
         uid: walletAddress, // Use wallet address as UID
         email: email,
-        photoURL: 'https://example.com/photo.jpg',
+        photoURL: '', // Empty string - will use default avatar or user's uploaded avatar
         displayName: username || email.split('@')[0],
         role: role,
       };
@@ -298,7 +398,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const tokenParts = loginResult.token.split('.');
           if (tokenParts.length === 3) {
             const payload = JSON.parse(atob(tokenParts[1]));
-            if (payload.sub && payload.sub.startsWith('DU')) {
+            if (payload.sub && (payload.sub.startsWith('DU') || payload.sub.startsWith('XW'))) {
               walletAddress = payload.sub;
               console.log('✅ Wallet from JWT token:', walletAddress);
             }
@@ -321,7 +421,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           if (walletResponse.ok) {
             const walletData = await walletResponse.json();
             console.log('📡 Wallet response data:', walletData);
-            if (walletData.wallet_address && walletData.wallet_address.startsWith('DU')) {
+            if (walletData.wallet_address && (walletData.wallet_address.startsWith('DU') || walletData.wallet_address.startsWith('XW'))) {
               walletAddress = walletData.wallet_address;
             }
           }
@@ -332,25 +432,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       // ✅ CRITICAL: Do NOT use email as wallet address fallback
       // If we don't have a valid wallet address, we cannot proceed
-      if (!walletAddress || !walletAddress.startsWith('DU')) {
+      // Accept wallets starting with DU (legacy) or XW (new format) or any valid wallet format
+      const isValidWallet = walletAddress && (
+        walletAddress.startsWith('DU') || 
+        walletAddress.startsWith('XW') ||
+        walletAddress.length >= 20 // Basic validation: wallet should be at least 20 chars
+      );
+      
+      if (!isValidWallet || !walletAddress) {
         console.error('❌ No valid wallet address found. Cannot proceed with login.');
         throw new Error('No valid wallet address found. Please contact support.');
       }
       
+      // At this point, TypeScript knows walletAddress is not null
+      const validWalletAddress: string = walletAddress;
+      
       // Store the wallet
       localStorage.setItem('dujyo_wallet', JSON.stringify({
-        address: walletAddress,
+        address: validWalletAddress,
         publicKey: '0000000000000000000000000000000000000000000000000000000000000002'
       }));
-      localStorage.setItem('dujyo_wallet_account', walletAddress);
-      console.log('✅ Wallet stored:', walletAddress);
+      localStorage.setItem('dujyo_wallet_account', validWalletAddress);
+      console.log('✅ Wallet stored:', validWalletAddress);
 
       // Create user object with real wallet address
       const role = determineUserRole(email);
       const newUser: User = {
-        uid: walletAddress,
+        uid: validWalletAddress,
         email: email,
-        photoURL: 'https://example.com/photo.jpg',
+        photoURL: '', // Empty string - will use default avatar or user's uploaded avatar
         displayName: email.split('@')[0],
         role: role,
       };

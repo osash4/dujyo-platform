@@ -36,6 +36,7 @@ import {
 import { useAuth } from '../../auth/AuthContext';
 import { useBlockchain } from '../../contexts/BlockchainContext';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { fetchWithAutoRefresh, getValidToken, handleAuthError } from '../../utils/authHelpers';
 
 interface SongMetadata {
   title: string;
@@ -92,6 +93,7 @@ interface BlockchainProgress {
 const UploadMusic: React.FC = () => {
   const { user } = useAuth();
   const { account } = useBlockchain();
+  const [contentType, setContentType] = useState<'audio' | 'video' | 'gaming'>('audio');
   const [currentStep, setCurrentStep] = useState(1);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -304,8 +306,14 @@ const UploadMusic: React.FC = () => {
     const files = Array.from(e.dataTransfer.files);
     const file = files[0];
     
-    if (type === 'audio' && file.type.startsWith('audio/')) {
-      handleFileSelect(file, 'audio');
+    if (type === 'audio') {
+      const isValidPrimary =
+        (contentType === 'audio' && file.type.startsWith('audio/')) ||
+        (contentType === 'video' && file.type.startsWith('video/')) ||
+        (contentType === 'gaming'); // allow most types for gaming bundles
+      if (isValidPrimary) {
+        handleFileSelect(file, 'audio');
+      }
     } else if (type === 'image' && file.type.startsWith('image/')) {
       handleFileSelect(file, 'image');
     }
@@ -407,43 +415,227 @@ const UploadMusic: React.FC = () => {
   };
 
   const simulateUpload = async () => {
-    setIsUploading(true);
-    const files = [
-      { name: 'Audio File', file: audioFile },
-      { name: 'Cover Image', file: coverImage },
-      { name: 'Metadata', file: null }
-    ].filter(item => item.file);
-
-    for (const item of files) {
-      setUploadProgress(prev => [...prev, {
-        file: item.name,
-        progress: 0,
-        status: 'uploading',
-        message: 'Uploading to IPFS...'
-      }]);
-
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200));
-        setUploadProgress(prev => prev.map(p => 
-          p.file === item.name ? { ...p, progress: i } : p
-        ));
-      }
-
-      setUploadProgress(prev => prev.map(p => 
-        p.file === item.name ? { ...p, status: 'processing', message: 'Processing...' } : p
-      ));
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      setUploadProgress(prev => prev.map(p => 
-        p.file === item.name ? { ...p, status: 'completed', message: 'Upload complete' } : p
-      ));
+    // ✅ REAL UPLOAD - Replace simulation with actual backend upload
+    if (!audioFile) {
+      alert(contentType === 'audio' ? 'Please select an audio file first' : contentType === 'video' ? 'Please select a video file first' : 'Please select your game file first');
+      return;
     }
 
-    // Blockchain registration
-    await simulateBlockchainRegistration();
+    if (!metadata.title || !metadata.artist) {
+      alert('Please fill in title and artist name');
+      return;
+    }
 
-    setIsUploading(false);
+    setIsUploading(true);
+    setUploadProgress([]);
+
+    try {
+      const token = getValidToken();
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
+      }
+
+      console.log('🚀🚀🚀 [UploadMusic] Starting REAL upload...', {
+        title: metadata.title,
+        artist: metadata.artist,
+        fileName: audioFile.name,
+        fileSize: audioFile.size,
+        hasCoverImage: !!coverImage
+      });
+
+      // Step 1: Upload primary file
+      const primaryLabel = contentType === 'audio' ? 'Audio File' : contentType === 'video' ? 'Video File' : 'Game File';
+      setUploadProgress(prev => [...prev, {
+        file: primaryLabel,
+        progress: 0,
+        status: 'uploading',
+        message: `Uploading ${primaryLabel.toLowerCase()}...`
+      }]);
+
+      // Create FormData for upload
+      const uploadData = new FormData();
+      uploadData.append('title', metadata.title.trim());
+      uploadData.append('artist', metadata.artist.trim());
+      uploadData.append('description', (metadata.description || '').trim());
+      uploadData.append('genre', (metadata.genre || '').trim());
+      uploadData.append('price', '0');
+      uploadData.append('type', contentType);
+      uploadData.append('file', audioFile);
+      if (coverImage) {
+        uploadData.append('thumbnail', coverImage);
+      }
+      const userId = user?.uid || account || '';
+      uploadData.append('user', userId);
+      
+      console.log('📤 [UploadMusic] FormData prepared:', {
+        title: metadata.title.trim(),
+        artist: metadata.artist.trim(),
+        type: contentType,
+        fileName: audioFile.name,
+        fileSize: audioFile.size,
+        hasThumbnail: !!coverImage,
+        userId: userId
+      });
+
+      // Simulate progress for upload
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => prev.map(p => {
+          if (p.file === primaryLabel && p.status === 'uploading' && p.progress < 90) {
+            return { ...p, progress: Math.min(p.progress + 10, 90) };
+          }
+          return p;
+        }));
+      }, 200);
+
+      const apiBaseUrl = getApiBaseUrl();
+      const uploadUrl = `${apiBaseUrl}/api/v1/upload/content`;
+      console.log('📤 [UploadMusic] Sending request to:', uploadUrl);
+
+      let response: Response;
+      try {
+        // ✅ CRITICAL: Don't set Content-Type header - browser will set it automatically with boundary for FormData
+        response = await fetchWithAutoRefresh(uploadUrl, {
+          method: 'POST',
+          // Explicitly don't set Content-Type - let browser set it with boundary
+          body: uploadData
+        });
+        
+        console.log('📤 [UploadMusic] Request sent, waiting for response...');
+      } catch (fetchError) {
+        clearInterval(progressInterval);
+        console.error('❌ [UploadMusic] Fetch error:', fetchError);
+        throw new Error(`Network error: ${fetchError instanceof Error ? fetchError.message : 'Failed to connect to server'}`);
+      }
+
+      clearInterval(progressInterval);
+      
+      // Log response immediately for debugging
+      console.log('📥 [UploadMusic] Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
+      // Handle non-OK responses first (before handleAuthError consumes the body)
+      if (!response.ok) {
+        // Clone the response to read the body without consuming it
+        const responseClone = response.clone();
+        const errorText = await responseClone.text();
+        
+        console.error('❌ [UploadMusic] Upload failed - Response status:', response.status);
+        console.error('❌ [UploadMusic] Response headers:', Object.fromEntries(response.headers.entries()));
+        console.error('❌ [UploadMusic] Response body:', errorText);
+        
+        // Check for auth errors AFTER reading the body
+        if (response.status === 401) {
+          const isAuthError = await handleAuthError(response, () => {
+            alert('Your session has expired. Redirecting to login...');
+            window.location.href = '/login';
+          });
+          if (isAuthError) {
+            throw new Error('Your session has expired. Please log in again.');
+          }
+        }
+        
+        let errorMessage = 'Upload failed';
+        let errorDetails: any = {};
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+          errorDetails = errorData;
+          console.error('❌ [UploadMusic] Parsed error data:', errorData);
+        } catch {
+          errorMessage = errorText || errorMessage;
+          console.error('❌ [UploadMusic] Error response is not JSON:', errorText);
+        }
+        
+        // Provide more specific error messages
+        if (response.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (response.status === 403) {
+          errorMessage = 'You are not authorized to upload content. Please become an artist first.';
+        } else if (response.status === 413) {
+          errorMessage = 'File is too large. Please upload a smaller file.';
+        } else if (response.status === 429) {
+          errorMessage = 'Upload limit reached. Please try again later.';
+        } else if (response.status === 500) {
+          errorMessage = 'Server error. Please try again later or contact support.';
+        }
+        
+        throw new Error(`${errorMessage} (Status: ${response.status})`);
+      }
+
+      // If response is OK, update progress
+      setUploadProgress(prev => prev.map(p => 
+        p.file === 'Audio File' ? { ...p, progress: 100, status: 'completed', message: 'Upload complete' } : p
+      ));
+
+      const result = await response.json();
+      console.log('✅ [UploadMusic] Upload success:', result);
+
+      // Step 2: Simulate blockchain registration (for now, just show progress)
+      setUploadProgress(prev => [...prev, {
+        file: 'Blockchain Registration',
+        progress: 0,
+        status: 'processing',
+        message: 'Registering on blockchain...'
+      }]);
+
+      await simulateBlockchainRegistration();
+
+      setUploadProgress(prev => prev.map(p => 
+        p.file === 'Blockchain Registration' 
+          ? { ...p, progress: 100, status: 'completed', message: 'Registration complete' } 
+          : p
+      ));
+
+      // Success!
+      alert(`✅ Successfully uploaded "${metadata.title}"! Your content is now live.`);
+      
+      // Reset form
+      setAudioFile(null);
+      setCoverImage(null);
+      setMetadata({
+        title: '',
+        artist: user?.displayName || '',
+        album: '',
+        genre: '',
+        mood: '',
+        bpm: 120,
+        releaseDate: new Date().toISOString().split('T')[0],
+        description: '',
+        tags: [],
+        royaltyRate: 85,
+        collaborators: []
+      });
+      setCurrentStep(1);
+      setUploadProgress([]);
+
+    } catch (error) {
+      console.error('❌ [UploadMusic] Upload error:', error);
+      console.error('❌ [UploadMusic] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : 'Unknown'
+      });
+      
+      setUploadProgress(prev => prev.map(p => 
+        p.status === 'uploading' || p.status === 'processing'
+          ? { ...p, status: 'error', message: error instanceof Error ? error.message : 'Upload failed' }
+          : p
+      ));
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === 'string' 
+          ? error 
+          : 'Unknown error occurred';
+      
+      alert(`❌ Upload failed: ${errorMessage}\n\nCheck the console for more details.`);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const togglePlayPause = () => {
@@ -591,9 +783,35 @@ const UploadMusic: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
-          {/* Audio Upload */}
+          {/* Content Type Selector */}
+          <div className="lg:col-span-2 -mt-2 -mb-2">
+            <div className="inline-flex bg-gray-800 rounded-lg p-1 border border-gray-700">
+              {(['audio','video','gaming'] as const).map((ct) => (
+                <button
+                  key={ct}
+                  type="button"
+                  onClick={() => {
+                    setContentType(ct);
+                    // clear previously selected primary file when switching types
+                    setAudioFile(null);
+                    setIsPlaying(false);
+                  }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    contentType === ct
+                      ? 'bg-amber-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {ct === 'audio' ? 'Audio' : ct === 'video' ? 'Video' : 'Gaming'}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Primary Content Upload */}
           <div className="bg-gray-800 p-6 rounded-xl">
-            <h3 className="text-xl font-bold text-white mb-4">Audio File</h3>
+            <h3 className="text-xl font-bold text-white mb-4">
+              {contentType === 'audio' ? 'Audio File' : contentType === 'video' ? 'Video File' : 'Game File'}
+            </h3>
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                 audioFile ? 'border-green-500 bg-green-900/20' : 'border-gray-600 hover:border-gray-500'
@@ -603,7 +821,11 @@ const UploadMusic: React.FC = () => {
             >
               {audioFile ? (
                 <div className="space-y-4">
-                  <Music className="w-12 h-12 text-green-500 mx-auto" />
+                  {contentType === 'audio' ? (
+                    <Music className="w-12 h-12 text-green-500 mx-auto" />
+                  ) : (
+                    <Upload className="w-12 h-12 text-green-500 mx-auto" />
+                  )}
                   <div>
                     <p className="text-white font-medium">{audioFile.name}</p>
                     <p className="text-gray-400 text-sm">
@@ -611,12 +833,22 @@ const UploadMusic: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex items-center justify-center space-x-4">
-                    <button
-                      onClick={togglePlayPause}
-                      className="bg-amber-600 hover:bg-amber-700 text-white p-2 rounded-full transition-colors"
-                    >
-                      {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </button>
+                    {contentType === 'audio' && (
+                      <>
+                        <button
+                          onClick={togglePlayPause}
+                          className="bg-amber-600 hover:bg-amber-700 text-white p-2 rounded-full transition-colors"
+                        >
+                          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        </button>
+                        <audio
+                          ref={audioRef}
+                          src={audioFile ? URL.createObjectURL(audioFile) : undefined}
+                          onEnded={() => setIsPlaying(false)}
+                          className="hidden"
+                        />
+                      </>
+                    )}
                     <button
                       onClick={() => setAudioFile(null)}
                       className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors"
@@ -624,17 +856,17 @@ const UploadMusic: React.FC = () => {
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  <audio
-                    ref={audioRef}
-                    src={audioFile ? URL.createObjectURL(audioFile) : undefined}
-                    onEnded={() => setIsPlaying(false)}
-                    className="hidden"
-                  />
                 </div>
               ) : (
                 <div>
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-400 mb-2">Drag & drop your audio file here</p>
+                  <p className="text-gray-400 mb-2">
+                    {contentType === 'audio'
+                      ? 'Drag & drop your audio file here'
+                      : contentType === 'video'
+                      ? 'Drag & drop your video file here'
+                      : 'Drag & drop your game file here'}
+                  </p>
                   <p className="text-gray-500 text-sm mb-4">or</p>
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -645,7 +877,13 @@ const UploadMusic: React.FC = () => {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="audio/*"
+                    accept={
+                      contentType === 'audio'
+                        ? 'audio/*'
+                        : contentType === 'video'
+                        ? 'video/*'
+                        : '.zip,.rar,.7z,.exe,.apk,.app,.dmg'
+                    }
                     onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0], 'audio')}
                     className="hidden"
                   />

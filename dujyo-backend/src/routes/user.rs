@@ -1,5 +1,5 @@
 use axum::{
-    extract::{State, Extension, Multipart},
+    extract::{State, Extension, Multipart, Path as PathExtractor},
     http::StatusCode,
     response::Json,
     routing::{get, put, post},
@@ -482,19 +482,51 @@ pub async fn upload_avatar_handler(
     }
 
     let avatar_id = Uuid::new_v4().to_string();
-    let safe_file_name = file_name
+    
+    // ✅ CRITICAL FIX: Extract filename WITHOUT extension to avoid double extension
+    // Get the base name (stem) without extension
+    let file_stem = Path::new(&file_name)
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or("avatar");
+    
+    // Sanitize the stem (remove unsafe characters but keep alphanumeric, dots, dashes, underscores)
+    let safe_file_stem = file_stem
         .chars()
         .filter(|c| c.is_alphanumeric() || *c == '.' || *c == '-' || *c == '_')
         .collect::<String>();
-    let file_path = format!("{}/{}_{}.{}", uploads_dir, avatar_id, safe_file_name, file_ext);
+    
+    // Get extension (already extracted above, but ensure it's lowercase)
+    let file_ext_lower = file_ext.to_lowercase();
+    
+    // Construct filename: {uuid}_{stem}.{ext}
+    let filename = format!("{}_{}.{}", avatar_id, safe_file_stem, file_ext_lower);
+    let file_path = format!("{}/{}", uploads_dir, filename);
+    
+    eprintln!("🔍 [upload_avatar] Original filename: {}", file_name);
+    eprintln!("🔍 [upload_avatar] File stem: {}", safe_file_stem);
+    eprintln!("🔍 [upload_avatar] File extension: {}", file_ext_lower);
+    eprintln!("🔍 [upload_avatar] Final filename: {}", filename);
+    eprintln!("🔍 [upload_avatar] Saving file to: {}", file_path);
     
     if let Some(ref data) = file_data {
         fs::write(&file_path, data)
             .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+            .map_err(|e| {
+                eprintln!("❌ [upload_avatar] Error writing file: {}", e);
+                StatusCode::INTERNAL_SERVER_ERROR
+            })?;
+        
+        // Verify file was saved
+        if !Path::new(&file_path).exists() {
+            eprintln!("❌ [upload_avatar] File was not saved correctly: {}", file_path);
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+        
+        eprintln!("✅ [upload_avatar] File saved successfully: {}", file_path);
     }
 
-    let avatar_url = format!("/uploads/avatars/{}_{}.{}", avatar_id, safe_file_name, file_ext);
+    let avatar_url = format!("/uploads/avatars/{}", filename);
 
     // Update user avatar_url in database
     sqlx::query("UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE wallet_address = $2")
@@ -511,6 +543,56 @@ pub async fn upload_avatar_handler(
         "success": true,
         "avatar_url": avatar_url
     })))
+}
+
+/// GET /api/v1/user/avatar/:filename
+/// Serve avatar file
+pub async fn serve_avatar_handler(
+    PathExtractor(filename): PathExtractor<String>,
+) -> Result<axum::response::Response<axum::body::Body>, StatusCode> {
+    use axum::body::Body;
+    use axum::http::{header, Response};
+    use std::path::Path;
+    use tokio::fs;
+
+    let file_path = format!("uploads/avatars/{}", filename);
+    
+    // Security: Prevent path traversal
+    if filename.contains("..") || filename.contains("/") || filename.contains("\\") {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    // Check if file exists
+    if !Path::new(&file_path).exists() {
+        return Err(StatusCode::NOT_FOUND);
+    }
+
+    // Read file
+    let file_content = fs::read(&file_path)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    // Determine content type
+    let content_type = if filename.ends_with(".jpg") || filename.ends_with(".jpeg") {
+        "image/jpeg"
+    } else if filename.ends_with(".png") {
+        "image/png"
+    } else if filename.ends_with(".gif") {
+        "image/gif"
+    } else if filename.ends_with(".webp") {
+        "image/webp"
+    } else {
+        "application/octet-stream"
+    };
+
+    let response = Response::builder()
+        .status(StatusCode::OK)
+        .header(header::CONTENT_TYPE, content_type)
+        .header(header::CACHE_CONTROL, "public, max-age=31536000")
+        .body(Body::from(file_content))
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(response)
 }
 
 /// GET /api/v1/user/privacy
@@ -603,6 +685,7 @@ pub fn user_routes() -> axum::Router<AppState> {
         .route("/profile", get(get_profile_handler))
         .route("/profile", put(update_profile_handler))
         .route("/avatar", post(upload_avatar_handler))
+        .route("/avatar/:filename", get(serve_avatar_handler))
         .route("/privacy", get(get_privacy_handler))
         .route("/privacy", put(update_privacy_handler))
         // TODO: Fix claim_tokens_handler - problema con trait Handler

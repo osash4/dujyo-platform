@@ -41,12 +41,25 @@ const SpotifyBottomNav: React.FC = () => {
             onClick={handleProfileClick}
             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
-              {user?.photoURL ? (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center overflow-hidden">
+              {user?.photoURL && 
+               !user.photoURL.includes('example.com') && 
+               user.photoURL.trim().length > 0 ? (
                 <img 
+                  key={`bottomnav-avatar-${user.photoURL}`} // Force re-render when URL changes
                   src={user.photoURL} 
                   alt="Profile" 
                   className="w-8 h-8 rounded-full object-cover"
+                  crossOrigin="anonymous" // Allow CORS for local images
+                  onError={(e) => {
+                    console.error('❌ [BottomNav] Avatar image failed to load:', user.photoURL);
+                    // Hide image on error, will show default icon
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                  onLoad={() => {
+                    console.log('✅ [BottomNav] Avatar image loaded successfully:', user.photoURL);
+                  }}
                 />
               ) : (
                 <User className="w-5 h-5 text-white" />

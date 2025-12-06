@@ -147,9 +147,18 @@ pub async fn jwt_middleware(
     // Verify JWT token
     match jwt_config.verify_token(token) {
         Ok(claims) => {
+            eprintln!("✅ [JWT] Token verified successfully for path: {}", request.uri().path());
+            eprintln!("✅ [JWT] Claims sub: {}", claims.sub);
             // Add claims to request extensions for use in handlers
             request.extensions_mut().insert(claims);
-            next.run(request).await
+            eprintln!("✅ [JWT] Claims inserted into extensions");
+            let response = next.run(request).await;
+            eprintln!("✅ [JWT] Response status: {}", response.status());
+            // ✅ DEBUG: Verify claims were inserted
+            if response.status() == StatusCode::INTERNAL_SERVER_ERROR {
+                eprintln!("⚠️ [JWT] Response was 500 - claims extraction may have failed");
+            }
+            response
         }
         Err(e) => {
             eprintln!("JWT verification failed: {}", e);

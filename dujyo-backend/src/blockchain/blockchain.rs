@@ -99,7 +99,7 @@ impl Blockchain {
 
     fn create_genesis_block() -> Block {
         let genesis_address = "0x0000000000000000000000000000000000000000".to_string();
-        let recipient_address = "XW1111111111111111111111111111111111111111".to_string();
+        let recipient_address = "DU1111111111111111111111111111111111111111".to_string();
         
         let genesis_transaction = Transaction {
             from: genesis_address.clone(),

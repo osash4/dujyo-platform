@@ -9,6 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import Logo from '../common/Logo';
 import '../../styles/neon-colors.css';
@@ -68,6 +69,8 @@ interface OnboardingData {
   marketingEmails: boolean;
     loginMethod: 'email' | 'google';
   custodialWalletCreated: boolean;
+  betaAccessGranted: boolean;
+  betaAccessCode: string;
   tutorialCompleted: boolean;
   freeTokensClaimed: boolean;
   web3ConversionStarted: boolean;
@@ -79,10 +82,21 @@ interface OnboardingData {
 
 const OnboardingFlow: React.FC = () => {
   const { signUp } = useAuth();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [googleReady, setGoogleReady] = useState(false);
+  
+  // Check if we should start at a specific step (e.g., ?step=beta)
+  useEffect(() => {
+    const stepParam = searchParams.get('step');
+    if (stepParam === 'beta') {
+      // Find beta step index (step 4, index 3)
+      setCurrentStep(3);
+    }
+  }, [searchParams]);
   const [data, setData] = useState<OnboardingData>({
     email: '',
     password: '',
@@ -94,6 +108,8 @@ const OnboardingFlow: React.FC = () => {
     marketingEmails: false,
     loginMethod: 'email',
     custodialWalletCreated: false,
+    betaAccessGranted: false,
+    betaAccessCode: '',
     tutorialCompleted: false,
     freeTokensClaimed: false,
     web3ConversionStarted: false,
@@ -126,6 +142,14 @@ const OnboardingFlow: React.FC = () => {
     },
     {
       id: 4,
+      title: "Beta Access",
+      description: "Request access to Stream-to-Earn features",
+      component: BetaAccessStep,
+      isCompleted: false,
+      isOptional: false,
+    },
+    {
+      id: 5,
       title: "Claim Your Free Tokens",
       description: "Get 100 DYO tokens to start exploring",
       component: TokenClaimStep,
@@ -133,7 +157,7 @@ const OnboardingFlow: React.FC = () => {
       isOptional: false,
     },
     {
-      id: 5,
+      id: 6,
       title: "Quick Tutorial",
       description: "Learn how to use DUJYO in 2 minutes",
       component: TutorialStep,
@@ -141,7 +165,7 @@ const OnboardingFlow: React.FC = () => {
       isOptional: true,
     },
     {
-      id: 6,
+      id: 7,
       title: "You're All Set!",
       description: "Welcome to the future of entertainment",
       component: CompletionStep,
@@ -199,8 +223,14 @@ const OnboardingFlow: React.FC = () => {
       // Complete onboarding process
       await completeOnboarding(data);
       
-      // Redirect to profile page (user's main dashboard)
-      window.location.href = '/profile';
+      // Check if there's a returnTo parameter
+      const returnTo = searchParams.get('returnTo');
+      if (returnTo) {
+        navigate(decodeURIComponent(returnTo));
+      } else {
+        // Redirect to profile page (user's main dashboard)
+        navigate('/profile');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -776,6 +806,158 @@ const WalletCreationStep: React.FC<OnboardingStepProps> = ({ data, updateData })
           <p className="mb-2">Your wallet address: <span className="text-blue-400 font-mono">0x1234...5678</span></p>
           <p>You can upgrade to a self-custody wallet later in settings</p>
         </motion.div>
+      )}
+    </div>
+  );
+};
+
+const BetaAccessStep: React.FC<OnboardingStepProps> = ({ data, updateData, onNext }) => {
+  const { user } = useAuth();
+  const [accessCode, setAccessCode] = useState(data.betaAccessCode || '');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(data.betaAccessGranted || false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const apiBaseUrl = getApiBaseUrl();
+      const token = localStorage.getItem('token') || localStorage.getItem('jwt_token');
+      
+      if (!token) {
+        setError('Please log in first');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${apiBaseUrl}/api/v1/s2e/request-beta-access`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          access_code: accessCode,
+          email: user?.email,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.success && responseData.granted) {
+        setSuccess(true);
+        updateData({ 
+          betaAccessGranted: true,
+          betaAccessCode: accessCode,
+        });
+        // Auto-advance after 2 seconds
+        setTimeout(() => {
+          onNext();
+        }, 2000);
+      } else {
+        setError(responseData.message || 'Failed to grant beta access');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Beta access request error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="mb-8"
+      >
+        <div 
+          className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+          style={{ background: 'linear-gradient(135deg, #F59E0B, #EA580C)' }}
+        >
+          {success ? (
+            <CheckCircle className="w-12 h-12 text-white" />
+          ) : (
+            <Key className="w-12 h-12 text-white" />
+          )}
+        </div>
+        
+        <h2 className="text-3xl font-bold text-white mb-4">
+          {success ? 'Beta Access Granted!' : 'Request Beta Access'}
+        </h2>
+        
+        <p className="text-xl text-gray-300 mb-8">
+          {success 
+            ? 'You can now use Stream-to-Earn features'
+            : 'Stream-to-Earn is currently in closed beta. Enter your access code to join.'
+          }
+        </p>
+      </motion.div>
+
+      {success ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <p className="text-gray-300 mb-4">Redirecting to next step...</p>
+        </motion.div>
+      ) : (
+        <>
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertCircle size={20} className="text-yellow-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-yellow-300 font-semibold mb-1">Closed Beta</p>
+                <p className="text-xs text-gray-400">
+                  Contact us to receive your beta access code
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Access Code
+              </label>
+              <input
+                type="text"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
+                placeholder="DUJYO-S2E-BETA-2024"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500 transition-colors"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading || !accessCode}
+              className="w-full px-4 py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Requesting...</span>
+                </div>
+              ) : (
+                'Request Access'
+              )}
+            </button>
+          </form>
+        </>
       )}
     </div>
   );

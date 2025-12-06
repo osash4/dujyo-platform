@@ -4,6 +4,9 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use crate::blockchain::blockchain::{Blockchain, Block, Transaction};
 
+// Export r2_storage submodule
+pub mod r2_storage;
+
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct DbBlock {
     pub height: i64,
@@ -53,6 +56,17 @@ pub struct DbDexLiquidityPosition {
     pub lp_tokens: i64,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct S2EPool {
+    pub month_year: String,
+    pub total_amount: f64,
+    pub remaining_amount: f64,
+    pub artist_pool: f64,
+    pub listener_pool: f64,
+    pub artist_spent: f64,
+    pub listener_spent: f64,
 }
 
 pub struct BlockchainStorage {
@@ -213,6 +227,33 @@ impl BlockchainStorage {
         )
         .execute(&self.pool)
         .await?;
+
+        // Create staking_positions table (for staking with lock periods)
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS staking_positions (
+                position_id VARCHAR(255) PRIMARY KEY,
+                user_address VARCHAR(255) NOT NULL,
+                amount BIGINT NOT NULL,
+                lock_period_days INTEGER NOT NULL DEFAULT 30,
+                unlock_timestamp BIGINT NOT NULL,
+                rewards_earned BIGINT DEFAULT 0,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+            "#
+        )
+        .execute(&self.pool)
+        .await?;
+
+        // Create index for faster queries
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_staking_positions_user ON staking_positions(user_address)")
+            .execute(&self.pool)
+            .await?;
+        
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_staking_positions_unlock ON staking_positions(unlock_timestamp)")
+            .execute(&self.pool)
+            .await?;
 
         // Create indexes for users table
         sqlx::query("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
@@ -517,9 +558,9 @@ impl BlockchainStorage {
     pub async fn seed_demo_data(&self) -> Result<(), sqlx::Error> {
         // Insert genesis balances
         let genesis_addresses = vec![
-            ("XW1111111111111111111111111111111111111111", 1000000),
-            ("XW2222222222222222222222222222222222222222", 500000),
-            ("XW3333333333333333333333333333333333333333", 250000),
+            ("DU1111111111111111111111111111111111111111", 1000000),
+            ("DU2222222222222222222222222222222222222222", 500000),
+            ("DU3333333333333333333333333333333333333333", 250000),
         ];
 
         for (address, balance) in genesis_addresses {
@@ -642,5 +683,138 @@ impl BlockchainStorage {
             .await?;
 
         Ok(positions)
+    }
+
+    // ============================================================================
+    // S2E MONTHLY POOL METHODS
+    // ============================================================================
+
+    /// Get the current month's S2E pool
+    pub async fn get_current_pool(&self) -> Result<S2EPool, sqlx::Error> {
+        let month_year = Utc::now().format("%Y-%m").to_string();
+        
+        // Use ::float8 cast to get f64 directly from PostgreSQL DECIMAL
+        let row = sqlx::query(
+            r#"
+            SELECT 
+                month_year, 
+                total_amount::float8 as total_amount,
+                remaining_amount::float8 as remaining_amount,
+                artist_pool::float8 as artist_pool,
+                listener_pool::float8 as listener_pool,
+                artist_spent::float8 as artist_spent,
+                listener_spent::float8 as listener_spent
+            FROM s2e_monthly_pools 
+            WHERE month_year = $1
+            "#
+        )
+        .bind(&month_year)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        match row {
+            Some(row) => {
+                // With ::float8 cast in SQL, SQLx should return f64 directly
+                Ok(S2EPool {
+                    month_year: row.get::<String, _>("month_year"),
+                    total_amount: row.get::<f64, _>("total_amount"),
+                    remaining_amount: row.get::<f64, _>("remaining_amount"),
+                    artist_pool: row.get::<f64, _>("artist_pool"),
+                    listener_pool: row.get::<f64, _>("listener_pool"),
+                    artist_spent: row.get::<f64, _>("artist_spent"),
+                    listener_spent: row.get::<f64, _>("listener_spent"),
+                })
+            },
+            None => {
+                // Pool doesn't exist for this month - create it
+                let new_pool = S2EPool {
+                    month_year: month_year.clone(),
+                    total_amount: 1000000.0,
+                    remaining_amount: 1000000.0,
+                    artist_pool: 600000.0,
+                    listener_pool: 400000.0,
+                    artist_spent: 0.0,
+                    listener_spent: 0.0,
+                };
+                
+                sqlx::query(
+                    r#"
+                    INSERT INTO s2e_monthly_pools (
+                        month_year, total_amount, remaining_amount,
+                        artist_pool, listener_pool, artist_spent, listener_spent
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    "#
+                )
+                .bind(&new_pool.month_year)
+                .bind(new_pool.total_amount)
+                .bind(new_pool.remaining_amount)
+                .bind(new_pool.artist_pool)
+                .bind(new_pool.listener_pool)
+                .bind(new_pool.artist_spent)
+                .bind(new_pool.listener_spent)
+                .execute(&self.pool)
+                .await?;
+                
+                Ok(new_pool)
+            }
+        }
+    }
+
+    /// Check if pool has sufficient funds for the requested tokens
+    pub async fn check_pool_has_funds(&self, tokens_needed: f64) -> Result<bool, sqlx::Error> {
+        let month_year = Utc::now().format("%Y-%m").to_string();
+        
+        let row = sqlx::query(
+            "SELECT remaining_amount FROM s2e_monthly_pools WHERE month_year = $1"
+        )
+        .bind(&month_year)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        match row {
+            Some(_row) => {
+                // Use ::float8 cast for direct f64 conversion
+                let remaining: Option<f64> = sqlx::query_scalar::<_, f64>(
+                    "SELECT remaining_amount::float8 FROM s2e_monthly_pools WHERE month_year = $1"
+                )
+                .bind(&month_year)
+                .fetch_optional(&self.pool)
+                .await?;
+                let remaining_value = remaining.unwrap_or(0.0);
+                Ok(remaining_value >= tokens_needed)
+            },
+            None => Ok(false), // Pool doesn't exist - no funds available
+        }
+    }
+
+    /// Decrement the pool by the specified amounts (artist + listener tokens)
+    pub async fn decrement_pool(
+        &self,
+        artist_tokens: f64,
+        listener_tokens: f64,
+    ) -> Result<(), sqlx::Error> {
+        let month_year = Utc::now().format("%Y-%m").to_string();
+        let total_tokens = artist_tokens + listener_tokens;
+        
+        sqlx::query(
+            r#"
+            UPDATE s2e_monthly_pools 
+            SET 
+                remaining_amount = remaining_amount - $1,
+                artist_spent = artist_spent + $2,
+                listener_spent = listener_spent + $3,
+                updated_at = NOW()
+            WHERE month_year = $4 
+            AND remaining_amount >= $1
+            "#
+        )
+        .bind(total_tokens)
+        .bind(artist_tokens)
+        .bind(listener_tokens)
+        .bind(&month_year)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
     }
 }

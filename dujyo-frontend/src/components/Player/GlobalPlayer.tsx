@@ -6,6 +6,7 @@ import { usePlayerContext } from '../../contexts/PlayerContext';
 import { useUnifiedBalance } from '../../hooks/useUnifiedBalance';
 import StreamEarnNotification from './StreamEarnNotification';
 import StreamEarnDisplay from './StreamEarnDisplay';
+import { TipButton } from '../tips/TipButton';
 
 interface GlobalPlayerProps {
   track: Track;
@@ -183,21 +184,24 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
   // ✅ PERSIST: Handle initial load with existing track - RESTORE playback state
   useEffect(() => {
     // Restore playback position for both audio and video
-    const savedTime = localStorage.getItem(`dujyo_playback_time_${track.id}`);
-    const restoredTime = savedTime ? parseFloat(savedTime) : 0;
-    
-    if (track.playerMode === 'music' && audioRef.current) {
-      audioRef.current.currentTime = restoredTime;
-      audioRef.current.volume = volume;
-      audioRef.current.muted = isMuted;
-      console.log('🎵 Audio restored - time:', restoredTime, 'isPlaying:', isPlaying);
-    } else if (track.playerMode === 'video' && videoRef.current) {
-      videoRef.current.currentTime = restoredTime;
-      videoRef.current.volume = volume;
-      videoRef.current.muted = isMuted;
-      console.log('🎬 Video restored - time:', restoredTime, 'isPlaying:', isPlaying);
+    // Solo restaurar si NO está reproduciendo (para evitar resetear durante la reproducción)
+    if (!isPlaying) {
+      const savedTime = localStorage.getItem(`dujyo_playback_time_${track.id}`);
+      const restoredTime = savedTime ? parseFloat(savedTime) : 0;
+      
+      if (track.playerMode === 'music' && audioRef.current) {
+        audioRef.current.currentTime = restoredTime;
+        audioRef.current.volume = volume;
+        audioRef.current.muted = isMuted;
+        console.log('🎵 Audio restored - time:', restoredTime, 'isPlaying:', isPlaying);
+      } else if (track.playerMode === 'video' && videoRef.current) {
+        videoRef.current.currentTime = restoredTime;
+        videoRef.current.volume = volume;
+        videoRef.current.muted = isMuted;
+        console.log('🎬 Video restored - time:', restoredTime, 'isPlaying:', isPlaying);
+      }
     }
-  }, [track.id, track.playerMode, volume, isMuted, isPlaying]); // Restore when track changes
+  }, [track.id, track.playerMode, volume, isMuted]); // Removed isPlaying from dependencies to avoid resetting during playback
 
   // ✅ PERSIST: Save playback position every 5 seconds for both audio and video
   useEffect(() => {
@@ -263,16 +267,32 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
     
     if (track.playerMode === 'video' && videoRef.current) {
       if (isPlaying) {
+        // Guardar tiempo actual antes de pausar
+        const currentTime = videoRef.current.currentTime;
+        localStorage.setItem(`dujyo_playback_time_${track.id}`, currentTime.toString());
         videoRef.current.pause();
       } else {
+        // Restaurar tiempo guardado antes de reproducir
+        const savedTime = localStorage.getItem(`dujyo_playback_time_${track.id}`);
+        if (savedTime) {
+          videoRef.current.currentTime = parseFloat(savedTime);
+        }
         videoRef.current.play().catch(err => {
           console.error('Video play error:', err);
         });
       }
     } else if (track.playerMode === 'music' && audioRef.current) {
       if (isPlaying) {
+        // Guardar tiempo actual antes de pausar
+        const currentTime = audioRef.current.currentTime;
+        localStorage.setItem(`dujyo_playback_time_${track.id}`, currentTime.toString());
         audioRef.current.pause();
       } else {
+        // Restaurar tiempo guardado antes de reproducir
+        const savedTime = localStorage.getItem(`dujyo_playback_time_${track.id}`);
+        if (savedTime) {
+          audioRef.current.currentTime = parseFloat(savedTime);
+        }
         audioRef.current.play().catch(err => {
           console.error('Audio play error:', err);
         });
@@ -443,11 +463,6 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
     />
   );
 
-  // 🎯 Si no debe mostrarse, solo renderizar la zona de detección
-  if (!shouldShow) {
-    return proximityZone;
-  }
-
   // 🎯 Renderizar elementos de media SIEMPRE (necesarios para que funcione el play/pause)
   const mediaElements = (
     <>
@@ -455,6 +470,8 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
         <video
           ref={videoRef}
           src={track.url}
+          crossOrigin="anonymous"
+          preload="auto"
           className="hidden"
           onPlay={() => {
             console.log('🎵 GlobalPlayer: Video onPlay event, setting isPlaying to true');
@@ -463,6 +480,15 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
           onPause={() => {
             console.log('🎵 GlobalPlayer: Video onPause event, setting isPlaying to false');
             setPlaying(false);
+            try {
+              if (videoRef.current) {
+                const currentTime = videoRef.current.currentTime;
+                localStorage.setItem(`dujyo_playback_time_${track.id}`, String(currentTime));
+                console.log('💾 Saved video playback time:', currentTime);
+              }
+            } catch (e) {
+              console.error('Error saving video playback time:', e);
+            }
           }}
           onEnded={() => {
             setPlaying(false);
@@ -493,6 +519,8 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
         <audio
           ref={audioRef}
           src={track.url}
+          crossOrigin="anonymous"
+          preload="auto"
           onPlay={() => {
             console.log('🎵 GlobalPlayer: Audio onPlay event, setting isPlaying to true');
             setPlaying(true);
@@ -500,6 +528,11 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
           onPause={() => {
             console.log('🎵 GlobalPlayer: Audio onPause event, setting isPlaying to false');
             setPlaying(false);
+            try {
+              if (audioRef.current) {
+                localStorage.setItem(`dujyo_playback_time_${track.id}`, String(audioRef.current.currentTime));
+              }
+            } catch {}
           }}
           onEnded={() => {
             setPlaying(false);
@@ -657,6 +690,15 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
             >
               <Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`} />
             </button>
+            {track.artist && (
+              <TipButton
+                artistAddress={track.id} // Will be resolved to actual address if needed
+                artistName={track.artist}
+                compact={true}
+                contentId={track.id}
+                className="text-xs"
+              />
+            )}
             <button
               onClick={handleShare}
               className="text-gray-400 hover:text-white transition-colors"
@@ -965,6 +1007,16 @@ const GlobalPlayer: React.FC<GlobalPlayerProps> = ({ track, position }) => {
               >
                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
               </button>
+              
+              {track.artist && (
+                <TipButton
+                  artistAddress={track.id} // Will be resolved to actual address if needed
+                  artistName={track.artist}
+                  compact={true}
+                  contentId={track.id}
+                  className="text-xs"
+                />
+              )}
               
               <button 
                 onClick={handleShare}

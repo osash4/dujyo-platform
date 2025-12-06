@@ -20,8 +20,7 @@ CREATE TABLE IF NOT EXISTS user_statistics (
     current_streak_days INTEGER NOT NULL DEFAULT 0,
     last_active_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT user_statistics_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_statistics_user_id ON user_statistics(user_id);
@@ -43,8 +42,7 @@ CREATE TABLE IF NOT EXISTS premium_subscriptions (
     price_paid DECIMAL(20, 6),
     currency VARCHAR(10) DEFAULT 'DYO',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT premium_subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_premium_subscriptions_user_id ON premium_subscriptions(user_id);
@@ -62,9 +60,7 @@ CREATE TABLE IF NOT EXISTS exclusive_content_access (
     granted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     expires_at TIMESTAMPTZ,
     is_active BOOLEAN NOT NULL DEFAULT true,
-    CONSTRAINT exclusive_content_access_unique UNIQUE (content_id, user_id),
-    CONSTRAINT exclusive_content_access_content_id_fkey FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE,
-    CONSTRAINT exclusive_content_access_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE
+    CONSTRAINT exclusive_content_access_unique UNIQUE (content_id, user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_exclusive_content_access_content_id ON exclusive_content_access(content_id);
@@ -100,9 +96,7 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     unlocked_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     progress INTEGER NOT NULL DEFAULT 100, -- 0-100, for progress tracking
     is_notified BOOLEAN NOT NULL DEFAULT false,
-    CONSTRAINT user_achievements_unique UNIQUE (user_id, achievement_id),
-    CONSTRAINT user_achievements_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(wallet_address) ON DELETE CASCADE,
-    CONSTRAINT user_achievements_achievement_id_fkey FOREIGN KEY (achievement_id) REFERENCES achievements(achievement_id) ON DELETE CASCADE
+    CONSTRAINT user_achievements_unique UNIQUE (user_id, achievement_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_achievements_user_id ON user_achievements(user_id);

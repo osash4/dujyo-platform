@@ -35,7 +35,7 @@ phf = { version = "0.11", features = ["macros"] }
 # Axum HTTP server dependencies
 axum = { version = "0.7", features = ["ws", "multipart"] } # ✅ FIX: Added multipart feature
 tower = "0.5"
-tower-http = { version = "0.6", features = ["cors", "trace"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
@@ -44,7 +44,9 @@ futures-util = "0.3"
 tokio-tungstenite = "0.24"
 
 # Database dependencies
-sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json", "migrate"] }
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json", "migrate", "bigdecimal"] }
+rust_decimal = { version = "1.36", features = ["serde-with-str"] }
+nanoid = "0.4"
 dotenv = "0.15"
 
 # JWT authentication

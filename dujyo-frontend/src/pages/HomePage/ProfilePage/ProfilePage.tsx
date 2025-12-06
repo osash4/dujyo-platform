@@ -14,6 +14,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { getApiBaseUrl } from '../../../utils/apiConfig';
 import Logo from '../../../components/common/Logo';
+import S2EStatsSection from './S2EStatsSection';
 
 interface ContentItems {
   [key: string]: string[];
@@ -575,10 +576,19 @@ const ProfilePage: React.FC = () => {
             >
               {user?.photoURL && !avatarError ? (
                 <img
+                  key={`profile-avatar-${user.photoURL}`} // Force re-render when URL changes
                   src={user.photoURL}
                   alt={user.displayName || 'Profile'}
                   className="w-full h-full object-cover"
-                  onError={() => setAvatarError(true)}
+                  crossOrigin="anonymous" // Allow CORS for local images
+                  onError={(e) => {
+                    console.error('❌ [ProfilePage] Avatar image failed to load:', user.photoURL);
+                    setAvatarError(true);
+                  }}
+                  onLoad={() => {
+                    console.log('✅ [ProfilePage] Avatar image loaded successfully:', user.photoURL);
+                    setAvatarError(false); // Reset error if image loads successfully
+                  }}
                 />
               ) : (
                 <User size={64} className="text-white" />
@@ -1382,6 +1392,9 @@ const ProfilePage: React.FC = () => {
                     })()}
                 </div>
               </motion.div>
+
+              {/* 🆕 Stream-to-Earn Stats Section */}
+              <S2EStatsSection />
             </div>
           )}
 

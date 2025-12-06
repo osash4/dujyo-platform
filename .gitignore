@@ -123,3 +123,6 @@ xwave_audit_*.zip
 # Archivos de blockchain
 *.json.gz
 backup-*/
+env.production
+.env.production
+*.env.production

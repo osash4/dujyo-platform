@@ -143,6 +143,10 @@ const translations: Translations = {
   },
   
   // Common
+  'common.all': {
+    en: 'All',
+    es: 'Todos',
+  },
   'common.loading': {
     en: 'Loading...',
     es: 'Cargando...',
@@ -1394,6 +1398,51 @@ const translations: Translations = {
   'artist.artistDashboard': {
     en: 'Artist Dashboard',
     es: 'Panel de Artista',
+  },
+  // Artist Content Manager
+  'artist.contentManagerTitle': {
+    en: 'Content Manager',
+    es: 'Gestor de Contenido',
+  },
+  'artist.contentManagerSubtitle': {
+    en: 'Manage your catalog and releases',
+    es: 'Administra tu catálogo y lanzamientos',
+  },
+  'artist.uploadContent': {
+    en: 'Upload Content',
+    es: 'Subir Contenido',
+  },
+  'artist.createAlbum': {
+    en: 'Create Album',
+    es: 'Crear Álbum',
+  },
+  'artist.songs': {
+    en: 'Songs',
+    es: 'Canciones',
+  },
+  'artist.albums': {
+    en: 'Albums',
+    es: 'Álbumes',
+  },
+  'artist.yourContent': {
+    en: 'Your Content',
+    es: 'Tu Contenido',
+  },
+  'artist.album': {
+    en: 'Album',
+    es: 'Álbum',
+  },
+  'artist.duration': {
+    en: 'Duration',
+    es: 'Duración',
+  },
+  'artist.public': {
+    en: 'Public',
+    es: 'Público',
+  },
+  'artist.private': {
+    en: 'Private',
+    es: 'Privado',
   },
   'artist.welcomeBack': {
     en: 'Welcome back, {{name}}',

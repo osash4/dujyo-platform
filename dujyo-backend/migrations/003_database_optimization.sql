@@ -10,16 +10,16 @@
 -- ============================================================================
 
 -- Composite index for balance lookups with timestamp
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_balances_address_updated 
+CREATE INDEX IF NOT EXISTS idx_balances_address_updated 
 ON balances (address, updated_at DESC);
 
 -- Partial index for non-zero balances (most common query)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_balances_non_zero 
+CREATE INDEX IF NOT EXISTS idx_balances_non_zero 
 ON balances (address) 
 WHERE balance > 0;
 
 -- Index for balance range queries
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_balances_amount_range 
+CREATE INDEX IF NOT EXISTS idx_balances_amount_range 
 ON balances (balance, address) 
 WHERE balance > 0;
 
@@ -28,25 +28,25 @@ WHERE balance > 0;
 -- ============================================================================
 
 -- Composite index for token balance lookups
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_token_balances_address_updated 
+CREATE INDEX IF NOT EXISTS idx_token_balances_address_updated 
 ON token_balances (address, updated_at DESC);
 
 -- Partial indexes for each token type
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_token_balances_dyo_non_zero 
+CREATE INDEX IF NOT EXISTS idx_token_balances_dyo_non_zero 
 ON token_balances (address, dyo_balance) 
 WHERE dyo_balance > 0;
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_token_balances_usdyo_non_zero 
-ON token_balances (address, usdyo_balance) 
-WHERE usdyo_balance > 0;
+CREATE INDEX IF NOT EXISTS idx_token_balances_dys_non_zero 
+ON token_balances (address, dys_balance) 
+WHERE dys_balance > 0;
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_token_balances_staked_non_zero 
+CREATE INDEX IF NOT EXISTS idx_token_balances_staked_non_zero 
 ON token_balances (address, staked_balance) 
 WHERE staked_balance > 0;
 
 -- Index for total balance calculations
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_token_balances_total 
-ON token_balances ((dyo_balance + usdyo_balance + staked_balance), address);
+CREATE INDEX IF NOT EXISTS idx_token_balances_total 
+ON token_balances ((dyo_balance + dys_balance + staked_balance), address);
 
 -- ============================================================================
 -- 3. TRANSACTIONS TABLE OPTIMIZATION
@@ -59,28 +59,28 @@ DROP INDEX IF EXISTS idx_transactions_status;
 DROP INDEX IF EXISTS idx_transactions_block_height;
 
 -- Composite indexes for better query performance
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_from_status_created 
+CREATE INDEX IF NOT EXISTS idx_transactions_from_status_created 
 ON transactions (from_address, status, created_at DESC);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_to_status_created 
+CREATE INDEX IF NOT EXISTS idx_transactions_to_status_created 
 ON transactions (to_address, status, created_at DESC);
 
 -- Index for transaction history with pagination
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_user_history 
+CREATE INDEX IF NOT EXISTS idx_transactions_user_history 
 ON transactions (from_address, to_address, created_at DESC, tx_hash);
 
 -- Index for pending transactions (frequently queried)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_pending 
+CREATE INDEX IF NOT EXISTS idx_transactions_pending 
 ON transactions (status, created_at) 
 WHERE status = 'pending';
 
 -- Index for confirmed transactions by block
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_confirmed_block 
+CREATE INDEX IF NOT EXISTS idx_transactions_confirmed_block 
 ON transactions (block_height, created_at) 
 WHERE status = 'confirmed' AND block_height IS NOT NULL;
 
 -- Index for amount-based queries
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_transactions_amount_range 
+CREATE INDEX IF NOT EXISTS idx_transactions_amount_range 
 ON transactions (amount, created_at DESC) 
 WHERE amount > 0;
 
@@ -93,39 +93,40 @@ DROP INDEX IF EXISTS idx_blocks_hash;
 DROP INDEX IF EXISTS idx_blocks_timestamp;
 
 -- Composite index for block queries
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_height_timestamp 
+CREATE INDEX IF NOT EXISTS idx_blocks_height_timestamp 
 ON blocks (height, timestamp DESC);
 
 -- Index for block hash lookups
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_hash_lookup 
+CREATE INDEX IF NOT EXISTS idx_blocks_hash_lookup 
 ON blocks (hash) 
 WHERE hash IS NOT NULL;
 
 -- Index for recent blocks (most common query)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_blocks_recent 
-ON blocks (timestamp DESC, height DESC) 
-WHERE timestamp > NOW() - INTERVAL '7 days';
+-- Note: Removed WHERE clause with NOW() as it's not IMMUTABLE
+-- Use timestamp-based queries instead
+CREATE INDEX IF NOT EXISTS idx_blocks_recent 
+ON blocks (timestamp DESC, height DESC);
 
 -- ============================================================================
 -- 5. DEX TABLES OPTIMIZATION
 -- ============================================================================
 
 -- DEX pools optimization
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dex_pools_token_pair 
+CREATE INDEX IF NOT EXISTS idx_dex_pools_token_pair 
 ON dex_pools (token_a, token_b, updated_at DESC);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dex_pools_liquidity 
+CREATE INDEX IF NOT EXISTS idx_dex_pools_liquidity 
 ON dex_pools (total_supply DESC, updated_at DESC) 
 WHERE total_supply > 0;
 
 -- DEX liquidity positions optimization
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dex_liquidity_positions_user 
+CREATE INDEX IF NOT EXISTS idx_dex_liquidity_positions_user 
 ON dex_liquidity_positions (user_address, updated_at DESC);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dex_liquidity_positions_pool 
+CREATE INDEX IF NOT EXISTS idx_dex_liquidity_positions_pool 
 ON dex_liquidity_positions (pool_id, lp_tokens DESC);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dex_liquidity_positions_active 
+CREATE INDEX IF NOT EXISTS idx_dex_liquidity_positions_active 
 ON dex_liquidity_positions (user_address, pool_id, lp_tokens) 
 WHERE lp_tokens > 0;
 
@@ -139,13 +140,13 @@ SELECT
     b.address,
     b.balance as legacy_balance,
     COALESCE(tb.dyo_balance, 0) as dyo_balance,
-    COALESCE(tb.usdyo_balance, 0) as usdyo_balance,
+    COALESCE(tb.dys_balance, 0) as dys_balance,
     COALESCE(tb.staked_balance, 0) as staked_balance,
-    COALESCE(tb.dyo_balance + tb.usdyo_balance + tb.staked_balance, b.balance) as total_balance,
+    COALESCE(tb.dyo_balance + tb.dys_balance + tb.staked_balance, b.balance) as total_balance,
     GREATEST(b.updated_at, COALESCE(tb.updated_at, b.updated_at)) as last_updated
 FROM balances b
 LEFT JOIN token_balances tb ON b.address = tb.address
-WHERE b.balance > 0 OR COALESCE(tb.dyo_balance + tb.usdyo_balance + tb.staked_balance, 0) > 0;
+WHERE b.balance > 0 OR COALESCE(tb.dyo_balance + tb.dys_balance + tb.staked_balance, 0) > 0;
 
 -- View for transaction statistics
 CREATE OR REPLACE VIEW transaction_stats AS
@@ -213,17 +214,26 @@ ANALYZE dex_liquidity_positions;
 -- ============================================================================
 
 -- Add check constraints for data validation
-ALTER TABLE balances ADD CONSTRAINT chk_balance_non_negative 
-CHECK (balance >= 0);
-
-ALTER TABLE token_balances ADD CONSTRAINT chk_token_balances_non_negative 
-CHECK (dyo_balance >= 0 AND usdyo_balance >= 0 AND staked_balance >= 0);
-
-ALTER TABLE transactions ADD CONSTRAINT chk_transaction_amount_positive 
-CHECK (amount > 0);
-
-ALTER TABLE dex_pools ADD CONSTRAINT chk_dex_pool_reserves_positive 
-CHECK (reserve_a >= 0 AND reserve_b >= 0 AND total_supply >= 0);
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_balance_non_negative') THEN
+        ALTER TABLE balances ADD CONSTRAINT chk_balance_non_negative CHECK (balance >= 0);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_token_balances_non_negative') THEN
+        ALTER TABLE token_balances ADD CONSTRAINT chk_token_balances_non_negative 
+        CHECK (dyo_balance >= 0 AND dys_balance >= 0 AND staked_balance >= 0);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_transaction_amount_positive') THEN
+        ALTER TABLE transactions ADD CONSTRAINT chk_transaction_amount_positive CHECK (amount > 0);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_dex_pool_reserves_positive') THEN
+        ALTER TABLE dex_pools ADD CONSTRAINT chk_dex_pool_reserves_positive 
+        CHECK (reserve_a >= 0 AND reserve_b >= 0 AND total_supply >= 0);
+    END IF;
+END $$;
 
 -- ============================================================================
 -- 10. PERFORMANCE MONITORING QUERIES
@@ -292,45 +302,16 @@ BEGIN
     WHERE created_at < NOW() - INTERVAL '30 days' 
     AND status = 'confirmed';
     
-    -- Vacuum tables
-    VACUUM ANALYZE balances;
-    VACUUM ANALYZE token_balances;
-    VACUUM ANALYZE transactions;
-    VACUUM ANALYZE blocks;
+    -- Note: VACUUM cannot run inside a function or transaction
+    -- Run VACUUM ANALYZE manually after migrations complete
 END;
 $$ LANGUAGE plpgsql;
 
 -- ============================================================================
 -- 12. GRANTS AND PERMISSIONS
 -- ============================================================================
-
--- Grant permissions for read-only user
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO dujyo_readonly;
-GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO dujyo_readonly;
-GRANT EXECUTE ON FUNCTION get_slow_queries() TO dujyo_readonly;
-GRANT EXECUTE ON FUNCTION get_index_usage() TO dujyo_readonly;
-
--- Grant permissions for application user
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO dujyo_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO dujyo_app;
-GRANT EXECUTE ON FUNCTION maintenance_cleanup() TO dujyo_app;
-
--- Grant permissions for monitoring user
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO monitoring;
-GRANT EXECUTE ON FUNCTION get_slow_queries() TO monitoring;
-GRANT EXECUTE ON FUNCTION get_index_usage() TO monitoring;
+-- Grants removed - create users and grant permissions manually when needed
 
 -- ============================================================================
 -- MIGRATION COMPLETE
 -- ============================================================================
-
--- Log migration completion
-INSERT INTO blocks (height, hash, prev_hash, timestamp, tx_count, data) 
-VALUES (
-    (SELECT COALESCE(MAX(height), 0) + 1 FROM blocks),
-    'migration_003_database_optimization_' || EXTRACT(EPOCH FROM NOW()),
-    (SELECT hash FROM blocks ORDER BY height DESC LIMIT 1),
-    NOW(),
-    0,
-    '{"migration": "003_database_optimization", "description": "Database optimization for 1M+ users", "timestamp": "' || NOW() || '"}'
-) ON CONFLICT (height) DO NOTHING;

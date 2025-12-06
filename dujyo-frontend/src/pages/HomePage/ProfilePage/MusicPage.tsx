@@ -147,6 +147,8 @@ const MusicPage: React.FC = () => {
   const { connect, account, isConnecting } = useWallet();
   const [selectedSong, setSelectedSong] = useState<string | null>(null);
   const [filteredContent, setFilteredContent] = useState(musicContent);
+  const [realMusicContent, setRealMusicContent] = useState<any[]>([]); // ✅ Real content from API
+  const [isLoadingContent, setIsLoadingContent] = useState(true); // ✅ Loading state
   const [metrics, setMetrics] = useState<StreamMetrics>({
     dyoPerStream: 0.01,
     totalStreams: 0,
@@ -158,16 +160,99 @@ const MusicPage: React.FC = () => {
   const [listeningStreak, setListeningStreak] = useState(0);
   const [earningsProgress, setEarningsProgress] = useState(0);
   
+  // ✅ FIX: Fetch real music content from API
+  useEffect(() => {
+    const fetchMusicContent = async () => {
+      try {
+        setIsLoadingContent(true);
+        const apiBaseUrl = getApiBaseUrl();
+        const token = localStorage.getItem('jwt_token');
+        
+        const response = await fetch(`${apiBaseUrl}/api/v1/content/public?type=audio&limit=50`, {
+          headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.success && data.content && Array.isArray(data.content)) {
+            console.log('✅ [MusicPage] Received content from API:', data.content.length, 'items');
+            
+            // Map API content to musicContent format
+            const mappedContent = data.content.map((item: any) => {
+              const fileUrl = item.file_url || '';
+              const thumbnailUrl = item.thumbnail_url || '';
+              const apiBaseUrl = getApiBaseUrl();
+              
+              const fullFileUrl = fileUrl.startsWith('http') 
+                ? fileUrl 
+                : fileUrl.startsWith('/') 
+                  ? `${apiBaseUrl}${fileUrl}`
+                  : `${apiBaseUrl}/${fileUrl}`;
+              
+              const fullThumbnailUrl = thumbnailUrl && (
+                thumbnailUrl.startsWith('http') 
+                  ? thumbnailUrl 
+                  : thumbnailUrl.startsWith('/') 
+                    ? `${apiBaseUrl}${thumbnailUrl}`
+                    : `${apiBaseUrl}/${thumbnailUrl}`
+              );
+              
+              return {
+                id: item.content_id || item.id,
+                title: item.title || 'Unknown Title',
+                artist: item.artist_name || item.artist || 'Unknown Artist',
+                src: fullFileUrl,
+                cover: fullThumbnailUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.title || 'Music')}&background=F59E0B&color=fff&size=400`,
+                genre: item.genre || 'Unknown',
+                duration: '3:45', // Default duration
+                rating: 4.5, // Default rating
+                streams: 0, // Default streams
+                earnings: 0, // Default earnings
+                earnPerStream: 0.01, // ✅ Default earn per stream
+                listenersEarning: 0, // ✅ Default listeners earning
+                dailyEarnings: 0 // ✅ Default daily earnings
+              };
+            });
+            
+            console.log('✅ [MusicPage] Mapped content:', mappedContent.length, 'items');
+            setRealMusicContent(mappedContent);
+            
+            // Update filteredContent with real content
+            setFilteredContent(mappedContent.length > 0 ? mappedContent : musicContent);
+          } else {
+            console.log('⚠️ [MusicPage] No content from API, using fallback');
+            setFilteredContent(musicContent);
+          }
+        } else {
+          console.log('⚠️ [MusicPage] API error, using fallback');
+          setFilteredContent(musicContent);
+        }
+      } catch (err) {
+        console.error('❌ [MusicPage] Error fetching music content:', err);
+        setFilteredContent(musicContent);
+      } finally {
+        setIsLoadingContent(false);
+      }
+    };
+    
+    fetchMusicContent();
+  }, []);
+  
   // Calculate total metrics
   useEffect(() => {
-    const totalStreams = musicContent.reduce((sum, song) => sum + song.streams, 0);
+    const contentToUse = filteredContent.length > 0 ? filteredContent : musicContent;
+    const totalStreams = contentToUse.reduce((sum: number, song: any) => sum + (song.streams || 0), 0);
     const activeListeners = Math.floor(totalStreams / 100); // Estimate based on streams
     setMetrics({
       dyoPerStream: 0.01,
       totalStreams,
       activeListeners
     });
-  }, []);
+  }, [filteredContent]);
 
   // Fetch user earnings if wallet connected
   useEffect(() => {
@@ -195,18 +280,24 @@ const MusicPage: React.FC = () => {
     }
   };
   
-  // Trending data with earnings
-  const trendingMusic = [
-    { id: '1', title: 'Dices', subtitle: 'Rian', image: musicContent[0].cover, type: 'music' as const, views: '125K', likes: '8.2K', trend: 'up' as const, earnings: 1250 },
-    { id: '2', title: 'COMOPAMORA', subtitle: 'Rian', image: musicContent[1].cover, type: 'music' as const, views: '89K', likes: '6.5K', trend: 'new' as const, earnings: 890 },
-    { id: '3', title: 'Soy un principiante', subtitle: 'YVML', image: musicContent[2].cover, type: 'music' as const, views: '156K', likes: '12.3K', trend: 'up' as const, earnings: 1560 },
-    { id: '4', title: 'Drum&BassRomantic', subtitle: 'Rian', image: musicContent[3].cover, type: 'music' as const, views: '78K', likes: '5.9K', trend: 'new' as const, earnings: 780 }
-  ];
+  // Trending data with earnings - use real content if available
+  const contentForTrending = filteredContent.length > 0 ? filteredContent : musicContent;
+  const trendingMusic = contentForTrending.slice(0, 4).map((song, idx) => ({
+    id: song.id,
+    title: song.title,
+    subtitle: song.artist || 'Unknown',
+    image: song.cover,
+    type: 'music' as const,
+    views: `${Math.floor(Math.random() * 200 + 50)}K`,
+    likes: `${Math.floor(Math.random() * 15 + 3)}K`,
+    trend: idx % 2 === 0 ? 'up' as const : 'new' as const,
+    earnings: Math.floor(Math.random() * 2000 + 500)
+  }));
   
-  // Curated playlist
+  // Curated playlist - use real content if available
   const curatedPlaylist = {
     title: t('music.topPicks'),
-    items: musicContent.map(song => ({
+    items: contentForTrending.map(song => ({
       id: song.id,
       title: song.title,
       artist: song.artist,
@@ -559,7 +650,7 @@ const MusicPage: React.FC = () => {
             <TrendingSection
               items={trendingMusic}
               onItemClick={(item) => {
-                const song = musicContent.find(s => s.id === item.id);
+                const song = (contentForTrending || musicContent).find((s: any) => s.id === item.id);
                 if (song) handleSongClick(song);
               }}
             />
@@ -573,7 +664,7 @@ const MusicPage: React.FC = () => {
               title={curatedPlaylist.title}
               items={curatedPlaylist.items}
               onPlay={(item) => {
-                const song = musicContent.find(s => s.id === item.id);
+                const song = (contentForTrending || musicContent).find((s: any) => s.id === item.id);
                 if (song) handlePlayTrack(song);
               }}
             />
@@ -615,7 +706,7 @@ const MusicPage: React.FC = () => {
                     {/* Earn $DYO Badge */}
                     <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-400/30 rounded-full">
                       <Coins className="w-3 h-3 text-amber-400" />
-                      <span className="text-xs font-semibold text-amber-300">{t('music.earnAmount', { amount: song.earnPerStream.toFixed(2) })}</span>
+                      <span className="text-xs font-semibold text-amber-300">{t('music.earnAmount', { amount: (song.earnPerStream ?? 0).toFixed(2) })}</span>
                     </div>
 
                     <div className="flex items-center space-x-4">
@@ -643,7 +734,7 @@ const MusicPage: React.FC = () => {
                           <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1 text-amber-400">
                               <TrendingUp className="w-3 h-3" />
-                              <span>{t('music.artist')}: {song.earnings.toFixed(2)} $DYO</span>
+                              <span>{t('music.artist')}: {(song.earnings ?? 0).toFixed(2)} $DYO</span>
                             </div>
                             <div className="flex items-center gap-1 text-green-400">
                               <Users className="w-3 h-3" />
@@ -652,7 +743,7 @@ const MusicPage: React.FC = () => {
                           </div>
                           <div className="mt-1 text-xs text-gray-500 flex items-center gap-2">
                             <Eye className="w-3 h-3" />
-                            <span>{formatNumber(song.streams)} {t('music.streams')} • {formatNumber(song.dailyEarnings)} $DYO {t('common.today')}</span>
+                            <span>{formatNumber(song.streams || 0)} {t('music.streams')} • {formatNumber(song.dailyEarnings || 0)} $DYO {t('common.today')}</span>
                           </div>
                         </div>
                       </div>

@@ -91,7 +91,7 @@ const ExploreNow: React.FC = () => {
             </motion.div>
 
             {/* Floating Particles - Reduced on mobile for performance */}
-            {[...Array(isMobile ? 3 : 6)].map((_, i) => {
+            {Array.from({ length: isMobile ? 3 : 6 }, (_, i) => {
               const particleCount = isMobile ? 3 : 6;
               const radius = isMobile ? 150 : 250;
               const radiusMax = isMobile ? 180 : 300;
@@ -128,7 +128,7 @@ const ExploreNow: React.FC = () => {
                 />
               </motion.div>
               );
-            })}
+            }).filter(Boolean)}
 
             {/* Main Logo - Better hierarchy: Full logo on desktop, icon on mobile */}
             <motion.div

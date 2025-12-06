@@ -48,6 +48,11 @@ impl Default for RateLimitRules {
 
 /// Extract rate limit category from request path
 pub fn get_rate_limit_category(path: &str) -> &'static str {
+    // Skip rate limiting for static files (they're served directly)
+    if path.starts_with("/uploads/") {
+        return "public"; // Will be skipped in middleware anyway
+    }
+    
     // Financial endpoints get stricter rate limiting
     if path.starts_with("/api/v1/royalties/distribute") 
         || path.starts_with("/api/v1/royalties/external-report")
@@ -127,6 +132,27 @@ pub async fn redis_rate_limiting_middleware(
     next: Next,
 ) -> Response {
     let path = request.uri().path();
+    let full_uri = request.uri().to_string();
+    
+    // ✅✅✅ CRITICAL FIX: Log EVERY request to debug
+    eprintln!("🔍🔍🔍 [rate_limiting] Request - path: '{}', uri: '{}'", path, full_uri);
+    
+    // ✅✅✅ CRITICAL FIX: Skip rate limiting for health check and static files
+    // THIS CHECK MUST BE FIRST - before any other processing
+    // Check multiple variations to be sure
+    let should_skip = path == "/health" 
+        || path.starts_with("/uploads/")
+        || full_uri.contains("/uploads/");
+    
+    if should_skip {
+        eprintln!("✅✅✅ [rate_limiting] SKIPPING rate limit for path: '{}' (static file or health check)", path);
+        let response = next.run(request).await;
+        eprintln!("✅✅✅ [rate_limiting] Response status after skip: {}", response.status());
+        return response;
+    }
+    
+    eprintln!("⚠️⚠️⚠️ [rate_limiting] NOT skipping - applying rate limit to: '{}'", path);
+    
     let category = get_rate_limit_category(path);
     
     // Get rate limit rules for this category
@@ -140,10 +166,7 @@ pub async fn redis_rate_limiting_middleware(
         _ => (60, 60), // default
     };
     
-    // Skip rate limiting for health check to avoid false positives in tests
-    if path == "/health" {
-        return next.run(request).await;
-    }
+    eprintln!("🔍 [rate_limiting] Processing rate limit for path: {} (category: {})", path, category);
     
     // Extract identifiers
     let ip = extract_ip(&headers);

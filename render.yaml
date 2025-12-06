@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: dujyo-backend
+    env: rust
+    region: oregon  # o frankfurt si estás en EU
+    buildCommand: |
+      cd dujyo-backend
+      cargo build --release
+      sqlx migrate run --source ./migrations
+    startCommand: ./dujyo-backend/target/release/xwavve-backend
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: HOST
+        value: 0.0.0.0
+    healthCheckPath: /health
+    autoDeploy: true
+

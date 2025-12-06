@@ -3,6 +3,7 @@ pub mod analytics;
 pub mod royalties; // ✅ Royalties routes
 pub mod discovery;
 pub mod upload;
+pub mod health;
 pub mod artist_verification;
 pub mod validator_registration;
 pub mod payments;
@@ -24,3 +25,11 @@ pub mod trending;
 pub mod dex; // ✅ Trending algorithms
 pub mod nfts; // ✅ NFT routes
 pub mod metrics; // ✅ MVP-CRITICAL: Métricas para monitoreo
+pub mod payout;
+pub mod stripe;
+pub mod s2e_config;
+pub mod s2e_dashboard; // ✅ S2E configuration endpoint
+pub mod s2e_user; // ✅ S2E user stats endpoint
+pub mod s2e_beta; // ✅ S2E beta access routes
+pub mod s2e_admin; // ✅ S2E admin panel routes
+pub mod monitoring; // ✅ Monitoring and health check routes
