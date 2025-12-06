@@ -58,7 +58,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' http://localhost:8083 https://dujyo-platform.onrender.com wss://dujyo-platform.onrender.com https://www.google-analytics.com; media-src 'self' blob: https:; frame-src 'self' https://www.youtube.com;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' http://localhost:8083 https://dujyo-platform.onrender.com wss://dujyo-platform.onrender.com https://api.dujyo.com wss://api.dujyo.com https://www.google-analytics.com; media-src 'self' blob: https:; frame-src 'self' https://www.youtube.com;"
         },
         {
           "key": "X-Content-Type-Options",
