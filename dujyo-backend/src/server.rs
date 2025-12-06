@@ -2226,21 +2226,48 @@ pub fn create_router(state: AppState) -> Router {
         // ✅✅✅ DEBUG: Apply global debug middleware FIRST to see ALL requests
         .layer(axum::middleware::from_fn(global_debug_middleware))
         // ✅ MVP-CRITICAL: CORS configuration with dynamic origin from environment
-        .layer(
-            CorsLayer::new()
-                .allow_origin(
-                    std::env::var("CORS_ORIGIN")
-                        .unwrap_or_else(|_| "https://dujyo.vercel.app".to_string())
-                        .parse::<HeaderValue>()
-                        .unwrap_or_else(|_| HeaderValue::from_static("https://dujyo.vercel.app"))
-                )
-                .allow_origin("https://www.dujyo.com".parse::<HeaderValue>().unwrap())
-                .allow_origin("https://dujyo.com".parse::<HeaderValue>().unwrap())
-                .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())
-                .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
+        .layer({
+            let mut cors = CorsLayer::new();
+            
+            // Parse CORS_ORIGIN environment variable (supports comma-separated values)
+            if let Ok(cors_origin_env) = std::env::var("CORS_ORIGIN") {
+                for origin in cors_origin_env.split(',') {
+                    let origin = origin.trim();
+                    if !origin.is_empty() {
+                        if let Ok(header_value) = origin.parse::<HeaderValue>() {
+                            cors = cors.allow_origin(header_value);
+                            println!("✅ CORS: Added origin from env: {}", origin);
+                        } else {
+                            eprintln!("⚠️  CORS: Failed to parse origin: {}", origin);
+                        }
+                    }
+                }
+            } else {
+                // Fallback: add default origins
+                if let Ok(header_value) = "https://dujyo.vercel.app".parse::<HeaderValue>() {
+                    cors = cors.allow_origin(header_value);
+                }
+            }
+            
+            // Always allow these production origins
+            if let Ok(header_value) = "https://www.dujyo.com".parse::<HeaderValue>() {
+                cors = cors.allow_origin(header_value);
+            }
+            if let Ok(header_value) = "https://dujyo.com".parse::<HeaderValue>() {
+                cors = cors.allow_origin(header_value);
+            }
+            
+            // Allow localhost for development (only if not in production)
+            if std::env::var("ENVIRONMENT").unwrap_or_default() != "production" {
+                if let Ok(header_value) = "http://localhost:5173".parse::<HeaderValue>() {
+                    cors = cors.allow_origin(header_value);
+                }
+            }
+            
+            cors.allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
                 .allow_headers([AUTHORIZATION, CONTENT_TYPE])
                 .allow_credentials(true)
-        )
+        })
         .with_state(state)
 }
 

@@ -32,13 +32,13 @@ export function getApiBaseUrl(): string {
     if (!envUrl) {
       console.error('❌ ERROR: VITE_API_BASE_URL not set in production!');
       console.error('   Please configure VITE_API_BASE_URL in Vercel environment variables');
-      console.error('   Expected format: https://dujyo-platform.onrender.com');
+      console.error('   Expected format: https://api.dujyo.com');
       console.error('   Current host:', currentHost);
-      console.error('   Falling back to default Render URL');
+      console.error('   Falling back to default API URL');
     }
-    // Fallback: use default Render URL
-    const fallbackUrl = 'https://dujyo-platform.onrender.com';
-    console.error('🌐 Using backend URL:', envUrl || fallbackUrl);
+    // Fallback: use production API URL
+    const fallbackUrl = 'https://api.dujyo.com';
+    console.warn('🌐 Using backend URL:', envUrl || fallbackUrl);
     return envUrl || fallbackUrl;
   }
 
@@ -53,7 +53,7 @@ export function getApiBaseUrl(): string {
     if (!envUrl) {
       console.error('❌ ERROR: VITE_API_BASE_URL not set for Vercel preview!');
     }
-    return envUrl || 'https://dujyo-platform.onrender.com';
+    return envUrl || 'https://api.dujyo.com';
   }
 
   // ✅ PRIORITY 5: ngrok (development tunneling)

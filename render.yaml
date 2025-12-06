@@ -17,6 +17,12 @@ services:
         sync: false
       - key: HOST
         value: 0.0.0.0
+      - key: CORS_ORIGIN
+        value: https://dujyo.com
+      - key: RPC_PORT
+        value: 8083
+      - key: WS_PORT
+        value: 8084
     healthCheckPath: /health
     autoDeploy: true
 
